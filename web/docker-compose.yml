@@ -1,0 +1,10 @@
+version: "2.4"
+services:
+  web:
+    build: .
+    ports:
+      - 8001:8001   # Frontend
+    volumes:
+      - .:/app/
+      - /app/node_modules/ # IGNORE node_modules, should be added also in .dockerignore [MANDATORY]
+    stop_grace_period: 1m

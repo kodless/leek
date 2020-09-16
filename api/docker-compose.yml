@@ -1,0 +1,123 @@
+version: "2.4"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: dockers/leek.Dockerfile
+    volumes:
+      - .:/opt/app
+      - ./aws.creds:/home/appuser/.aws/credentials:ro
+    command: make run_gunicorn
+    env_file:
+      - docker-compose.env
+    ports:
+      - 9000:5000
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5000" ]
+      interval: 2s
+      timeout: 4s
+      retries: 20
+
+  # Just for local development!! (Test worker)
+  worker:
+    build:
+      context: .
+      dockerfile: dockers/clr.Dockerfile
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local development!! (Test client)
+  publisher:
+    build:
+      context: .
+      dockerfile: dockers/clr.Dockerfile
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    command: >
+      bash -c "python3 publisher.py"
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local development!! (Test broker)
+  mq:
+    image: rabbitmq:3.8-management-alpine
+    volumes:
+      - ./rmq/plugins/hackney-1.16.0.ez:/opt/rabbitmq/plugins/hackney-1.16.0.ez
+      - ./rmq/plugins/leek_webhooks-0.0.0.ez:/opt/rabbitmq/plugins/leek_webhooks-0.0.0.ez
+      - ./rmq/plugins/certifi-2.5.2.ez:/opt/rabbitmq/plugins/certifi-2.5.2.ez
+      - ./rmq/plugins/idna-6.0.1.ez:/opt/rabbitmq/plugins/idna-6.0.1.ez
+      - ./rmq/plugins/metrics-1.0.1.ez:/opt/rabbitmq/plugins/metrics-1.0.1.ez
+      - ./rmq/plugins/mimerl-1.1.0.ez:/opt/rabbitmq/plugins/mimerl-1.1.0.ez
+      - ./rmq/plugins/parse_trans-3.3.0.ez:/opt/rabbitmq/plugins/parse_trans-3.3.0.ez
+      - ./rmq/plugins/unicode_util_compat-0.5.0.ez:/opt/rabbitmq/plugins/unicode_util_compat-0.5.0.ez
+      - ./rmq/plugins/ssl_verify_fun-1.1.6.ez:/opt/rabbitmq/plugins/ssl_verify_fun-1.1.6.ez
+      - ./rmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 2s
+      timeout: 4s
+      retries: 20
+
+
+  # Just for local development!! (Test index db)
+  es01:
+    image: elasticsearch:7.8.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01 # ,es02
+#      - discovery.seed_hosts=es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    command: ["elasticsearch", "-Elogger.level=ERROR"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+#  es02:
+#    image: elasticsearch:7.4.0
+#    container_name: es02
+#    environment:
+#      - node.name=es02
+#      - cluster.name=es-docker-cluster
+#      - discovery.seed_hosts=es01
+#      - cluster.initial_master_nodes=es01,es02
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    volumes:
+#      - data02:/usr/share/elasticsearch/data
+#    networks:
+#      - elastic
+
+#  kibana:
+#    image: kibana:7.8.1
+#    container_name: kibana
+#    depends_on:
+#      es01:
+#        condition: service_healthy
+#    ports:
+#      - 5601:5601
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://es01:9200
+#    logging:
+#      driver: none

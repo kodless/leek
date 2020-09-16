@@ -1,0 +1,11 @@
+frontend/public/
+frontend/node_modules/
+frontend/.cache/
+api/docker-compose.env
+.idea/*
+*.iml
+**/*.DS_Store
+__pycache__
+.pytest_cache
+*.db
+aws.creds
