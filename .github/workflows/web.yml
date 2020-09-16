@@ -1,0 +1,4 @@
+name: Publish WEB static distribution
+on:
+  release:
+    types: [published]
