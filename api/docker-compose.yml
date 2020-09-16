@@ -6,7 +6,6 @@ services:
       dockerfile: dockers/leek.Dockerfile
     volumes:
       - .:/opt/app
-      - ./aws.creds:/home/appuser/.aws/credentials:ro
     command: make run_gunicorn
     env_file:
       - docker-compose.env
