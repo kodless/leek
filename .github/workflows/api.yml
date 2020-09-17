@@ -25,5 +25,5 @@ jobs:
           tags: |
             kodhive/leek:latest
             kodhive/leek:${{ github.event.release.tag_name }}
-          cache-from: type=registry,ref=user/app:latest
-          cache-to: type=registry,ref=user/app:latest
+          cache-from: type=registry,ref=kodhive/leek:latest
+          cache-to: type=registry,ref=kodhive/leek:latest
