@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import {
     Row, List, Button, Col, Card, Typography, Tag, Table, Modal, Form,
-    Input, Select, Switch, Divider, Radio, Empty, message, InputNumber, Space
+    Input, Select, Switch, Divider, Radio, Empty, InputNumber, Space
 } from 'antd'
 import {AppstoreAddOutlined, DeploymentUnitOutlined, SlackOutlined, BellOutlined} from "@ant-design/icons";
 
 import TriggerDataColumns from "../../components/triggers/triggerData";
-import {TaskStateClosable} from '../../components/task/taskState'
+import {TaskStateClosable} from '../../components/task/taskState';
+
 import {ApplicationSearch} from "../../api/application";
-import {handleAPIError, handleAPIResponse} from "../../utils/errors"
+import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 
 
 const Text = Typography.Text;

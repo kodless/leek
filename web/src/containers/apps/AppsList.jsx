@@ -2,9 +2,8 @@ import React, {useEffect, useState} from 'react'
 import {Row, List, Button, Empty, Typography, Space} from 'antd'
 import {AppstoreAddOutlined} from "@ant-design/icons";
 
-
-import {useApplication} from "../../context/ApplicationProvider";
 import CreateApp from "./CreateApp";
+import {useApplication} from "../../context/ApplicationProvider";
 
 const Text = Typography.Text;
 

@@ -78,5 +78,4 @@ function TriggerData(props) {
     ];
 }
 
-
 export default TriggerData;

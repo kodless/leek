@@ -1,7 +1,6 @@
 import React from 'react'
 import {Helmet} from 'react-helmet'
 
-
 import Applications from "../../containers/apps/Applications";
 
 const ApplicationsPage = () => {

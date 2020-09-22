@@ -6,6 +6,7 @@ import {SyncOutlined} from '@ant-design/icons';
 
 import WorkerDataColumns from "../../components/worker/workerData";
 import WorkerDetailsDrawer from "../../containers/workers/WorkerDetailsDrawer";
+
 import {useApplication} from "../../context/ApplicationProvider";
 import {WorkerSearch} from "../../api/worker";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors"

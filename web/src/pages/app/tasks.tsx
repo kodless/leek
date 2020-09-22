@@ -2,12 +2,13 @@ import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
 import moment from "moment";
 import {useQueryParam, StringParam} from "use-query-params";
-import {Row, Drawer, message, Col, Table, DatePicker, Button, Switch, Card, Empty, Space, Select, Input} from 'antd'
+import {Row, Drawer, message, Col, Table, DatePicker, Button, Switch, Card, Empty, Select, Input} from 'antd'
 import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
 
 import TaskDataColumns from "../../components/task/taskData"
 import TaskDetailsDrawer from '../../containers/tasks/TaskDetailsDrawer'
 import Filter from '../../containers/tasks/TaskFilter';
+
 import {useApplication} from "../../context/ApplicationProvider";
 import {TaskSearch} from "../../api/task";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";

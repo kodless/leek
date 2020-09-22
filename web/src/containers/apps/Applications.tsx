@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {Row, Button, Col, Card, Typography, Space, PageHeader, Tag} from 'antd'
 
-import {useApplication} from "../../context/ApplicationProvider";
-import {adaptTime} from "../../utils/date";
-
 import Triggers from "./Triggers";
 import AppsList from "./AppsList"
+
+import {useApplication} from "../../context/ApplicationProvider";
+import {adaptTime} from "../../utils/date";
 
 const Text = Typography.Text;
 
