@@ -3,7 +3,7 @@ import React from "react";
 import {Typography, Tag, Space, Button} from "antd";
 import {DeleteOutlined, EditOutlined, SlackOutlined} from "@ant-design/icons";
 
-import {TaskState} from '../task/taskState'
+import {TaskState} from '../task/TaskState'
 
 const Text = Typography.Text;
 

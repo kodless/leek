@@ -2,7 +2,7 @@ import React from 'react';
 import {Typography, Tabs, List} from 'antd'
 
 import {adaptTime} from '../../utils/date'
-import {WorkerState} from '../../components/worker/workerState'
+import {WorkerState} from '../../components/worker/WorkerState'
 
 const Text = Typography.Text;
 const {TabPane} = Tabs;

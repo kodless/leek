@@ -7,7 +7,7 @@ import {
     TeamOutlined,
     UserOutlined,
 } from '@ant-design/icons';
-import Image from "../../../components/image";
+import Image from "../../../components/Image";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;

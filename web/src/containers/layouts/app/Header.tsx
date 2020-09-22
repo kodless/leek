@@ -7,7 +7,7 @@ import {
     ClearOutlined, DownOutlined, MenuOutlined
 } from '@ant-design/icons';
 
-import Image from "../../../components/image";
+import Image from "../../../components/Image";
 import {useAuth} from "../../../context/AuthProvider";
 import {useApplication} from "../../../context/ApplicationProvider";
 

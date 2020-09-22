@@ -2,7 +2,7 @@ import React from "react";
 import {Badge, Space, Typography} from "antd";
 import {LoadingOutlined, CheckOutlined, HeartOutlined} from "@ant-design/icons";
 
-import {WorkerState} from './workerState'
+import {WorkerState} from './WorkerState'
 
 const Text = Typography.Text;
 

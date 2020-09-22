@@ -2,7 +2,7 @@ import React from "react";
 import TimeAgo from 'react-timeago'
 import {Typography, Tag} from "antd";
 
-import {TaskState} from './taskState'
+import {TaskState} from './TaskState'
 
 const Text = Typography.Text;
 

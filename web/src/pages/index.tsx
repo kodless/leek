@@ -2,7 +2,7 @@ import React from 'react'
 import {Helmet} from 'react-helmet'
 import {Button, Col, Layout, Row, Typography} from 'antd'
 import {Link} from "gatsby";
-import Image from "../components/image";
+import Image from "../components/Image";
 import {DeploymentUnitOutlined, BookOutlined, LoginOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;

@@ -5,7 +5,7 @@ import {useQueryParam, StringParam} from "use-query-params";
 import {Row, Drawer, message, Col, Table, DatePicker, Button, Switch, Card, Empty, Select, Input} from 'antd'
 import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
 
-import TaskDataColumns from "../../components/task/taskData"
+import TaskDataColumns from "../../components/task/TaskData"
 import TaskDetailsDrawer from '../../containers/tasks/TaskDetailsDrawer'
 import Filter from '../../containers/tasks/TaskFilter';
 

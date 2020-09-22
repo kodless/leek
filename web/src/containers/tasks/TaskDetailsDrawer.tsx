@@ -3,7 +3,7 @@ import {Typography, Tabs, List} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import {adaptTime} from '../../utils/date'
-import {TaskState} from '../../components/task/taskState'
+import {TaskState} from '../../components/task/TaskState'
 import TaskDetailsDrawer from './TaskDetailsDrawer.style'
 
 const Text = Typography.Text;

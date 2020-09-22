@@ -3,7 +3,7 @@ import {Row, Button, Typography, Col} from 'antd'
 import {GoogleOutlined} from "@ant-design/icons";
 
 
-import Image from "../components/image";
+import Image from "../components/Image";
 import {useAuth} from "../context/AuthProvider";
 import {Link} from "gatsby";
 
