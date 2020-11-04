@@ -6,6 +6,10 @@ export interface Application {
 
     createApplication(application: { any }): any;
 
+    purgeApplication(app_name: string): any;
+
+    deleteApplication(app_name: string): any;
+
     addFanoutTrigger(app_name: string, trigger: { any }): any
 
     editFanoutTrigger(app_name: string, trigger_id: string, trigger: { any }): any
@@ -41,6 +45,38 @@ export class ApplicationSearch implements Application {
                     },
                     body: JSON.stringify(application)
                 })
+            );
+        }
+    }
+
+    purgeApplication(app_name) {
+        let fb = getFirebase();
+        if (fb) {
+            return fb.auth().currentUser.getIdToken().then(token =>
+                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/purge`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    })
+            );
+        }
+    }
+
+    deleteApplication(app_name) {
+        let fb = getFirebase();
+        if (fb) {
+            return fb.auth().currentUser.getIdToken().then(token =>
+                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    })
             );
         }
     }

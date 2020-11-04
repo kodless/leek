@@ -1,17 +1,24 @@
 import React, {useEffect, useState} from 'react'
-import {Row, Button, Col, Card, Typography, Space, PageHeader, Tag} from 'antd'
+import {Row, Button, Col, Card, Typography, Space, PageHeader, Tag, message, Modal} from 'antd'
+import {ExclamationCircleOutlined} from '@ant-design/icons';
 
 import Triggers from "./Triggers";
 import AppsList from "./AppsList"
 
 import {useApplication} from "../../context/ApplicationProvider";
 import {adaptTime} from "../../utils/date";
+import {ApplicationSearch} from "../../api/application";
+import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 
 const Text = Typography.Text;
+const {confirm} = Modal;
 
 const Applications = () => {
 
-    const {applications, listApplications, currentApp} = useApplication();
+    const applicationSearch = new ApplicationSearch();
+    const [applicationPurging, setApplicationPurging] = useState<boolean>();
+    const [applicationDeleting, setApplicationDeleting] = useState<boolean>();
+    const {applications, currentApp, listApplications, deleteApplication} = useApplication();
     const [selectedApp, setSelectedApp] = useState<{
         app_name: string,
         app_description: string,
@@ -31,6 +38,52 @@ const Applications = () => {
         setSelectedApp(app)
     }
 
+    function handlePurgeApp() {
+        if (selectedApp) {
+            confirm({
+                title: 'Purge application',
+                icon: <ExclamationCircleOutlined/>,
+                content: 'Do you want to purge all events from selected application?',
+                onOk() {
+                    setApplicationPurging(true);
+                    applicationSearch.purgeApplication(selectedApp.app_name)
+                        .then(handleAPIResponse)
+                        .then((_: any) => {
+                            message.info("Application purged!")
+                        }, handleAPIError)
+                        .catch(handleAPIError)
+                        .finally(() => {
+                            setApplicationPurging(false);
+                        });
+                }
+            });
+        }
+    }
+
+    function handleDeleteApp() {
+        if (selectedApp) {
+            confirm({
+                title: 'Delete application',
+                icon: <ExclamationCircleOutlined/>,
+                content: 'Do you want to delete selected application?',
+                onOk() {
+                    setApplicationDeleting(true);
+                    applicationSearch.deleteApplication(selectedApp.app_name)
+                        .then(handleAPIResponse)
+                        .then((_: any) => {
+                            deleteApplication(selectedApp.app_name);
+                            setSelectedApp(undefined);
+                            message.info("Application deleted!")
+                        }, handleAPIError)
+                        .catch(handleAPIError)
+                        .finally(() => {
+                            setApplicationDeleting(false);
+                        });
+                }
+            });
+        }
+    }
+
     return (
         <Row justify="center">
             <Row style={{width: "100%"}}>
@@ -47,7 +100,12 @@ const Applications = () => {
                         }
                         subTitle={selectedApp.app_description}
                         extra={[
-                            <Button key="1" type="primary" danger ghost>
+                            <Button key="1" type="dashed" danger ghost onClick={handlePurgeApp}
+                                    loading={applicationPurging}>
+                                Purge
+                            </Button>,
+                            <Button key="2" danger ghost onClick={handleDeleteApp}
+                                    loading={applicationDeleting}>
                                 Delete
                             </Button>,
                         ]}

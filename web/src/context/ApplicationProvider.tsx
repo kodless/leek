@@ -48,6 +48,8 @@ interface ApplicationContextData {
 
     selectApplication(app_name: string);
 
+    deleteApplication(app_name: string);
+
     selectEnv(name: string);
 }
 
@@ -70,7 +72,7 @@ function ApplicationProvider({children}) {
     const applicationSearch = new ApplicationSearch();
     const [qpApp, setQPApp] = useQueryParam("app", StringParam);
     const [loading, setLoading] = useState<boolean>(true);
-    const [applications, setApplications] = useState<[]>([]);
+    const [applications, setApplications] = useState<any[]>([]);
     const [currentApp, setCurrentApp] = useState<string | undefined>(undefined);
     const [currentEnv, setCurrentEnv] = useState<string | undefined>(undefined);
 
@@ -129,13 +131,28 @@ function ApplicationProvider({children}) {
 
 
     useEffect(() => {
-        if (!currentApp) return;
-        getMetadata();
         if (interval) clearInterval(interval);
+        // If no application specified, return
+        if (!currentApp)
+            return;
+        // Else, get metadata every 10 seconds
+        getMetadata();
         interval =  setInterval(() => {
             getMetadata();
         }, 10000);
     }, [currentApp]);
+
+    function deleteApplication(app_name) {
+        let newApps = applications.filter( app => {
+            return app.app_name !== app_name;
+        });
+        setApplications(newApps);
+        if (currentApp === app_name)
+            if (newApps.length !== 0)
+                setCurrentApp(newApps[0].app_name);
+            else
+                setCurrentApp(undefined);
+    }
 
     function setCreateAppModalVisible(visible) {
 
@@ -153,6 +170,7 @@ function ApplicationProvider({children}) {
                 seenRoutingKeys: seenRoutingKeys,
                 seenEnvs: seenEnvs,
                 listApplications: listApplications,
+                deleteApplication: deleteApplication,
                 selectApplication: selectApplication,
                 selectEnv: selectEnv
             }

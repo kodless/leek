@@ -70,6 +70,29 @@ class AddFanoutTriggers(Resource):
         )
 
 
+@applications_ns.route('/<string:app_name>')
+class DeleteApplication(Resource):
+
+    @auth
+    def delete(self, app_name):
+        """
+        Delete application
+        """
+        return apps.delete_application(f"{g.org_name}-{app_name}")
+
+
+@applications_ns.route('/<string:app_name>/purge')
+class PurgeApplication(Resource):
+
+    @auth
+    def delete(self, app_name):
+        """
+        Purge application
+        """
+
+        return apps.purge_application(f"{g.org_name}-{app_name}")
+
+
 @applications_ns.route('/<string:app_name>/fo-triggers/<string:trigger_id>')
 class UpdateFanoutTriggers(Resource):
 
