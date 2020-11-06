@@ -1,6 +1,37 @@
 import {search} from "./search";
 import moment from "moment";
 
+export function getFilterQuery(app_env: string | undefined, filters: TaskFilters, ) {
+    let time_filter;
+    if (filters.interval_type === "at" && filters.timestamp_type && (filters.after_time || filters.before_time)) {
+        time_filter = {range: {[filters.timestamp_type]: {}}};
+        if (filters.after_time) time_filter.range[filters.timestamp_type]["gte"] = filters.after_time;
+        if (filters.before_time) time_filter.range[filters.timestamp_type]["lte"] = filters.before_time;
+    } else if (filters.interval_type === "past" && filters.timestamp_type && filters.past_time) {
+        time_filter = {range: {[filters.timestamp_type]: {}}};
+        time_filter.range[filters.timestamp_type]["gte"] = moment().unix() - filters.past_time;
+    }
+    let f = [
+        {"match": {"kind": "task"}},
+        app_env && {"match": {"app_env": app_env}},
+        filters.name && {"match": {"name": filters.name}},
+        filters.uuid && {"match": {"uuid": filters.uuid}},
+        filters.state && {"match": {"state": filters.state}},
+        filters.hostname && {"match": {"hostname": filters.hostname}},
+        filters.routing_key && {"match": {"routing_key": filters.routing_key}},
+        filters.parent && {"match": {"parent": filters.parent}},
+        filters.runtime && {"range": {"runtime": {[filters.runtime_op || "gte"]: filters.runtime}}},
+        filters.retries && {"range": {"retries": {[filters.retries_op || "gte"]: filters.retries}}},
+        filters.exception && {"match": {"exception": {"query": filters.exception}}},
+        filters.traceback && {"match": {"traceback": {"query": filters.traceback}}},
+        filters.args && {"match": {"args": {"query": filters.args}}},
+        filters.kwargs && {"match": {"kwargs": {"query": filters.kwargs}}},
+        filters.result && {"match": {"result": {"query": filters.result}}},
+        time_filter
+    ];
+    return f.filter(Boolean);
+}
+
 export interface TaskFilters {
     name: string | null,
     uuid: string | null,
@@ -49,41 +80,12 @@ export class TaskSearch implements Task {
         order: string | "desc",
         filters: TaskFilters,
     ) {
-        let time_filter;
-        if (filters.interval_type === "at" && filters.timestamp_type && (filters.after_time || filters.before_time)) {
-            time_filter = {range: {[filters.timestamp_type]: {}}};
-            if (filters.after_time) time_filter.range[filters.timestamp_type]["gte"] = filters.after_time;
-            if (filters.before_time) time_filter.range[filters.timestamp_type]["lte"] = filters.before_time;
-        } else if (filters.interval_type === "past" && filters.timestamp_type && filters.past_time) {
-            time_filter = {range: {[filters.timestamp_type]: {}}};
-            time_filter.range[filters.timestamp_type]["gte"] = moment().unix() - filters.past_time;
-        }
-        let f = [
-            {"match": {"kind": "task"}},
-            app_env && {"match": {"app_env": app_env}},
-            filters.name && {"match": {"name": filters.name}},
-            filters.uuid && {"match": {"uuid": filters.uuid}},
-            filters.state && {"match": {"state": filters.state}},
-            filters.hostname && {"match": {"hostname": filters.hostname}},
-            filters.routing_key && {"match": {"routing_key": filters.routing_key}},
-            filters.parent && {"match": {"parent": filters.parent}},
-            filters.runtime && {"range": {"runtime": {[filters.runtime_op || "gte"]: filters.runtime}}},
-            filters.retries && {"range": {"retries": {[filters.retries_op || "gte"]: filters.retries}}},
-            filters.exception && {"match": {"exception": {"query": filters.exception}}},
-            filters.traceback && {"match": {"traceback": {"query": filters.traceback}}},
-            filters.args && {"match": {"args": {"query": filters.args}}},
-            filters.kwargs && {"match": {"kwargs": {"query": filters.kwargs}}},
-            filters.result && {"match": {"result": {"query": filters.result}}},
-            time_filter
-        ];
-        console.log(f);
-        f = f.filter(Boolean);
         return search(
             app_name,
             {
                 query: {
                     "bool": {
-                        "must": f
+                        "must": getFilterQuery(app_env, filters)
                     }
                 },
                 sort: [

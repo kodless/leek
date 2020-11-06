@@ -149,4 +149,11 @@ properties = {
     "sw_ver": {
         "type": "keyword",
     },
+    # Broker specific
+    "exchange": {
+        "type": "keyword",
+    },
+    "routing_key": {
+        "type": "keyword",
+    }
 }

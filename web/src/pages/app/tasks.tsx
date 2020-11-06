@@ -168,6 +168,7 @@ const TasksPage: React.FC = () => {
                     <Row justify="center" style={{width: "100%"}}>
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
+                            size="small" style={{width: "100%"}}
                             title={
                                 <Row align="middle">
                                     <Col span={3}>
@@ -246,8 +247,7 @@ const TasksPage: React.FC = () => {
                                                 style={{float: "right"}}/>
                                     </Col>
                                 </Row>
-                            }
-                            size="small" style={{width: "100%"}}>
+                            }>
                             <Table dataSource={tasks}
                                    columns={columns}
                                    pagination={{...pagination, showTotal: handleShowTotal}}

@@ -42,7 +42,7 @@ TaskEventSchema = Schema(
         Optional("kwargs"): And(str),
         # If the exchange and routing keys are set
         Optional("exchange"): And(str, len),
-        Optional("routing_key"): And(str, len),
+        Optional("routing_key", default="#"): And(str, len),
         # If the task has a parent task caller
         Optional("root_id"): Or(None, And(str, len)),
         Optional("parent_id"): Or(None, And(str, len)),
