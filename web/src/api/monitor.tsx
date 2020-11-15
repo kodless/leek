@@ -34,7 +34,8 @@ export class MonitorSearch implements Monitor {
                         aggs: {
                             statesDistribution: {
                                 "terms": {"field": "state", "size": 1000}
-                            }
+                            },
+                            runtimeDistribution: {"avg": {"field": "runtime"}}
                         }
                     },
                     statesDistribution: {
@@ -42,6 +43,12 @@ export class MonitorSearch implements Monitor {
                     },
                     routingKeysDistribution: {
                         "terms": {"field": "routing_key", "size": 1000}
+                    },
+                    timeDistribution: {
+                        "date_histogram": {
+                            "field": "timestamp",
+                            "calendar_interval": "1m",
+                        }
                     },
                 }
             },

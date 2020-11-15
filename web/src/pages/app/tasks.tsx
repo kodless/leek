@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
-import moment from "moment";
 import {useQueryParam, StringParam} from "use-query-params";
-import {Row, Drawer, message, Col, Table, DatePicker, Button, Switch, Card, Empty, Select, Input} from 'antd'
+import {Row, Drawer, message, Col, Table, Button, Switch, Card, Empty} from 'antd'
 import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
 
 import TaskDataColumns from "../../components/task/TaskData"
+import TimeFilter from '../../components/task/TaskTimeFilter';
 import TaskDetailsDrawer from '../../containers/tasks/TaskDetailsDrawer'
 import Filter from '../../containers/tasks/TaskFilter';
 
@@ -13,8 +13,6 @@ import {useApplication} from "../../context/ApplicationProvider";
 import {TaskSearch} from "../../api/task";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 
-const {Option} = Select;
-const {RangePicker} = DatePicker;
 
 const TasksPage: React.FC = () => {
     // STATE
@@ -27,7 +25,7 @@ const TasksPage: React.FC = () => {
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
         interval_type: "at",
-        past_time: 900
+        past_time: 900000
     });
     const [order, setOrder] = useState<string>("desc");
 
@@ -130,22 +128,6 @@ const TasksPage: React.FC = () => {
         setFilters(values)
     }
 
-    function handleTimeRangeChange(dates, dateStrings) {
-        // The dates are converted to UTC unix timestamps because dates are indexed as such
-        let filters = {...timeFilters};
-        if (dateStrings[0])
-            filters.after_time = moment(dateStrings[0]).unix();
-        else
-            filters.after_time = 0;
-
-        if (dateStrings[1])
-            filters.before_time = moment(dateStrings[1]).unix();
-        else
-            filters.before_time = 0;
-
-        setTimeFilters(filters);
-    }
-
     return (
         <>
             <Helmet
@@ -183,64 +165,7 @@ const TasksPage: React.FC = () => {
                                         />
                                     </Col>
                                     <Col span={18} style={{textAlign: "center"}}>
-                                        <Input.Group compact>
-                                            <Select defaultValue="timestamp"
-                                                    dropdownMatchSelectWidth
-                                                    style={{width: 115}}
-                                                    size="small"
-                                                    onChange={type => setTimeFilters({
-                                                        ...timeFilters,
-                                                        timestamp_type: type
-                                                    })}
-                                            >
-                                                <Option value="timestamp">Seen</Option>
-                                                <Option value="sent_at">Sent</Option>
-                                                <Option value="received_at">Received</Option>
-                                                <Option value="started_at">Started</Option>
-                                                <Option value="succeeded_at">Succeeded</Option>
-                                                <Option value="failed_at">Failed</Option>
-                                                <Option value="retried_at">Retried</Option>
-                                                <Option value="rejected_at">Rejected</Option>
-                                                <Option value="revoked_at">Revoked</Option>
-                                            </Select>
-                                            <Select defaultValue="at"
-                                                    dropdownMatchSelectWidth
-                                                    style={{width: 70}}
-                                                    size="small"
-                                                    onChange={type => setTimeFilters({
-                                                        ...timeFilters,
-                                                        interval_type: type
-                                                    })}
-                                            >
-                                                <Option value="at">at</Option>
-                                                <Option value="past">past</Option>
-                                            </Select>
-                                            {timeFilters.interval_type == "at" ?
-                                                <RangePicker
-                                                    showTime
-                                                    allowEmpty={[true, true]}
-                                                    onChange={handleTimeRangeChange}
-                                                    size="small"/>
-                                                :
-                                                <Select defaultValue="900"
-                                                        dropdownMatchSelectWidth
-                                                        style={{width: 120}}
-                                                        size="small"
-                                                        onChange={past => setTimeFilters({
-                                                            ...timeFilters,
-                                                            past_time: parseInt(past)
-                                                        })}
-                                                >
-                                                    <Option value="900">15 minutes</Option>
-                                                    <Option value="1800">30 minutes</Option>
-                                                    <Option value="3600">1 Hour</Option>
-                                                    <Option value="14400">4 Hours</Option>
-                                                    <Option value="86400">1 day</Option>
-                                                    <Option value="172800">2 days</Option>
-                                                </Select>
-                                            }
-
-                                        </Input.Group>
+                                        <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
                                     </Col>
                                     <Col span={3}>
                                         <Button size="small" onClick={handleRefresh} icon={<SyncOutlined/>}

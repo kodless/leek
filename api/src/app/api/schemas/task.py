@@ -1,4 +1,4 @@
-from schema import Schema, And, Or, Optional
+from schema import Schema, And, Or, Optional, Use
 
 TASK_EVENT_TYPES = (
     "task-sent",
@@ -33,7 +33,7 @@ TaskEventSchema = Schema(
             *TASK_EVENT_TYPES
         ),
         "uuid": And(str, len),
-        "timestamp": And(float),
+        "timestamp": And(float, Use(lambda t: t * 1000)),  # Seconds to Milliseconds
         "utcoffset": And(int),
         "pid": And(int),
         "clock": And(int),

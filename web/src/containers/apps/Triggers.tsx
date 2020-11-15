@@ -5,7 +5,7 @@ import {
 } from 'antd'
 import {AppstoreAddOutlined, DeploymentUnitOutlined, SlackOutlined, BellOutlined} from "@ant-design/icons";
 
-import TriggerDataColumns from "../../components/triggers/TriggerData";
+import TriggerDataColumns from "../../components/app/TriggerData";
 import {TaskStateClosable} from '../../components/task/TaskState';
 
 import {ApplicationSearch} from "../../api/application";
@@ -174,7 +174,7 @@ const Triggers = (props) => {
 
 
     return (
-        <Row style={{width: "100%"}}>
+        <Row style={{width: "100%", marginBottom: "16px"}}>
 
             {/*Create Trigger*/}
             <Modal

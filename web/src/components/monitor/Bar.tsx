@@ -11,13 +11,13 @@ export const LeekBar: React.FC<any> = (props) => {
     return (
         <ResponsiveBar
             data={props.data}
-            keys={[ "SENT", "RECEIVED", "STARTED", "SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RETRY" ]}
-            indexBy="task"
+            keys={props.keys}
+            indexBy="id"
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-            padding={0.3}
+            padding={0.8}
             layout="horizontal"
             valueScale={{ type: 'linear' }}
-            colors={{ scheme: 'set3' }}
+            colors={{ scheme: 'blue_green' }}
             defs={[
                 {
                     id: 'dots',
@@ -53,7 +53,8 @@ export const LeekBar: React.FC<any> = (props) => {
                 }
             ]}
             borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
-            axisTop={null}
+            borderRadius={5}
+            axisTop={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
             axisRight={null}
             axisBottom={{
                 tickSize: 5,
@@ -63,17 +64,10 @@ export const LeekBar: React.FC<any> = (props) => {
                 legendPosition: 'middle',
                 legendOffset: 32
             }}
-            axisLeft={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'tasks',
-                legendPosition: 'middle',
-                legendOffset: -40
-            }}
+            axisLeft={null}
             labelSkipWidth={12}
             labelSkipHeight={12}
-            labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
+            labelTextColor="black"
             legends={[
                 {
                     dataFrom: 'keys',
@@ -98,6 +92,8 @@ export const LeekBar: React.FC<any> = (props) => {
                     ]
                 }
             ]}
+            enableGridX={true}
+            enableGridY={false}
             animate={true}
             motionStiffness={90}
             motionDamping={15}

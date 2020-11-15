@@ -9,6 +9,7 @@ import {useApplication} from "../../context/ApplicationProvider";
 import {adaptTime} from "../../utils/date";
 import {ApplicationSearch} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
+import Indices from "./Indices";
 
 const Text = Typography.Text;
 const {confirm} = Modal;
@@ -31,11 +32,11 @@ const Applications = () => {
     } | undefined>(applications[0]);
 
     useEffect(() => {
-        listApplications()
+        listApplications();
     }, []);
 
     function handleSelectApp(app) {
-        setSelectedApp(app)
+        setSelectedApp(app);
     }
 
     function handlePurgeApp() {
@@ -96,7 +97,7 @@ const Applications = () => {
                         onBack={() => setSelectedApp(undefined)}
                         title={selectedApp.app_name}
                         tags={
-                            currentApp == selectedApp.app_name ? <Tag color="blue">Current</Tag>: <></>
+                            currentApp == selectedApp.app_name ? <Tag color="blue">Current</Tag> : <></>
                         }
                         subTitle={selectedApp.app_description}
                         extra={[
@@ -141,6 +142,8 @@ const Applications = () => {
                         </Card>
 
                         <Triggers selectedApp={selectedApp} setSelectedApp={setSelectedApp}/>
+
+                        <Indices selectedApp={selectedApp}/>
                     </PageHeader>
                     }
                 </Col>

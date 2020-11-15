@@ -43,17 +43,10 @@ services:
 
   # Just for local development!! (Test broker)
   mq:
-    image: rabbitmq:3.8-management-alpine
+    build:
+      context: .
+      dockerfile: dockers/rmq.Dockerfile
     volumes:
-      - ./rmq/plugins/hackney-1.16.0.ez:/opt/rabbitmq/plugins/hackney-1.16.0.ez
-      - ./rmq/plugins/leek_webhooks-0.0.0.ez:/opt/rabbitmq/plugins/leek_webhooks-0.0.0.ez
-      - ./rmq/plugins/certifi-2.5.2.ez:/opt/rabbitmq/plugins/certifi-2.5.2.ez
-      - ./rmq/plugins/idna-6.0.1.ez:/opt/rabbitmq/plugins/idna-6.0.1.ez
-      - ./rmq/plugins/metrics-1.0.1.ez:/opt/rabbitmq/plugins/metrics-1.0.1.ez
-      - ./rmq/plugins/mimerl-1.1.0.ez:/opt/rabbitmq/plugins/mimerl-1.1.0.ez
-      - ./rmq/plugins/parse_trans-3.3.0.ez:/opt/rabbitmq/plugins/parse_trans-3.3.0.ez
-      - ./rmq/plugins/unicode_util_compat-0.5.0.ez:/opt/rabbitmq/plugins/unicode_util_compat-0.5.0.ez
-      - ./rmq/plugins/ssl_verify_fun-1.1.6.ez:/opt/rabbitmq/plugins/ssl_verify_fun-1.1.6.ez
       - ./rmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ./rmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
     ports:

@@ -9,7 +9,7 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         if (filters.before_time) time_filter.range[filters.timestamp_type]["lte"] = filters.before_time;
     } else if (filters.interval_type === "past" && filters.timestamp_type && filters.past_time) {
         time_filter = {range: {[filters.timestamp_type]: {}}};
-        time_filter.range[filters.timestamp_type]["gte"] = moment().unix() - filters.past_time;
+        time_filter.range[filters.timestamp_type]["gte"] = moment().valueOf() - filters.past_time;
     }
     let f = [
         {"match": {"kind": "task"}},

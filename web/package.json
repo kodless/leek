@@ -7,6 +7,7 @@
     "@ant-design/dark-theme": "2.0.1",
     "@ant-design/icons": "4.1.0",
     "@nivo/bar": "^0.64.0",
+    "@nivo/line": "^0.64.0",
     "@nivo/pie": "^0.64.0",
     "@nivo/waffle": "^0.64.0",
     "antd": "4.2.0",

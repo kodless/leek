@@ -129,7 +129,7 @@ def delete_app_fo_trigger(index_alias, trigger_id):
 def delete_application(index_alias):
     """
     Delete index template (Application) and all related indexes (Application Data)
-    :param index_alias: index name AKA application name
+    :param index_alias: application indices prefix AKA Application name
     :return:
     """
     connection = es.connection
@@ -146,7 +146,7 @@ def delete_application(index_alias):
 def purge_application(index_alias):
     """
     Purge application data by deleting all indexes and create primary empty index
-    :param index_alias:
+    :param index_alias: application indices prefix AKA Application name
     :return:
     """
     connection = es.connection
@@ -154,6 +154,21 @@ def purge_application(index_alias):
         connection.indices.delete(f"{index_alias}*")
         connection.indices.create(f"{index_alias}-primary")
         return "Done", 200
+    except es_exceptions.ConnectionError:
+        return responses.cache_backend_unavailable
+    except es_exceptions.RequestError:
+        return responses.application_already_exist
+
+
+def get_application_indices(index_alias):
+    """
+    Get application indices
+    :param index_alias: index_alias: application indices prefix AKA Application name
+    :return:
+    """
+    connection = es.connection
+    try:
+        return connection.indices.stats(f"{index_alias}*"), 200
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
     except es_exceptions.RequestError:

@@ -4,6 +4,8 @@ import env from "../utils/vars";
 export interface Application {
     listApplications(): any;
 
+    listApplicationIndices(app_name: string): any;
+
     createApplication(application: { any }): any;
 
     purgeApplication(app_name: string): any;
@@ -122,6 +124,22 @@ export class ApplicationSearch implements Application {
                 fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
                     {
                         method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    })
+            );
+        }
+    }
+
+    listApplicationIndices(app_name) {
+        let fb = getFirebase();
+        if (fb) {
+            return fb.auth().currentUser.getIdToken().then(token =>
+                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/indices`,
+                    {
+                        method: "GET",
                         headers: {
                             "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json"

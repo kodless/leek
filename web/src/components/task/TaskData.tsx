@@ -39,7 +39,7 @@ function TaskData() {
             render: timestamp => {
                 return (
                     <Text style={{color: "rgba(45,137,183,0.8)"}}>
-                        {timestamp ? <TimeAgo date={timestamp * 1000}/> : '-'}
+                        {timestamp ? <TimeAgo date={timestamp}/> : '-'}
                     </Text>
                 );
             }

@@ -93,6 +93,18 @@ class PurgeApplication(Resource):
         return apps.purge_application(f"{g.org_name}-{app_name}")
 
 
+@applications_ns.route('/<string:app_name>/indices')
+class ApplicationIndices(Resource):
+
+    @auth
+    def get(self, app_name):
+        """
+        List application indices
+        """
+
+        return apps.get_application_indices(f"{g.org_name}-{app_name}")
+
+
 @applications_ns.route('/<string:app_name>/fo-triggers/<string:trigger_id>')
 class UpdateFanoutTriggers(Resource):
 

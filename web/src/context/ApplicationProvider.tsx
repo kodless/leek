@@ -116,7 +116,6 @@ function ApplicationProvider({children}) {
     }
 
     function selectApplication(app_name) {
-        setQPApp(app_name);
         setCurrentApp(app_name);
     }
 
@@ -131,16 +130,23 @@ function ApplicationProvider({children}) {
 
 
     useEffect(() => {
+        // Stop refreshing metadata
         if (interval) clearInterval(interval);
         // If no application specified, return
         if (!currentApp)
             return;
+        setQPApp(currentApp);
         // Else, get metadata every 10 seconds
         getMetadata();
         interval =  setInterval(() => {
             getMetadata();
         }, 10000);
     }, [currentApp]);
+
+    useEffect(() => {
+        if (qpApp && qpApp !== currentApp)
+            setCurrentApp(qpApp)
+    }, [qpApp]);
 
     function deleteApplication(app_name) {
         let newApps = applications.filter( app => {
