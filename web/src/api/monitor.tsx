@@ -45,9 +45,9 @@ export class MonitorSearch implements Monitor {
                         "terms": {"field": "routing_key", "size": 1000}
                     },
                     timeDistribution: {
-                        "date_histogram": {
+                        "auto_date_histogram": {
                             "field": "timestamp",
-                            "calendar_interval": "1m",
+                            "buckets": 20,
                         }
                     },
                 }

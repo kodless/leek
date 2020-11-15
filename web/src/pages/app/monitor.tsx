@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import _ from 'lodash';
+import _ from 'lodash'
 import {Card, Col, Row, Empty} from 'antd'
-import {LeekPie} from "../../components/monitor/Pie";
-import {LeekBar} from "../../components/monitor/Bar";
-import {LeekWaffle} from "../../components/monitor/Waffle";
-import Filter from "../../containers/tasks/TaskFilter";
-import {handleAPIError, handleAPIResponse} from "../../utils/errors";
-import {MonitorSearch} from "../../api/monitor";
-import {useApplication} from "../../context/ApplicationProvider";
-import TimeFilter from "../../components/task/TaskTimeFilter";
+import {LeekPie} from "../../components/monitor/Pie"
+import {LeekBar} from "../../components/monitor/Bar"
+import {LeekWaffle} from "../../components/monitor/Waffle"
+import {LeekLine} from "../../components/monitor/Line"
+import AttributesFilter from "../../components/task/TaskAttributesFilter"
+import TimeFilter from "../../components/task/TaskTimeFilter"
+import {handleAPIError, handleAPIResponse} from "../../utils/errors"
+import {MonitorSearch} from "../../api/monitor"
+import {useApplication} from "../../context/ApplicationProvider"
+import {timeFormat} from 'd3-time-format';
 
 const tasksStatesSeries = {
     SENT: 0,
@@ -29,6 +31,7 @@ const MonitorPage = () => {
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
     const [routingKeysDistribution, setRoutingKeysDistribution] = useState<any>([]);
     const [tasksDistribution, setTasksDistribution] = useState<any>([]);
+    const [tasksOverTimeDistribution, setTasksOverTimeDistribution] = useState<any>([]);
 
     // Filters
     const {currentApp, currentEnv} = useApplication();
@@ -70,7 +73,15 @@ const MonitorPage = () => {
                         )
                     )
                 );
-                console.log(result.aggregations.timeDistribution);
+                let format = timeFormat("%Y-%m-%d %H:%M:%SZ");
+                setTasksOverTimeDistribution([
+                    {
+                        id: "tasks",
+                        data: result.aggregations.timeDistribution.buckets.map(
+                            ({key, doc_count}) => ({x: format(key), y: doc_count})
+                        )
+                    }
+                ]);
                 setTotalHits(result.hits.total.value);
             }, handleAPIError)
             .catch(handleAPIError);
@@ -90,7 +101,7 @@ const MonitorPage = () => {
 
             <Row style={{marginBottom: "16px"}} gutter={[12, 12]}>
                 <Col xxl={5} xl={6} md={7} lg={8} sm={24} xs={24}>
-                    <Filter
+                    <AttributesFilter
                         onFilter={handleFilterChange}
                     />
                 </Col>
@@ -127,6 +138,16 @@ const MonitorPage = () => {
                             title="Tasks distribution">
                             <Row style={{height: "400px"}}>
                                 <LeekBar data={tasksDistribution} keys={Object.keys(tasksStatesSeries)}/>
+                            </Row>
+                        </Card>
+                    </Row>
+                    <Row justify="center" style={{width: "100%", marginTop: 13}}>
+                        <Card
+                            bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
+                            size="small" style={{width: "100%"}}
+                            title="Tasks over time distribution">
+                            <Row style={{height: "400px"}}>
+                                <LeekLine data={tasksOverTimeDistribution}/>
                             </Row>
                         </Card>
                     </Row>

@@ -33,7 +33,7 @@ TaskEventSchema = Schema(
             *TASK_EVENT_TYPES
         ),
         "uuid": And(str, len),
-        "timestamp": And(float, Use(lambda t: t * 1000)),  # Seconds to Milliseconds
+        "timestamp": And(float, Use(lambda t: int(t * 1000))),  # Seconds to Milliseconds
         "utcoffset": And(int),
         "pid": And(int),
         "clock": And(int),

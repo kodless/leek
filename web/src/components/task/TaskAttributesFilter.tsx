@@ -10,7 +10,7 @@ interface TasksFilterContextData {
     onFilter(value: {});
 }
 
-const TasksFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
+const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
     const {seenTasks, seenWorkers, seenStates, seenRoutingKeys} = useApplication();
     const [form] = Form.useForm();
 
@@ -161,4 +161,4 @@ const TasksFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContext
     );
 };
 
-export default TasksFilter
+export default TaskAttributesFilter

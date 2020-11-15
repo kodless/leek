@@ -2,16 +2,16 @@ import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
 import {useQueryParam, StringParam} from "use-query-params";
 import {Row, Drawer, message, Col, Table, Button, Switch, Card, Empty} from 'antd'
-import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
+import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons'
 
 import TaskDataColumns from "../../components/task/TaskData"
-import TimeFilter from '../../components/task/TaskTimeFilter';
+import AttributesFilter from '../../components/task/TaskAttributesFilter'
+import TimeFilter from '../../components/task/TaskTimeFilter'
 import TaskDetailsDrawer from '../../containers/tasks/TaskDetailsDrawer'
-import Filter from '../../containers/tasks/TaskFilter';
 
-import {useApplication} from "../../context/ApplicationProvider";
-import {TaskSearch} from "../../api/task";
-import {handleAPIError, handleAPIResponse} from "../../utils/errors";
+import {useApplication} from "../../context/ApplicationProvider"
+import {TaskSearch} from "../../api/task"
+import {handleAPIError, handleAPIResponse} from "../../utils/errors"
 
 
 const TasksPage: React.FC = () => {
@@ -142,7 +142,7 @@ const TasksPage: React.FC = () => {
 
             <Row style={{marginBottom: "16px"}} gutter={[12, 12]}>
                 <Col xxl={5} xl={6} md={7} lg={8} sm={24} xs={24}>
-                    <Filter
+                    <AttributesFilter
                         onFilter={handleFilterChange}
                     />
                 </Col>

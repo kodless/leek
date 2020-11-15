@@ -10,7 +10,7 @@ properties = {
         "type": "keyword",
     },
     "timestamp": {
-        "type": "double"
+        "type": "long"
     },
     "utcoffset": {
         "type": "long"
@@ -44,28 +44,28 @@ properties = {
         "type": "double"
     },
     "sent_at": {
-        "type": "double"
+        "type": "long"
     },
     "received_at": {
-        "type": "double"
+        "type": "long"
     },
     "started_at": {
-        "type": "double"
+        "type": "long"
     },
     "succeeded_at": {
-        "type": "double"
+        "type": "long"
     },
     "failed_at": {
-        "type": "double"
+        "type": "long"
     },
     "rejected_at": {
-        "type": "double"
+        "type": "long"
     },
     "revoked_at": {
-        "type": "double"
+        "type": "long"
     },
     "retried_at": {
-        "type": "double"
+        "type": "long"
     },
     "args": {
         "type": "text",
