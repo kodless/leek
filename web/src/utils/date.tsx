@@ -1,14 +1,16 @@
 import React from "react";
 import {Typography} from "antd";
 import TimeAgo from 'react-timeago'
+import moment from 'moment';
 
 
 const Text = Typography.Text;
 
 
 export function adaptTime(time) {
+    console.log(time);
     return time ? <>
-        {new Date(time).toString()} <Text style={{color: "#00BFA6"}}>(<TimeAgo
-        date={time}/>)</Text>
+        {moment(time).format("MMM D HH:mm:ss")} <Text style={{color: "#00BFA6"}}> - <TimeAgo
+        date={time}/></Text>
     </> : "-"
 }

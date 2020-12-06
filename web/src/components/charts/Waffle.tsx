@@ -9,12 +9,13 @@ import {ResponsiveWaffle} from '@nivo/waffle';
 // you'll often use just a few of them.
 export const LeekWaffle: React.FC<any> = (props) => {
     return (
-        props.total > 0 && <ResponsiveWaffle
+        props.total > 0 ? <ResponsiveWaffle
             data={props.data}
             total={props.total}
             rows={18}
             columns={18}
             margin={{top: 10, right: 10, bottom: 10, left: 120}}
+            // @ts-ignore
             colors={{scheme: 'set3'}}
             borderColor={{from: 'color', modifiers: [['darker', 0.3]]}}
             animate={true}
@@ -44,6 +45,6 @@ export const LeekWaffle: React.FC<any> = (props) => {
                     ]
                 }
             ]}
-        />
+        /> : <></>
     );
 };

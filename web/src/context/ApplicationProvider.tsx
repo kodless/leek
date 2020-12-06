@@ -13,7 +13,7 @@ interface ApplicationContextData {
     applications: {
         app_name: string,
         app_description: string,
-        api_key: string,
+        app_key: string,
         created_at: number
         owner: string,
         broker: string,

@@ -19,6 +19,7 @@ export const LeekPie: React.FC<any> = (props) => {
             cornerRadius={3}
             colors={{scheme: 'set3'}}
             borderWidth={1}
+            // @ts-ignore
             borderColor={{from: 'color', modifiers: [['darker', '0.2']]}}
             radialLabelsSkipAngle={10}
             radialLabelsTextXOffset={6}

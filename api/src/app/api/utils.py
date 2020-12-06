@@ -4,7 +4,7 @@ import string
 from .conf import settings
 
 
-def generate_api_key(length=48):
+def generate_app_key(length=48):
     if settings.ENV == "DEV":
         return "secret"
     letters_and_digits = string.ascii_letters + string.digits

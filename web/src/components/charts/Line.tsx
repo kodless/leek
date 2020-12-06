@@ -9,10 +9,10 @@ export const LeekLine: React.FC<any> = (props) => {
             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
             xScale={{
                 type: "time",
-                format: "%Y-%m-%d %H:%M:%SZ",
-                precision: "hour",
+                format: "%Y-%m-%d %H:%M:%S",
+                useUTC: false,
             }}
-            xFormat="time:%Y-%m-%d %H:%M:%SZ"
+            xFormat="time:%Y-%m-%d %H:%M:%S"
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
             yFormat=" >-.2f"
             axisTop={null}
@@ -28,11 +28,14 @@ export const LeekLine: React.FC<any> = (props) => {
                 legendPosition: 'middle'
             }}
             pointSize={10}
+            lineWidth={4}
             pointColor={{ theme: 'background' }}
             pointBorderWidth={2}
             pointBorderColor={{ from: 'serieColor' }}
             pointLabelYOffset={-12}
             useMesh={true}
+            curve="monotoneX"
+            colors={{ scheme: 'set3' }}
             legends={[
                 {
                     anchor: 'bottom-right',

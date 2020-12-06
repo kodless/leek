@@ -2,7 +2,7 @@ import React from "react";
 import {Badge, Space, Typography} from "antd";
 import {LoadingOutlined, CheckOutlined, HeartOutlined} from "@ant-design/icons";
 
-import {WorkerState} from './WorkerState'
+import {WorkerState} from '../tags/WorkerState'
 
 const Text = Typography.Text;
 
@@ -63,7 +63,7 @@ function WorkerData() {
                     <Space direction="horizontal">
                         <HeartOutlined/>
                         <Text style={{color: "rgba(45,137,183,0.8)"}}>
-                            {freq} seconds
+                            Every {freq} seconds
                         </Text>
                     </Space>
                 );

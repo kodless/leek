@@ -1,5 +1,5 @@
 window._env_ = {
-    "LEEK_API_URL": "http://0.0.0.0:9000",
+    "LEEK_API_URL": "http://0.0.0.0:5000",
     "LEEK_FIREBASE_API_KEY": "AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk",
     "LEEK_FIREBASE_AUTH_DOMAIN": "kodhive-leek.firebaseapp.com",
     "LEEK_FIREBASE_DATABASE_URL": "https://kodhive-leek.firebaseio.com",

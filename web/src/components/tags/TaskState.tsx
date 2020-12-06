@@ -3,7 +3,7 @@ import {Tag} from "antd";
 
 const statusColorMap = {
     SENT: "cyan",
-    RECEIVED: "lime",
+    RECEIVED: "green",
     STARTED: "geekblue",
     SUCCEEDED: "blue",
     FAILED: "red",

@@ -4,9 +4,9 @@ import {useQueryParam, StringParam} from "use-query-params";
 import {Row, Drawer, message, Col, Table, Button, Switch, Card, Empty} from 'antd'
 import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons'
 
-import TaskDataColumns from "../../components/task/TaskData"
-import AttributesFilter from '../../components/task/TaskAttributesFilter'
-import TimeFilter from '../../components/task/TaskTimeFilter'
+import TaskDataColumns from "../../components/data/TaskData"
+import AttributesFilter from '../../components/filters/TaskAttributesFilter'
+import TimeFilter from '../../components/filters/TaskTimeFilter'
 import TaskDetailsDrawer from '../../containers/tasks/TaskDetailsDrawer'
 
 import {useApplication} from "../../context/ApplicationProvider"

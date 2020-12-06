@@ -10,13 +10,13 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN mkdir -p /opt/amqp
 WORKDIR /opt/amqp
 
-COPY clr/requirements.txt /opt/requirements.txt
+COPY requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt
 
 RUN groupadd -g 999 appuser && \
     useradd -r -u 999 -g appuser appuser
 USER appuser
 
-COPY clr /opt/amqp
+COPY ./src /opt/amqp
 
-CMD ["celery", "worker", "-E", "-A", "tasks", "-l", "critical", "-n", "test-worker2@%h"]
+CMD ["celery", "worker", "-E", "-A", "leek_test.tasks", "-l", "critical", "-n", "test-worker2@%h"]

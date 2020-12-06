@@ -2,12 +2,25 @@ import React from "react";
 import TimeAgo from 'react-timeago'
 import {Typography, Tag} from "antd";
 
-import {TaskState} from './TaskState'
+import {TaskState} from '../tags/TaskState'
+import moment from "moment";
 
 const Text = Typography.Text;
 
 function TaskData() {
     return [
+        {
+            title: 'Last EV',
+            dataIndex: 'timestamp',
+            key: 'timestamp',
+            render: timestamp => {
+                return  <Text style={{color: "rgba(45,137,183,0.8)"}} strong>
+                    {timestamp ? moment(timestamp).format("MMM D HH:mm:ss") : '-'} - <Text>
+                    {timestamp ? <TimeAgo date={timestamp}/> : '-'}
+                </Text>
+                </Text>
+            },
+        },
         {
             title: 'Name',
             dataIndex: 'name',
@@ -21,7 +34,7 @@ function TaskData() {
             dataIndex: 'uuid',
             key: 'uuid',
             render: uuid => {
-                return <Tag><Text copyable>{uuid}</Text></Tag>
+                return <Tag><Text>{uuid}</Text></Tag>
             },
         },
         {
@@ -31,18 +44,6 @@ function TaskData() {
             render: state => {
                 return <TaskState state={state}/>
             },
-        },
-        {
-            title: 'Last EV',
-            dataIndex: 'timestamp',
-            key: 'timestamp',
-            render: timestamp => {
-                return (
-                    <Text style={{color: "rgba(45,137,183,0.8)"}}>
-                        {timestamp ? <TimeAgo date={timestamp}/> : '-'}
-                    </Text>
-                );
-            }
         }
     ];
 }

@@ -67,15 +67,15 @@ def get_app_context(_route=None):
                 org_name = request.headers["x-leek-org-name"]
                 app_name = request.headers["x-leek-app-name"]
                 app_env = request.headers["x-leek-app-env"]
-                api_key = request.headers["x-leek-api-key"]
+                app_key = request.headers["x-leek-app-key"]
             except KeyError as e:
                 return responses.missing_headers
 
             # Get app
             try:
                 app = get_app(f"{org_name}-{app_name}")
-                if api_key != app.get("api_key"):
-                    return responses.wrong_application_api_key
+                if app_key != app.get("app_key"):
+                    return responses.wrong_application_app_key
             except es_exceptions.NotFoundError:
                 return responses.application_not_found
             except es_exceptions.ConnectionError:
@@ -88,7 +88,7 @@ def get_app_context(_route=None):
                 "org_name": org_name,
                 "app_name": app_name,
                 "app_env": app_env,
-                "api_key": api_key,
+                "app_key": app_key,
             }
             return route(*args, **kwargs)
 

@@ -6,7 +6,7 @@ import {
 import {AppstoreAddOutlined, DeploymentUnitOutlined, SlackOutlined, BellOutlined} from "@ant-design/icons";
 
 import TriggerDataColumns from "../../components/app/TriggerData";
-import {TaskStateClosable} from '../../components/task/TaskState';
+import {TaskStateClosable} from '../../components/tags/TaskState';
 
 import {ApplicationSearch} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";

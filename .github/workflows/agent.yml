@@ -1,4 +1,4 @@
-name: Publish API Docker image
+name: Publish Agent Docker image
 on:
   release:
     types: [published]
@@ -19,11 +19,11 @@ jobs:
       - name: Build and Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: api
-          file: api/Dockerfile
+          context: agent
+          file: agent/Dockerfile
           push: true
           tags: |
-            kodhive/leek:latest
-            kodhive/leek:${{ github.event.release.tag_name }}
-          cache-from: type=registry,ref=kodhive/leek:latest
-          cache-to: type=registry,ref=kodhive/leek:latest
+            kodhive/leek-agent:latest
+            kodhive/leek-agent:${{ github.event.release.tag_name }}
+          cache-from: type=registry,ref=kodhive/leek-agent:latest
+          cache-to: type=registry,ref=kodhive/leek-agent:latest

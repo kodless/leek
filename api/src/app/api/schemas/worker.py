@@ -1,4 +1,4 @@
-from schema import Schema, And, Or
+from schema import Schema, And, Or, Use
 
 WORKER_EVENT_TYPES = (
     "worker-online",
@@ -18,7 +18,7 @@ WorkerEventSchema = Schema(
             *WORKER_EVENT_TYPES
         ),
         "hostname": And(str, len),
-        "timestamp": And(float),
+        "timestamp": And(float, Use(lambda t: int(t * 1000))),
         "utcoffset": And(int),
         "pid": And(int),
         "clock": And(int),

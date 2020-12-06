@@ -1,9 +1,9 @@
 import React from 'react';
-import {Typography, Tabs, List} from 'antd';
+import {Typography, Tabs, List, Row, Col} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import {adaptTime} from '../../utils/date'
-import {TaskState} from '../../components/task/TaskState'
+import {TaskState} from '../../components/tags/TaskState'
 import TaskDetailsDrawer from './TaskDetailsDrawer.style'
 
 const Text = Typography.Text;
@@ -14,8 +14,11 @@ export default props => {
     return (
         <TaskDetailsDrawer>
             {/* Header */}
-            <TaskState state={props.task.state}/> {adaptTime(props.task.timestamp)}
-            <Text copyable={{text: window.location.href}} strong/>
+
+            <Row justify="space-between">
+                <Col><TaskState state={props.task.state}/> {adaptTime(props.task.timestamp)}</Col>
+                <Col><Text copyable={{text: window.location.href}} strong/> LINK </Col>
+            </Row>
 
             <Tabs defaultActiveKey="basic">
                 {/* Basic */}

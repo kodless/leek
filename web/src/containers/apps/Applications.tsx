@@ -23,7 +23,7 @@ const Applications = () => {
     const [selectedApp, setSelectedApp] = useState<{
         app_name: string,
         app_description: string,
-        api_key: string,
+        app_key: string,
         created_at: number
         owner: string,
         broker: string,
@@ -115,7 +115,7 @@ const Applications = () => {
                             <Row style={{marginBottom: "16px"}}>
                                 <Space direction="horizontal">
                                     <Text strong>API KEY</Text>
-                                    <Text copyable code>{selectedApp.api_key}</Text>
+                                    <Text copyable code>{selectedApp.app_key}</Text>
                                 </Space>
                             </Row>
 

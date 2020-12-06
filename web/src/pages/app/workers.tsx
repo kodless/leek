@@ -4,7 +4,7 @@ import {StringParam, useQueryParam} from "use-query-params";
 import {Row, Drawer, Button, Col, Table, Radio, message, Empty, Card} from 'antd';
 import {SyncOutlined} from '@ant-design/icons';
 
-import WorkerDataColumns from "../../components/worker/WorkerData";
+import WorkerDataColumns from "../../components/data/WorkerData";
 import WorkerDetailsDrawer from "../../containers/workers/WorkerDetailsDrawer";
 
 import {useApplication} from "../../context/ApplicationProvider";

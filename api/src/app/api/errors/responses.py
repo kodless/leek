@@ -22,7 +22,7 @@ application_already_exist = {
                                 }
                             }, 401
 
-wrong_application_api_key = {
+wrong_application_app_key = {
                                 "error": {
                                     "code": "401001",
                                     "message": "Not Authorized",

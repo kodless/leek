@@ -1,0 +1,92 @@
+version: "2.4"
+services:
+  api:
+    build:
+      context: api
+    volumes:
+      - ./api:/opt/app
+    command: make run_gunicorn
+    env_file:
+      - api/docker-compose.env
+    ports:
+      - 5000:5000
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5000" ]
+      interval: 2s
+      timeout: 4s
+      retries: 20
+    depends_on:
+      es01:
+        condition: service_healthy
+
+  agent:
+    build:
+      context: agent
+    environment:
+      - LEEK_LOG_LEVEL=ERROR
+    depends_on:
+      mq:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  # Just for local development!! (Test worker)
+  worker:
+    build:
+      context: test
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local development!! (Test client)
+  publisher:
+    build:
+      context: test
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    command: >
+      bash -c "python3 publisher.py"
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local development!! (Test broker)
+  mq:
+    image: rabbitmq:3.8.9-management-alpine
+    volumes:
+      - ./rmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 2s
+      timeout: 4s
+      retries: 20
+
+
+  # Just for local development!! (Test index db)
+  es01:
+    image: elasticsearch:7.8.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01 # ,es02
+      #      - discovery.seed_hosts=es02
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    command: ["elasticsearch", "-Elogger.level=ERROR"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200

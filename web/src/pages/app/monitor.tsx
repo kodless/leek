@@ -1,17 +1,18 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
 import _ from 'lodash'
-import {Card, Col, Row, Empty} from 'antd'
-import {LeekPie} from "../../components/monitor/Pie"
-import {LeekBar} from "../../components/monitor/Bar"
-import {LeekWaffle} from "../../components/monitor/Waffle"
-import {LeekLine} from "../../components/monitor/Line"
-import AttributesFilter from "../../components/task/TaskAttributesFilter"
-import TimeFilter from "../../components/task/TaskTimeFilter"
+import {Card, Col, Row, Empty, Statistic} from 'antd'
+import {FilterOutlined} from "@ant-design/icons";
+import {LeekPie} from "../../components/charts/Pie"
+import {LeekBar} from "../../components/charts/Bar"
+import {LeekWaffle} from "../../components/charts/Waffle"
+import {LeekLine} from "../../components/charts/Line"
+import AttributesFilter from "../../components/filters/TaskAttributesFilter"
+import TimeFilter from "../../components/filters/TaskTimeFilter"
 import {handleAPIError, handleAPIResponse} from "../../utils/errors"
 import {MonitorSearch} from "../../api/monitor"
 import {useApplication} from "../../context/ApplicationProvider"
-import {timeFormat} from 'd3-time-format';
+import moment from "moment";
 
 const tasksStatesSeries = {
     SENT: 0,
@@ -73,12 +74,11 @@ const MonitorPage = () => {
                         )
                     )
                 );
-                let format = timeFormat("%Y-%m-%d %H:%M:%SZ");
                 setTasksOverTimeDistribution([
                     {
                         id: "tasks",
                         data: result.aggregations.timeDistribution.buckets.map(
-                            ({key, doc_count}) => ({x: format(key), y: doc_count})
+                            ({key, doc_count}) => ({x: moment(key).format("YYYY-MM-DD HH:mm:ss"), y: doc_count})
                         )
                     }
                 ]);
@@ -106,8 +106,13 @@ const MonitorPage = () => {
                     />
                 </Col>
                 <Col xxl={19} xl={18} md={17} lg={16} sm={24} xs={24}>
-                    <Row align="middle" style={{textAlign: "center"}}>
-                        <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
+                    <Row align="middle" style={{textAlign: "center"}} justify="space-between">
+                        <Col>
+                            <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
+                        </Col>
+                        <Col>
+                            <Statistic title="Total Filtered" value={totalHits} prefix={<FilterOutlined />}/>
+                        </Col>
                     </Row>
                     <Row justify="center" style={{width: "100%", marginTop: 13}} gutter={10}>
                         <Col span={12}>

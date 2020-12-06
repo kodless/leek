@@ -47,7 +47,7 @@ export class MonitorSearch implements Monitor {
                     timeDistribution: {
                         "auto_date_histogram": {
                             "field": "timestamp",
-                            "buckets": 20,
+                            "buckets": 30,
                         }
                     },
                 }

@@ -7,7 +7,7 @@ from flask import Blueprint, request, g
 from flask_restx import Resource
 
 from ..decorators import auth
-from ..utils import generate_api_key
+from ..utils import generate_app_key
 from ..schemas.application import ApplicationSchema, TriggerSchema
 from ..db import template as apps
 from .api_v1 import api_v1
@@ -31,7 +31,7 @@ class Applications(Resource):
         org_name = g.org_name
         template_name = f"{org_name}-{app['app_name']}"
 
-        app["api_key"] = generate_api_key()
+        app["app_key"] = generate_app_key()
         app["created_at"] = int(time.time())
         app["owner"] = g.email
 

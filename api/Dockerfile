@@ -7,7 +7,7 @@ WORKDIR /opt/app
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
 RUN set -ex \
     && apt-get update \
-    && apt-get install -y build-essential
+    && apt-get install -y build-essential netcat
 
 COPY src/requirements/test.txt /opt/pip/requirements/test.txt
 RUN pip3 install -r /opt/pip/requirements/test.txt
