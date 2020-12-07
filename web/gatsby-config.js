@@ -52,12 +52,6 @@ module.exports = {
                 modifyVars: light
             }
         },
-        {
-            resolve: 'gatsby-plugin-load-script',
-            options: {
-                src: '/leek-config.js', // Change to the script filename
-            },
-        },
         `gatsby-plugin-remove-trailing-slashes`,
         "gatsby-plugin-use-query-params",
         `gatsby-plugin-styled-components`,

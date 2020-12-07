@@ -9,7 +9,9 @@ let env = {
     "LEEK_FIREBASE_APP_ID": undefined,
     "LEEK_FIREBASE_MEASUREMENT_ID": undefined
 };
+
 if (typeof window !== 'undefined') {
-    env = window["_env_"];
+    console.log(window["leek_config"]);
 }
-export default env;
+
+export default typeof window !== 'undefined'?  window["leek_config"] : env;

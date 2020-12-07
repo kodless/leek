@@ -5,6 +5,18 @@ const {DocsLayout} = require("./src/containers/layouts/docs");
 const {AuthProvider} = require("./src/context/AuthProvider");
 const {ApplicationProvider} = require("./src/context/ApplicationProvider");
 
+exports.onRenderBody = ({setPostBodyComponents}) => {
+    setPostBodyComponents([
+        <script
+            key="/leek-config.js"
+            src="/leek-config.js"
+            charset="utf8"
+            type="text/javascript"
+            crossOrigin="anonymous"
+        />,
+    ])
+};
+
 // Wraps every page in a component
 exports.wrapPageElement = ({element, props}) => {
     return <>
