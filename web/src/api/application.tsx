@@ -24,7 +24,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications`, {
+                fetch(`${env.LEEK_API_URL}/v1/applications`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -39,7 +39,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications`, {
+                fetch(`${env.LEEK_API_URL}/v1/applications`, {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -55,7 +55,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/purge`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/purge`,
                     {
                         method: "DELETE",
                         headers: {
@@ -71,7 +71,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}`,
                     {
                         method: "DELETE",
                         headers: {
@@ -87,7 +87,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/fo-triggers`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers`,
                     {
                         method: "POST",
                         headers: {
@@ -104,7 +104,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
                     {
                         method: "PUT",
                         headers: {
@@ -121,7 +121,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
                     {
                         method: "DELETE",
                         headers: {
@@ -137,7 +137,7 @@ export class ApplicationSearch implements Application {
         let fb = getFirebase();
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/this/v1/applications/${app_name}/indices`,
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/indices`,
                     {
                         method: "GET",
                         headers: {

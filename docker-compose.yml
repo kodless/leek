@@ -46,6 +46,8 @@ services:
       context: test
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
+      - CELERY_SEND_SENT_EVENT=True
+      - CELERY_SEND_TASK_SENT_EVENT=True
     command: >
       bash -c "python3 publisher.py"
     depends_on:

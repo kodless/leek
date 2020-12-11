@@ -14,7 +14,7 @@ export function search(app_name, query, params: {} = {}) {
     if (fb && fb.auth().currentUser) {
         return fb.auth().currentUser.getIdToken().then(token =>
             fetch(
-                `${env.LEEK_API_URL}/this/v1/search${buildQueryString(params)}`,
+                `${env.LEEK_API_URL}/v1/search${buildQueryString(params)}`,
                 {
                     method: "POST",
                     headers: {

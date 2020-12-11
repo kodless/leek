@@ -4,7 +4,7 @@ from flask_restx import Api
 from ..errors.errors_handler import handle_errors
 from ..conf import settings
 
-api_v1_blueprint = Blueprint('api', __name__, url_prefix=f'/{settings.AWS_API_GW_STAGE_NAME}/v1')
+api_v1_blueprint = Blueprint('api', __name__, url_prefix=f'/v1')
 
 api_v1 = Api(api_v1_blueprint,
              version='1.0',

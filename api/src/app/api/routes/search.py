@@ -8,7 +8,7 @@ from ..schemas.search_params import SearchParamsSchema
 from ..db.search import search_index
 from .api_v1 import api_v1
 
-search_bp = Blueprint('search', __name__, url_prefix='/this/v1/search')
+search_bp = Blueprint('search', __name__, url_prefix='/v1/search')
 search_ns = api_v1.namespace('search', 'Search index.')
 
 logger = logging.getLogger(__name__)

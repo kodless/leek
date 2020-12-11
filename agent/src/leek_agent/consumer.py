@@ -16,7 +16,7 @@ class LeekConsumer(ConsumerMixin):
     BACKOFF_STATUS_CODES = [400, 404, 503]
     DOWN_DELAY_S = 20
     BACKOFF_DELAY_S = 5
-    LEEK_WEBHOOKS_ENDPOINT = "/this/v1/events/process"
+    LEEK_WEBHOOKS_ENDPOINT = "/v1/events/process"
 
     def __init__(
             self,

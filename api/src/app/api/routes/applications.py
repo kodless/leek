@@ -12,7 +12,7 @@ from ..schemas.application import ApplicationSchema, TriggerSchema
 from ..db import template as apps
 from .api_v1 import api_v1
 
-applications_bp = Blueprint('applications', __name__, url_prefix='/this/v1/applications')
+applications_bp = Blueprint('applications', __name__, url_prefix='/v1/applications')
 applications_ns = api_v1.namespace('applications', 'Manage Leek Applications')
 
 logger = logging.getLogger(__name__)

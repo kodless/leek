@@ -26,7 +26,7 @@ class ESExtension(BaseExtension):
                 session_token=credentials.token
             )
             self.connection = Elasticsearch(
-                hosts=settings.ES_DOMAIN_URL,
+                hosts=settings.LEEK_ES_DOMAIN_URL,
                 http_auth=aws_auth,
                 use_ssl=True,
                 verify_certs=True,

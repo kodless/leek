@@ -11,7 +11,7 @@
     "@nivo/line": "^0.66.0",
     "@nivo/pie": "^0.66.0",
     "@nivo/waffle": "^0.66.0",
-    "antd": "4.2.0",
+    "antd": "4.9.2",
     "babel-plugin-styled-components": "1.10.7",
     "classnames": "2.2.6",
     "dayjs": "1.8.26",

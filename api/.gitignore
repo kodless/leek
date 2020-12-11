@@ -1,0 +1,5 @@
+docker-compose.env
+__pycache__
+.pytest_cache
+*.db
+aws.creds

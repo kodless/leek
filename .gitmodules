@@ -1,0 +1,3 @@
+[submodule "landing/themes/compose"]
+	path = landing/themes/compose
+	url = https://github.com/onweru/compose.git
