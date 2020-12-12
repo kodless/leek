@@ -40,38 +40,38 @@ const Header = () => {
     </Menu>;
 
     const menuItems = [
-        <Menu.Item key="/app/workers">
+        <Menu.Item key="/workers">
             <Link
-                to="/app/workers"
+                to="/workers"
             >
                 <RobotFilled/>
                 Workers
             </Link>
         </Menu.Item>,
 
-        <Menu.Item key="/app/tasks">
-            <Link to="/app/tasks">
+        <Menu.Item key="/tasks">
+            <Link to="/tasks">
                 <UnorderedListOutlined/>
                 Tasks
             </Link>
         </Menu.Item>,
 
-        <Menu.Item key="/app/issues">
-            <Link to="/app/issues">
+        <Menu.Item key="/issues">
+            <Link to="/issues">
                 <BugOutlined />
                 Issues
             </Link>
         </Menu.Item>,
 
-        <Menu.Item key="/app/monitor">
-            <Link to="/app/monitor">
+        <Menu.Item key="/monitor">
+            <Link to="/monitor">
                 <RadarChartOutlined/>
                 Monitor
             </Link>
         </Menu.Item>,
 
-        <Menu.Item key="/app/applications">
-            <Link to="/app/applications">
+        <Menu.Item key="/applications">
+            <Link to="/applications">
                 <ClearOutlined/>
                 Applications
             </Link>
@@ -107,7 +107,7 @@ const Header = () => {
                         margin: '5px 20px 5px 0',
                         float: 'left'
                     }}>
-                        <Link to="/app">
+                        <Link to="/">
                             <Image alt="Logo"/>
                         </Link>
                     </div>

@@ -1,13 +1,21 @@
 version: "2.4"
 services:
-  api:
+  app:
     build:
-      context: api
+      context: app
     volumes:
-      - ./api:/opt/app
-    command: make run_gunicorn
-    env_file:
-      - api/docker-compose.env
+      - ./app:/opt/app
+    environment:
+      - ENV=DEV
+      - LEEK_LOG_LEVEL=INFO
+      - PYTHONWARNINGS=ignore:Unverified HTTPS request
+      - PYTHONUNBUFFERED=1
+      - ES_CREATE_LIFECYCLE_AFTER_CONNECTION=true
+      - LEEK_AUTHORIZED_AUDIENCES=kodhive-leek
+      - LEEK_ES_DOMAIN_URL=http://es01:9200
+      - LEEK_WEB_URL=http://0.0.0.0:8000
+      - LEEK_OWNER_ORG=ramp.com
+      - LEEK_WHITELISTED_ORGS=ramp.com,
     ports:
       - 5000:5000
     healthcheck:
@@ -18,16 +26,7 @@ services:
     depends_on:
       es01:
         condition: service_healthy
-
-  agent:
-    build:
-      context: agent
-    environment:
-      - LEEK_LOG_LEVEL=ERROR
-    depends_on:
       mq:
-        condition: service_healthy
-      api:
         condition: service_healthy
 
   # Just for local development!! (Test worker)
@@ -58,7 +57,7 @@ services:
   mq:
     image: rabbitmq:3.8.9-management-alpine
     volumes:
-      - ./rmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./test/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     ports:
       - 15672:15672
       - 5672:5672

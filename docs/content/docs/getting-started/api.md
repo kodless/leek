@@ -6,7 +6,7 @@ weight: 8
 Leek API is a Flask Restful Application and served with Gunicorn web server. it is built as a docker image and published 
 to DockerHub [public repository](https://hub.docker.com/repository/docker/kodhive/leek).
 
-This is an example on how you we can spin up a new container from Leek API Docker:
+This is an example on how you we can spin up a new server from Leek API Docker:
 
 ```yaml
 version: "2.4"

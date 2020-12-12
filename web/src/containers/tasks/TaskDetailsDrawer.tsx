@@ -175,7 +175,7 @@ export default props => {
                                 title="Worker"
                                 description={
                                     props.task.hostname ?
-                                        <a href={`/app/workers/?hostname=${props.task.hostname}`}>
+                                        <a href={`/workers/?hostname=${props.task.hostname}`}>
                                             {props.task.hostname}
                                         </a> : "-"
                                 }
@@ -210,7 +210,7 @@ export default props => {
                                 description={
                                     props.task.root_id ?
                                         <a target="_blank"
-                                           href={`/app/tasks/?uuid=${props.task.root_id}`}>
+                                           href={`/tasks/?uuid=${props.task.root_id}`}>
                                             {`${props.task.root_id} <${props.task.root_id}>`}
                                         </a> : "-"
                                 }
@@ -222,7 +222,7 @@ export default props => {
                                 description={
                                     props.task.parent_id ?
                                         <a target="_blank"
-                                           href={`/app/tasks/?uuid=${props.task.parent_id}`}>
+                                           href={`/tasks/?uuid=${props.task.parent_id}`}>
                                             {`${props.task.parent_id} <${props.task.parent_id}>`}
                                         </a> : "-"
                                 }
