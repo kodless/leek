@@ -3,21 +3,27 @@ services:
   app:
     build:
       context: app
-    volumes:
-      - ./app:/opt/app
+      dockerfile: dockers/Dockerfile
+#    volumes:
+#      # For sync and hot reload
+#      - ./app:/opt/app
+#      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
+#      - /opt/app/leek/web/node_modules
     environment:
       - ENV=DEV
-      - LEEK_LOG_LEVEL=INFO
-      - PYTHONWARNINGS=ignore:Unverified HTTPS request
-      - PYTHONUNBUFFERED=1
+      - LEEK_API_LOG_LEVEL=INFO
+      - LEEK_AGENT_LOG_LEVEL=INFO
       - ES_CREATE_LIFECYCLE_AFTER_CONNECTION=true
       - LEEK_AUTHORIZED_AUDIENCES=kodhive-leek
       - LEEK_ES_DOMAIN_URL=http://es01:9200
       - LEEK_WEB_URL=http://0.0.0.0:8000
       - LEEK_OWNER_ORG=ramp.com
       - LEEK_WHITELISTED_ORGS=ramp.com,
+      - LEEK_AGENT=ENABLE
+      - LEEK_WEB=ENABLE
     ports:
       - 5000:5000
+      - 80:80
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "5000" ]
       interval: 2s
