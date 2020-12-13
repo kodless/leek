@@ -10,7 +10,7 @@ def get_bool(env_name):
 
 
 # General
-ENV = os.environ.get("ENV")
+LEEK_ENV = os.environ.get("LEEK_ENV")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 # ES

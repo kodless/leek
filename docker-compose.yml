@@ -3,14 +3,14 @@ services:
   app:
     build:
       context: app
-      dockerfile: dockers/Dockerfile
-#    volumes:
-#      # For sync and hot reload
-#      - ./app:/opt/app
-#      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
-#      - /opt/app/leek/web/node_modules
+      dockerfile: dockers/dev.Dockerfile
+    volumes:
+      # For host/container sync and hot reload
+      - ./app:/opt/app
+      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
+      - /opt/app/leek/web/node_modules/
     environment:
-      - ENV=DEV
+      - LEEK_ENV=DEV
       - LEEK_API_LOG_LEVEL=INFO
       - LEEK_AGENT_LOG_LEVEL=INFO
       - ES_CREATE_LIFECYCLE_AFTER_CONNECTION=true

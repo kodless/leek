@@ -20,7 +20,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: app
-          file: dockers/ci.Dockerfile
+          file: dockers/Dockerfile
           push: true
           tags: |
             kodhive/leek:latest

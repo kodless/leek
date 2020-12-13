@@ -4,7 +4,6 @@ MAINTAINER Hamza Adami <me@adamihamza.com>
 ENV GATSBY_TELEMETRY_DISABLED=1
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
 WORKDIR /opt/app
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
@@ -12,8 +11,8 @@ RUN python3 -m venv $VIRTUAL_ENV  \
     && python3 -m pip install --upgrade pip
 
 # Install Backend Dependencies
-COPY leek/requirements.txt /opt/pip/requirements.txt
-RUN pip3 install -r /opt/pip/requirements.txt
+COPY leek/requirements.txt /opt/app/leek/
+RUN pip3 install -r /opt/app/leek/requirements.txt
 
 # Install Frontend Dependencies
 COPY leek/web/package.json leek/web/yarn.lock /opt/app/leek/web/

@@ -1,10 +1,13 @@
 #!/bin/bash
+# This script is poted from https://github.com/gatsbyjs/gatsby-docker/blob/master/nginx-boot.sh
 
 if [ "${LEEK_WEB:-ENABLE}" = "DISABLE" ]; then
   exit 0
 fi
 
-# This script is poted from https://github.com/gatsbyjs/gatsby-docker/blob/master/nginx-boot.sh
+if [ "${LEEK_ENV:-PROD}" = "DEV" ]; then
+  yarn --cwd /opt/app/leek/web develop -p 80
+fi
 
 # Check for variables
 export CHARSET=${CHARSET:-utf-8}

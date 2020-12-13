@@ -11,7 +11,7 @@ class ESExtension(BaseExtension):
 
     def init_app(self, app):
         app.extensions["es"] = self
-        if settings.ENV in ["DEV", "TEST"]:
+        if settings.LEEK_ENV in ["DEV", "TEST"]:
             self.connection = Elasticsearch(settings.LEEK_ES_DOMAIN_URL)
         else:
             from requests_aws4auth import AWS4Auth
