@@ -18,9 +18,9 @@ services:
       - LEEK_API_LOG_LEVEL=INFO
       - LEEK_ES_DOMAIN_URL=http://es01:9200
       - LEEK_WEB_URL=http://0.0.0.0:8000
-      - LEEK_AUTHORIZED_AUDIENCES=kodhive-leek
-      - LEEK_OWNER_ORG=ramp.com
-      - LEEK_WHITELISTED_ORGS=ramp.com,leek.com
+      - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
+      - LEEK_API_OWNER_ORG=ramp.com
+      - LEEK_API_WHITELISTED_ORGS=ramp.com,leek.com
     ports:
       - 5000:5000
     healthcheck:

@@ -65,6 +65,4 @@ class LeekAgent:
 
 
 if __name__ == '__main__':
-    if os.environ.get("LEEK_AGENT", "ENABLE") == "DISABLE":
-        exit(0)
     LeekAgent().start()

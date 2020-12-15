@@ -10,17 +10,30 @@ services:
       # ignore node_modules, should be added also in .dockerignore [MANDATORY]
       - /opt/app/leek/web/node_modules/
     environment:
+      # General
       - LEEK_ENV=DEV
       - LEEK_API_LOG_LEVEL=INFO
       - LEEK_AGENT_LOG_LEVEL=INFO
-      - ES_CREATE_LIFECYCLE_AFTER_CONNECTION=true
-      - LEEK_AUTHORIZED_AUDIENCES=kodhive-leek
-      - LEEK_ES_DOMAIN_URL=http://es01:9200
+      # Authorization
+      - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
+      - LEEK_API_OWNER_ORG=ramp.com
+      - LEEK_API_WHITELISTED_ORGS=ramp.com,
+      # Components
+      - LEEK_ENABLE_API=ENABLE
+      - LEEK_ENABLE_AGENT=ENABLE
+      - LEEK_ENABLE_WEB=ENABLE
+      - LEEK_ENABLE_ES=ENABLE
+      # URLs
+      - LEEK_API_URL=http://0.0.0.0:5000
       - LEEK_WEB_URL=http://0.0.0.0:8000
-      - LEEK_OWNER_ORG=ramp.com
-      - LEEK_WHITELISTED_ORGS=ramp.com,
-      - LEEK_AGENT=ENABLE
-      - LEEK_WEB=ENABLE
+      - LEEK_ES_DOMAIN_URL=http://0.0.0.0:9200
+      # Authentication
+      - LEEK_FIREBASE_PROJECT_ID=kodhive-leek
+      - LEEK_FIREBASE_APP_ID=1:894368938723:web:e14677d1835ce9bd09e3d6
+      - LEEK_FIREBASE_API_KEY=AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk
+      - LEEK_FIREBASE_AUTH_DOMAIN=kodhive-leek.firebaseapp.com
+      # Others
+      - LEEK_ES_CREATE_LIFECYCLE_AFTER_CONNECTION=true
     ports:
       - 5000:5000
       - 80:80

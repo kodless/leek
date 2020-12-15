@@ -79,10 +79,10 @@ def decode(token, verify_expiration=True, authorized_audiences=None):
 def verify(token):
     key = get_public_key(token)
     if valid_signature(token, key):
-        authorized_audiences = settings.LEEK_AUTHORIZED_AUDIENCES
+        authorized_audiences = settings.LEEK_API_AUTHORIZED_AUDIENCES
         return decode(
             token,
-            verify_expiration=settings.LEEK_AUTHORIZED_AUDIENCES,
+            verify_expiration=settings.LEEK_API_AUTHORIZED_AUDIENCES,
             authorized_audiences=authorized_audiences.split(',') if len(authorized_audiences) else None
         )
 
