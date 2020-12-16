@@ -32,11 +32,18 @@ WORKDIR /opt/app
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y gnupg2 wget \
+    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
+    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y \
     nginx \
-    supervisor
+    supervisor \
+    elasticsearch \
+    procps
 COPY --from=compile-image /opt /opt
 
 # Expose Backend/Frontend ports
-EXPOSE 5000 80
+EXPOSE 9200 5000 80
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/bin/supervisord.conf"]

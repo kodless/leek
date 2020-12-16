@@ -1,4 +1,8 @@
 import os
+import subprocess
+
+import requests
+import time
 from printy import printy
 
 LOGO = """
@@ -46,7 +50,7 @@ ENABLE_API = get_bool("LEEK_ENABLE_API")
 ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 
-LEEK_ES_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:9100")
+LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:80")
 
@@ -61,6 +65,21 @@ SERVICES = f"""
 
 printy(SERVICES)
 
-# Check variables
-if ENABLE_ES:
-    pass
+
+def ensure_connection(target):
+    for i in range(10):
+        try:
+            requests.options(url=target).raise_for_status()
+            return
+        except Exception as e:
+            time.sleep(5)
+            continue
+    raise Exception(f"Could not connect to target {target}")
+
+
+subprocess.run(["supervisorctl", "start", "es"])
+ensure_connection(LEEK_ES_URL)
+subprocess.run(["supervisorctl", "start", "api"])
+ensure_connection(f"{LEEK_API_URL}/v1/events/process")
+subprocess.run(["supervisorctl", "start", "agent"])
+subprocess.run(["supervisorctl", "start", "web"])

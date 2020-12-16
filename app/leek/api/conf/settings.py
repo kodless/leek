@@ -14,7 +14,7 @@ LEEK_ENV = os.environ.get("LEEK_ENV")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 # ES
-LEEK_ES_DOMAIN_URL = os.environ.get("LEEK_ES_DOMAIN_URL")
+LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
 LEEK_ES_CREATE_LIFECYCLE_AFTER_CONNECTION = get_bool("LEEK_ES_CREATE_LIFECYCLE_AFTER_CONNECTION")
 
 # Authentication/Authorization

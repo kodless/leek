@@ -9,7 +9,7 @@ Leek components are configured using environment variables.
 
 | Name | Description | Default |
 |:---- | ---- | ---- |
-| `LEEK_ES_DOMAIN_URL` | ElasticSearch index db domain URL | None |
+| `LEEK_ES_URL` | ElasticSearch index db domain URL | None |
 | `LEEK_API_LOG_LEVEL` | Log level, set it to ERROR after making sure that the agent can reach brokers and api. | INFO |
 | `LEEK_API_AUTHORIZED_AUDIENCES` | A list of Firebase JWT audiences (Firebase App Name) authorized to communicate with Leek API. | None |
 | `LEEK_WEB_URL` | Frontend application url, will be used when constructing slack triggers notifications. | None |

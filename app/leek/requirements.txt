@@ -10,6 +10,7 @@ schema==0.7.2
 simplejson==3.16.0
 elasticsearch==7.8.0
 cachecontrol[filecache]==0.12.6
+printy==2.1.1
 
 # Additional for agent
 kombu==5.0.2

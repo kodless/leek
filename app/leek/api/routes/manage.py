@@ -37,7 +37,7 @@ def has_no_empty_params(rule):
 @manage_ns.route('/site-map')
 class ListSiteMap(Resource):
 
-    @auth(allowed_org_names=[settings.LEEK_OWNER_ORG])
+    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def get(self):
         """
         Get flask app available urls
@@ -55,7 +55,7 @@ class ListSiteMap(Resource):
 @manage_ns.route('/lifecycle')
 class IndexLifecycle(Resource):
 
-    @auth(allowed_org_names=[settings.LEEK_OWNER_ORG])
+    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def put(self):
         """
         Update default index lifecycle

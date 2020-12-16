@@ -16,7 +16,7 @@ services:
     command: make run_gunicorn
     environment:
       - LEEK_API_LOG_LEVEL=INFO
-      - LEEK_ES_DOMAIN_URL=http://es01:9200
+      - LEEK_ES_URL=http://es01:9200
       - LEEK_WEB_URL=http://0.0.0.0:8000
       - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
       - LEEK_API_OWNER_ORG=ramp.com

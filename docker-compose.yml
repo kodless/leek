@@ -3,15 +3,16 @@ services:
   app:
     build:
       context: app
-      dockerfile: dockers/dev.Dockerfile
-    volumes:
-      # For host/container sync and hot reload
-      - ./app:/opt/app
-      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
-      - /opt/app/leek/web/node_modules/
+      dockerfile: dockers/Dockerfile
+#    volumes:
+#      # For host/container sync and hot reload
+#      - ./app:/opt/app
+#      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
+#      - /opt/app/leek/web/node_modules/
     environment:
       # General
-      - LEEK_ENV=DEV
+      #      - LEEK_ENV=DEV
+      - PYTHONUNBUFFERED=1
       - LEEK_API_LOG_LEVEL=INFO
       - LEEK_AGENT_LOG_LEVEL=INFO
       # Authorization
@@ -19,14 +20,14 @@ services:
       - LEEK_API_OWNER_ORG=ramp.com
       - LEEK_API_WHITELISTED_ORGS=ramp.com,
       # Components
-      - LEEK_ENABLE_API=ENABLE
-      - LEEK_ENABLE_AGENT=ENABLE
-      - LEEK_ENABLE_WEB=ENABLE
-      - LEEK_ENABLE_ES=ENABLE
+      - LEEK_ENABLE_API=true
+      - LEEK_ENABLE_AGENT=true
+      - LEEK_ENABLE_WEB=true
+      - LEEK_ENABLE_ES=true
       # URLs
       - LEEK_API_URL=http://0.0.0.0:5000
       - LEEK_WEB_URL=http://0.0.0.0:8000
-      - LEEK_ES_DOMAIN_URL=http://0.0.0.0:9200
+      - LEEK_ES_URL=http://0.0.0.0:9200
       # Authentication
       - LEEK_FIREBASE_PROJECT_ID=kodhive-leek
       - LEEK_FIREBASE_APP_ID=1:894368938723:web:e14677d1835ce9bd09e3d6
@@ -43,8 +44,6 @@ services:
       timeout: 4s
       retries: 20
     depends_on:
-      es01:
-        condition: service_healthy
       mq:
         condition: service_healthy
 
@@ -85,28 +84,3 @@ services:
       interval: 2s
       timeout: 4s
       retries: 20
-
-
-  # Just for local development!! (Test index db)
-  es01:
-    image: elasticsearch:7.8.0
-    container_name: es01
-    environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - cluster.initial_master_nodes=es01 # ,es02
-      #      - discovery.seed_hosts=es02
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    command: ["elasticsearch", "-Elogger.level=ERROR"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - 9200:9200
