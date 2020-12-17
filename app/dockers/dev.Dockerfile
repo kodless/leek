@@ -24,4 +24,4 @@ ADD . ./
 
 # Expose Backend/Frontend ports
 EXPOSE 5000 80
-CMD ["/usr/bin/supervisord", "-c", "/opt/app/bin/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

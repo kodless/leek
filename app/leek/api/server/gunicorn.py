@@ -84,5 +84,5 @@ keepalive = 60
 #
 
 errorlog = '-'
-loglevel = os.environ.get('LOG_LEVEL', 'INFO')
+loglevel = os.environ.get('LEEK_API_LOG_LEVEL', 'INFO')
 disable_redirect_access_to_syslog = True

@@ -1,4 +1,5 @@
 import os
+import uuid
 
 
 def get_list(env_name):
@@ -11,7 +12,6 @@ def get_bool(env_name):
 
 # General
 LEEK_ENV = os.environ.get("LEEK_ENV")
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 # ES
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
@@ -24,3 +24,5 @@ LEEK_API_WHITELISTED_ORGS = get_list("LEEK_API_WHITELISTED_ORGS")
 
 # Web
 LEEK_WEB_URL = os.environ["LEEK_WEB_URL"]
+
+LEEK_AGENT_API_SECRET = os.environ.get("LEEK_AGENT_API_SECRET", str(uuid.uuid4()))

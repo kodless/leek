@@ -22,7 +22,6 @@ Leek components are configured using environment variables.
 |:---- | ---- | ---- |
 | `LEEK_AGENT_LOG_LEVEL` | Log level, set it to ERROR after making sure that the agent can reach brokers and api. | INFO |
 | `LEEK_AGENT_SUBSCRIPTIONS` | A json string configuration descriptor with list of subscriptions. | None |
-| `LEEK_AGENT_SUBSCRIPTIONS_FILE_PATH` | If LEEK_SUBSCRIPTIONS is not set, the subscriptions file path can be passed to the agent. | None |
 
 ## Web
 

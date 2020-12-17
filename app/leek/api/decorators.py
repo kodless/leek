@@ -74,7 +74,7 @@ def get_app_context(_route=None):
             # Get app
             try:
                 app = get_app(f"{org_name}-{app_name}")
-                if app_key != app.get("app_key"):
+                if app_key not in [app.get("app_key"), settings.LEEK_AGENT_API_SECRET]:
                     return responses.wrong_application_app_key
             except es_exceptions.NotFoundError:
                 return responses.application_not_found

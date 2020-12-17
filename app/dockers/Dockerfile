@@ -43,7 +43,6 @@ RUN apt-get update \
     elasticsearch \
     procps
 COPY --from=compile-image /opt /opt
-
 # Expose Backend/Frontend ports
 EXPOSE 9200 5000 80
-CMD ["/usr/bin/supervisord", "-c", "/opt/app/bin/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

@@ -32,7 +32,7 @@ case ${SERVICE} in
         exec yarn --cwd /opt/app/leek/web develop -p 80
       else
         export NGINX_CONF=/etc/nginx/mushed.conf
-        cp /opt/app/bin/nginx.conf "${NGINX_CONF}"
+        cp /opt/app/conf/nginx.conf "${NGINX_CONF}"
         mkdir -p /run/nginx/
         chown -R root:root /var/lib/nginx
         exec nginx -c $NGINX_CONF
@@ -41,7 +41,6 @@ case ${SERVICE} in
     ;;
 
   *)
-    TRY_FILES="rewrite ^([^.]*[^/])\$ \$1/ permanent"
     echo "Service must one of [es, api, agent, web]!"
     exit 1
     ;;
