@@ -10,12 +10,8 @@ def get_bool(env_name):
     return os.environ.get(env_name) == "true"
 
 
-# General
-LEEK_ENV = os.environ.get("LEEK_ENV")
-
 # ES
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
-LEEK_ES_CREATE_LIFECYCLE_AFTER_CONNECTION = get_bool("LEEK_ES_CREATE_LIFECYCLE_AFTER_CONNECTION")
 
 # Authentication/Authorization
 LEEK_API_AUTHORIZED_AUDIENCES = os.environ.get("LEEK_API_AUTHORIZED_AUDIENCES", "")
@@ -24,5 +20,4 @@ LEEK_API_WHITELISTED_ORGS = get_list("LEEK_API_WHITELISTED_ORGS")
 
 # Web
 LEEK_WEB_URL = os.environ["LEEK_WEB_URL"]
-
 LEEK_AGENT_API_SECRET = os.environ.get("LEEK_AGENT_API_SECRET", str(uuid.uuid4()))

@@ -4,8 +4,8 @@ states = ["RECEIVED", "SENT", "STARTED", "SUCCEEDED", "RETRY", "REVOKED", "FAILE
 
 TriggerSchema = Schema({
     "enabled": And(bool),
-    "states": [str],
-    "envs": [str],
+    Optional("states", default=[]): [str],
+    Optional("envs", default=[]): [str],
     Optional("runtime_upper_bound"): And(Use(float), lambda n: 0.000000000001 <= n <= 1000),
     Optional(Or("exclude", "include", only_one=True)): [str],
     "type": Or("slack"),

@@ -7,11 +7,11 @@ from leek.api.ext import es
 # https://www.elastic.co/blog/implementing-hot-warm-cold-in-elasticsearch-with-index-lifecycle-management
 
 def create_or_update_default_lifecycle_policy(
-        hot_max_age=14,
-        hot_max_size=10,
-        warm_age=7,
-        cold_age=30,
-        delete_age=60
+        hot_max_size=100,
+        hot_max_age=10,
+        warm_age=5,
+        cold_age=10,
+        delete_age=15
 ):
     """
     The lifecycle policy governs how the index transitions through these stages and
@@ -40,7 +40,7 @@ def create_or_update_default_lifecycle_policy(
                         # will be created. That new index will start the policy all over again.
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/index-rollover.html
                         "rollover": {
-                            "max_size": f"{hot_max_size}gb",
+                            "max_size": f"{hot_max_size}mb",
                             "max_age": f"{hot_max_age}d"
                         },
                     }

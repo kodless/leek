@@ -29,7 +29,7 @@ case ${SERVICE} in
   "web")
     if [ "${ENABLE_WEB}" = true ]; then
       if [ "${LEEK_ENV:-PROD}" = "DEV" ]; then
-        exec yarn --cwd /opt/app/leek/web develop -p 80
+        exec yarn --cwd /opt/app/web develop -p 80
       else
         export NGINX_CONF=/etc/nginx/mushed.conf
         cp /opt/app/conf/nginx.conf "${NGINX_CONF}"

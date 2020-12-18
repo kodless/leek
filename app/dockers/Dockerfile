@@ -15,22 +15,27 @@ COPY leek/requirements.txt /opt/app/leek/
 RUN pip3 install -r /opt/app/leek/requirements.txt
 
 # Install Frontend Dependencies
-COPY leek/web/package.json leek/web/yarn.lock /opt/app/leek/web/
-RUN yarn --ignore-optional --cwd /opt/app/leek/web
+COPY web/package.json web/yarn.lock /opt/app/web/
+RUN yarn --ignore-optional --cwd /opt/app/web
 
 # Add application to container
-ADD . ./
+ADD web ./web
 
 # Build Frontend Application, and clean Frontend dependencies and code, Keeping only the dist
-RUN yarn --cwd /opt/app/leek/web build \
-    && mv /opt/app/leek/web/public /opt/app/leek/public \
-    && rm -rf /opt/app/leek/web
+RUN yarn --cwd /opt/app/web build \
+    && mv /opt/app/web/public /opt/app/public \
+    && rm -rf /opt/app/web
+
+ADD bin conf leek ./
 
 FROM python:3.8-slim-buster AS runtime-image
 
 WORKDIR /opt/app
+ENV DEBIAN_FRONTEND=noninteractive
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV LEEK_ENV=PROD
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y gnupg2 wget \
@@ -44,5 +49,5 @@ RUN apt-get update \
     procps
 COPY --from=compile-image /opt /opt
 # Expose Backend/Frontend ports
-EXPOSE 9200 5000 80
+EXPOSE 9200 5000 8000
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

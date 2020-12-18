@@ -108,7 +108,7 @@ if ENABLE_WEB:
     }};
     """
 
-    web_conf_file = "/opt/app/leek/public/leek-config.js"
+    web_conf_file = "/opt/app/public/leek-config.js"
     with open(web_conf_file, 'w') as f:
         f.write(web_conf)
 
