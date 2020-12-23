@@ -156,6 +156,16 @@ properties = {
     "sw_ver": {
         "type": "keyword",
     },
+    # -- For revoked tasks
+    "terminated": {
+        "type": "boolean",
+    },
+    "expired": {
+        "type": "boolean",
+    },
+    "signum": {
+        "type": "keyword",
+    },
     # Broker specific
     "exchange": {
         "type": "keyword",

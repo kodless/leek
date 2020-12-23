@@ -29,6 +29,9 @@ export class CommonSearch implements Common {
                     "seen_routing_keys": {
                         "terms": {"field": "routing_key", "size": 500}
                     },
+                    "seen_queues": {
+                        "terms": {"field": "queue", "size": 500}
+                    },
                 }
             },
             {

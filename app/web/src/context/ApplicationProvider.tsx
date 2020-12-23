@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Button, message, Spin} from 'antd';
+import {Badge, Button, message, Spin} from 'antd';
 import {StringParam, useQueryParam} from "use-query-params";
 
 import {ApplicationSearch} from "../api/application";
@@ -35,7 +35,15 @@ interface ApplicationContextData {
         key: string;
         doc_count: null;
     }[];
+    seenTaskStates: {
+        key: string;
+        doc_count: null;
+    }[];
     seenRoutingKeys: {
+        key: string;
+        doc_count: null;
+    }[];
+    seenQueues: {
         key: string;
         doc_count: null;
     }[];
@@ -60,7 +68,9 @@ const initial = {
     seenWorkers: [],
     seenTasks: [],
     seenStates: [],
+    seenTaskStates: [],
     seenRoutingKeys: [],
+    seenQueues: [],
     seenEnvs: []
 };
 
@@ -80,8 +90,10 @@ function ApplicationProvider({children}) {
     const commonSearch = new CommonSearch();
     const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
     const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
-    const [seenStates, setSeenStats] = useState<ApplicationContextData["seenStates"]>([]);
+    const [seenStates, setSeenStates] = useState<ApplicationContextData["seenStates"]>([]);
+    const [seenTaskStates, setSeenTaskStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenRoutingKeys, setSeenRoutingKeys] = useState<ApplicationContextData["seenRoutingKeys"]>([]);
+    const [seenQueues, setSeenQueues] = useState<ApplicationContextData["seenQueues"]>([]);
     const [seenEnvs, setSeenEnvs] = useState<ApplicationContextData["seenEnvs"]>([]);
 
     function listApplications() {
@@ -96,7 +108,8 @@ function ApplicationProvider({children}) {
             })
             .catch((error) => {
                 console.log(error);
-                message.error(<>{"Unable to connect to backend, retry after 10 seconds"} <Button>Retry now</Button></>, 10);
+                message.error(<>{"Unable to connect to backend, retry after 10 seconds"} <Button>Retry
+                    now</Button></>, 10);
                 setTimeout(listApplications, 10000)
             });
     }
@@ -108,8 +121,14 @@ function ApplicationProvider({children}) {
             .then((result: any) => {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
-                setSeenStats(result.aggregations.seen_states.buckets);
+                setSeenStates(result.aggregations.seen_states.buckets);
+                setSeenTaskStates(
+                    result.aggregations.seen_states.buckets.filter(
+                        item => !["HEARTBEAT", "ONLINE", "OFFLINE"].includes(item.key)
+                    )
+                );
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
+                setSeenQueues(result.aggregations.seen_queues.buckets);
                 setSeenEnvs(result.aggregations.seen_envs.buckets)
             }, handleAPIError)
             .catch(handleAPIError);
@@ -125,7 +144,9 @@ function ApplicationProvider({children}) {
 
     useEffect(() => {
         listApplications();
-        return () => { clearInterval(interval); }
+        return () => {
+            clearInterval(interval);
+        }
     }, []);
 
 
@@ -138,7 +159,7 @@ function ApplicationProvider({children}) {
         setQPApp(currentApp);
         // Else, get metadata every 10 seconds
         getMetadata();
-        interval =  setInterval(() => {
+        interval = setInterval(() => {
             getMetadata();
         }, 10000);
     }, [currentApp]);
@@ -149,7 +170,7 @@ function ApplicationProvider({children}) {
     }, [qpApp]);
 
     function deleteApplication(app_name) {
-        let newApps = applications.filter( app => {
+        let newApps = applications.filter(app => {
             return app.app_name !== app_name;
         });
         setApplications(newApps);
@@ -173,7 +194,9 @@ function ApplicationProvider({children}) {
                 seenWorkers: seenWorkers,
                 seenTasks: seenTasks,
                 seenStates: seenStates,
+                seenTaskStates: seenTaskStates,
                 seenRoutingKeys: seenRoutingKeys,
+                seenQueues: seenQueues,
                 seenEnvs: seenEnvs,
                 listApplications: listApplications,
                 deleteApplication: deleteApplication,
@@ -187,7 +210,8 @@ function ApplicationProvider({children}) {
                         width: "100%",
                         height: "100vh",
                         lineHeight: "100vh"
-                    }}/> : <CreateApp createAppModalVisible={applications.length == 0} setCreateAppModalVisible={setCreateAppModalVisible} />
+                    }}/> : <CreateApp createAppModalVisible={applications.length == 0}
+                                      setCreateAppModalVisible={setCreateAppModalVisible}/>
             }
         </ApplicationContext.Provider>
     )

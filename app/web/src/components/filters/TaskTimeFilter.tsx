@@ -11,10 +11,11 @@ interface TasksFilterContextData {
     timeFilter: {
         timestamp_type: string,
         interval_type: string,
-        past_time: string,
+        offset: string,
         after_time: number | undefined,
         before_time: number | undefined,
     }
+
     onTimeFilterChange(filter: {});
 }
 
@@ -47,15 +48,25 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
                         timestamp_type: type
                     })}
             >
-                <Option value="timestamp">Seen</Option>
-                <Option value="sent_at">Sent</Option>
-                <Option value="received_at">Received</Option>
-                <Option value="started_at">Started</Option>
-                <Option value="succeeded_at">Succeeded</Option>
-                <Option value="failed_at">Failed</Option>
-                <Option value="retried_at">Retried</Option>
-                <Option value="rejected_at">Rejected</Option>
-                <Option value="revoked_at">Revoked</Option>
+                {props.timeFilter.interval_type !== "next" &&
+                    <>
+                        <Option value="timestamp">Seen</Option>
+                        <Option value="sent_at">Sent</Option>
+                        <Option value="received_at">Received</Option>
+                        <Option value="started_at">Started</Option>
+                        <Option value="succeeded_at">Succeeded</Option>
+                        <Option value="failed_at">Failed</Option>
+                        <Option value="retried_at">Retried</Option>
+                        <Option value="rejected_at">Rejected</Option>
+                        <Option value="revoked_at">Revoked</Option>
+                    </>
+                }
+                {["next", "at"].includes(props.timeFilter.interval_type) &&
+                <>
+                    <Option value="eta">ETA</Option>
+                    <Option value="expires">Expires</Option>
+                </>
+                }
             </Select>
             <Select defaultValue="at"
                     dropdownMatchSelectWidth
@@ -68,21 +79,25 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
             >
                 <Option value="at">at</Option>
                 <Option value="past">past</Option>
+                <Option value="next">next</Option>
             </Select>
-            {props.timeFilter.interval_type == "at" ?
+            {
+                props.timeFilter.interval_type == "at" &&
                 <RangePicker
                     showTime
                     allowEmpty={[true, true]}
                     onChange={handleTimeRangeChange}
                     size="small"/>
-                :
+            }
+            {
+                ["past", "next"].includes(props.timeFilter.interval_type) &&
                 <Select defaultValue="900000"
                         dropdownMatchSelectWidth
                         style={{width: 120}}
                         size="small"
                         onChange={past => props.onTimeFilterChange({
                             ...props.timeFilter,
-                            past_time: parseInt(past)
+                            offset: parseInt(past)
                         })}
                 >
                     <Option value="900000">15 minutes</Option>
@@ -93,7 +108,6 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
                     <Option value="172800000">2 days</Option>
                 </Select>
             }
-
         </Group>
     );
 };

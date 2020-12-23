@@ -40,7 +40,7 @@ const MonitorPage = () => {
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
         interval_type: "at",
-        past_time: 900000
+        offset: 900000,
     });
 
 

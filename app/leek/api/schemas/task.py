@@ -69,5 +69,9 @@ TaskEventSchema = Schema(
         # Only available with task-failed, task-retried
         Optional("exception"): And(str),
         Optional("traceback"): And(str),
+        # Only available with task-revoked events
+        Optional("terminated"): And(bool),
+        Optional("expired"): And(bool),
+        Optional("signum"): Or(None, And(int)),
     }
 )

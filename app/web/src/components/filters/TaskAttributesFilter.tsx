@@ -11,7 +11,7 @@ interface TasksFilterContextData {
 }
 
 const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
-    const {seenTasks, seenWorkers, seenStates, seenRoutingKeys} = useApplication();
+    const {seenTasks, seenWorkers, seenTaskStates, seenRoutingKeys, seenQueues} = useApplication();
     const [form] = Form.useForm();
 
     // UI Callbacks
@@ -62,7 +62,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear>
                             {
-                                seenStates.map((state, key) =>
+                                seenTaskStates.map((state, key) =>
                                     <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
                                                                                                  overflowCount={999}/></Option>
                                 )
@@ -77,6 +77,20 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 allowClear>
                             {
                                 seenRoutingKeys.map((state, key) =>
+                                    <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
+                                                                                                 overflowCount={999}/></Option>
+                                )
+                            }
+                        </Select>
+                    </FormItem>
+                </Row>
+                <Row>
+                    <FormItem name="queue" style={{width: "100%"}}>
+                        <Select placeholder="Queue"
+                                style={{width: "100%"}}
+                                allowClear>
+                            {
+                                seenQueues.map((state, key) =>
                                     <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
                                                                                                  overflowCount={999}/></Option>
                                 )

@@ -133,34 +133,6 @@ export default props => {
                         </List.Item>
                     </List>
                 </TabPane>
-                {/* Trace */}
-                <TabPane tab="Trace" key="trace" disabled={!props.task.exception}>
-                    <List size="small">
-                        <List.Item key="retries">
-                            <List.Item.Meta
-                                title="Retries"
-                                description={props.task.retries || "-"}
-                            />
-                        </List.Item>
-                        <List.Item key="exception">
-                            <List.Item.Meta
-                                title="Exception"
-                                description={props.task.exception}
-                            />
-                        </List.Item>
-                        <List.Item key="traceback">
-                            <List.Item.Meta
-                                style={{width: "100%"}}
-                                title="Traceback"
-                                description={props.task.traceback &&
-                                <SyntaxHighlighter>
-                                    {props.task.traceback}
-                                </SyntaxHighlighter>
-                                }
-                            />
-                        </List.Item>
-                    </List>
-                </TabPane>
                 {/* Routing */}
                 <TabPane tab="Routing" key="routing">
                     <List size="small">
@@ -191,6 +163,12 @@ export default props => {
                             <List.Item.Meta
                                 title="Routing Key"
                                 description={props.task.routing_key || "-"}
+                            />
+                        </List.Item>
+                        <List.Item key="queue">
+                            <List.Item.Meta
+                                title="Queue"
+                                description={props.task.queue || "-"}
                             />
                         </List.Item>
                         <List.Item key="clock">
@@ -226,6 +204,57 @@ export default props => {
                                             {`${props.task.parent_id} <${props.task.parent_id}>`}
                                         </a> : "-"
                                 }
+                            />
+                        </List.Item>
+                    </List>
+                </TabPane>
+                {/* Trace */}
+                <TabPane tab="Trace" key="trace" disabled={!props.task.exception}>
+                    <List size="small">
+                        <List.Item key="retries">
+                            <List.Item.Meta
+                                title="Retries"
+                                description={props.task.retries || "-"}
+                            />
+                        </List.Item>
+                        <List.Item key="exception">
+                            <List.Item.Meta
+                                title="Exception"
+                                description={props.task.exception}
+                            />
+                        </List.Item>
+                        <List.Item key="traceback">
+                            <List.Item.Meta
+                                style={{width: "100%"}}
+                                title="Traceback"
+                                description={props.task.traceback &&
+                                <SyntaxHighlighter>
+                                    {props.task.traceback}
+                                </SyntaxHighlighter>
+                                }
+                            />
+                        </List.Item>
+                    </List>
+                </TabPane>
+                {/* Revocation */}
+                <TabPane tab="Revocation" key="revocation" disabled={props.task.state !== "REVOKED"}>
+                    <List size="small">
+                        <List.Item key="expired">
+                            <List.Item.Meta
+                                title="Expired"
+                                description={props.task.expired? "Yes": "No"}
+                            />
+                        </List.Item>
+                        <List.Item key="terminated">
+                            <List.Item.Meta
+                                title="Terminated"
+                                description={props.task.terminated? "Yes": "No"}
+                            />
+                        </List.Item>
+                        <List.Item key="signum">
+                            <List.Item.Meta
+                                title="Signal Number"
+                                description={props.task.signum || "-"}
                             />
                         </List.Item>
                     </List>
