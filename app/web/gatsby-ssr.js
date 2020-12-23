@@ -9,7 +9,7 @@ exports.onRenderBody = ({setPostBodyComponents}) => {
         <script
             key="/leek-config.js"
             src="/leek-config.js"
-            charset="utf8"
+            charSet="utf8"
             type="text/javascript"
             crossOrigin="anonymous"
         />,

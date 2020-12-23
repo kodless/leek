@@ -85,7 +85,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                     </FormItem>
                 </Row>
                 <Row>
-                    <FormItem name="hostname" style={{width: "100%"}}>
+                    <FormItem name="worker" style={{width: "100%"}}>
                         <Select placeholder="Worker"
                                 style={{width: "100%"}}
                                 allowClear>

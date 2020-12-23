@@ -93,6 +93,18 @@ class PurgeApplication(Resource):
         return apps.purge_application(f"{g.org_name}-{app_name}")
 
 
+@applications_ns.route('/<string:app_name>/clean')
+class CleanApplication(Resource):
+
+    @auth
+    def delete(self, app_name):
+        """
+        Clean application
+        """
+        data = request.args.to_dict()
+        return apps.clean_documents_older_than(f"{g.org_name}-{app_name}", count=data["count"], unit=data["unit"])
+
+
 @applications_ns.route('/<string:app_name>/indices')
 class ApplicationIndices(Resource):
 

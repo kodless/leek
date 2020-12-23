@@ -15,7 +15,7 @@ import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
 
 const tasksStatesSeries = {
-    SENT: 0,
+    QUEUED: 0,
     RECEIVED: 0,
     STARTED: 0,
     SUCCEEDED: 0,

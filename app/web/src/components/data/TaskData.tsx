@@ -41,8 +41,11 @@ function TaskData() {
             title: 'State',
             dataIndex: 'state',
             key: 'state',
-            render: state => {
-                return <TaskState state={state}/>
+            render: (state, row) => {
+                if (state === "SUCCEEDED" && row.retried_at)
+                    return <TaskState state="RECOVERED" retries={row.retries}/>;
+                else
+                    return <TaskState state={state} retries={row.retries}/>;
             },
         }
     ];

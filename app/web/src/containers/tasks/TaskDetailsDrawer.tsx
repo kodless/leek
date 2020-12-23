@@ -116,13 +116,13 @@ export default props => {
                         <List.Item key="eta">
                             <List.Item.Meta
                                 title="ETA"
-                                description={props.task.eta || "-"}
+                                description={adaptTime(props.task.eta)}
                             />
                         </List.Item>
                         <List.Item key="expires">
                             <List.Item.Meta
                                 title="Expires"
-                                description={props.task.expires || "-"}
+                                description={adaptTime(props.task.expires)}
                             />
                         </List.Item>
                         <List.Item key="last_event">
@@ -134,7 +134,7 @@ export default props => {
                     </List>
                 </TabPane>
                 {/* Trace */}
-                <TabPane tab="Trace" key="trace" disabled={!["FAILED", "RETRY", "REVOKED"].includes(props.task.state)}>
+                <TabPane tab="Trace" key="trace" disabled={!props.task.exception}>
                     <List size="small">
                         <List.Item key="retries">
                             <List.Item.Meta
@@ -174,9 +174,9 @@ export default props => {
                             <List.Item.Meta
                                 title="Worker"
                                 description={
-                                    props.task.hostname ?
-                                        <a href={`/workers/?hostname=${props.task.hostname}`}>
-                                            {props.task.hostname}
+                                    props.task.worker ?
+                                        <a href={`/workers/?hostname=${props.task.worker}`}>
+                                            {props.task.worker}
                                         </a> : "-"
                                 }
                             />

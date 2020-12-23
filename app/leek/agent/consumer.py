@@ -102,6 +102,7 @@ class LeekConsumer(ConsumerMixin):
         :param message: Message
         """
         logger.info(f"Received message...")
+        print(message.properties)
         for i in range(self.MAX_RETRIES):
             try:
                 response = requests.post(

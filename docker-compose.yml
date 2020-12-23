@@ -7,8 +7,6 @@ services:
     volumes:
       # For host/container sync and hot reload
       - ./app:/opt/app
-      # ignore node_modules, should be added also in .dockerignore [MANDATORY]
-      - /opt/app/leek/web/node_modules/
     environment:
       # General
       - LEEK_API_LOG_LEVEL=INFO
@@ -16,7 +14,7 @@ services:
       # Components
       - LEEK_ENABLE_API=true
       - LEEK_ENABLE_AGENT=true
-      - LEEK_ENABLE_WEB=true
+      - LEEK_ENABLE_WEB=false
       - LEEK_ENABLE_ES=true
       # URLs
       - LEEK_API_URL=http://0.0.0.0:5000
@@ -50,7 +48,7 @@ services:
       - LEEK_AGENT_API_SECRET=not-secret
     ports:
       - 5000:5000
-      - 8000:8000
+      - 9200:9200
     depends_on:
       mq:
         condition: service_healthy
@@ -71,8 +69,6 @@ services:
       context: test
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
-      - CELERY_SEND_SENT_EVENT=True
-      - CELERY_SEND_TASK_SENT_EVENT=True
     command: >
       bash -c "python3 publisher.py"
     depends_on:

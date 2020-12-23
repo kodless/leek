@@ -1,5 +1,6 @@
 import getFirebase from "../utils/firebase";
 import env from "../utils/vars";
+import {buildQueryString} from "./search";
 
 export interface Application {
     listApplications(): any;
@@ -9,6 +10,8 @@ export interface Application {
     createApplication(application: { any }): any;
 
     purgeApplication(app_name: string): any;
+
+    cleanApplication(app_name: string, count: number, unit: string): any;
 
     deleteApplication(app_name: string): any;
 
@@ -56,6 +59,26 @@ export class ApplicationSearch implements Application {
         if (fb) {
             return fb.auth().currentUser.getIdToken().then(token =>
                 fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/purge`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                    })
+            );
+        }
+    }
+
+    cleanApplication(app_name, count, unit="minutes") {
+        let fb = getFirebase();
+        let params = {
+            count: count,
+            unit: unit
+        };
+        if (fb) {
+            return fb.auth().currentUser.getIdToken().then(token =>
+                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/clean${buildQueryString(params)}`,
                     {
                         method: "DELETE",
                         headers: {

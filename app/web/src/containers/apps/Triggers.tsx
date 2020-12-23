@@ -17,7 +17,7 @@ const FormItem = Form.Item;
 const {Option} = Select;
 
 const statesOptions = [
-    {value: "SENT"},
+    {value: "QUEUED"},
     {value: "RECEIVED"},
     {value: "STARTED"},
     {value: "SUCCEEDED"},

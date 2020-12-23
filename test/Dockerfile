@@ -19,4 +19,4 @@ USER appuser
 
 COPY ./src /opt/amqp
 
-CMD ["celery", "worker", "-E", "-A", "leek_test.tasks", "-l", "critical", "-n", "test-worker2@%h"]
+CMD ["celery", "worker", "-E", "-A", "leek_test.app", "-l", "critical", "-n", "test-worker2@%h"]

@@ -53,8 +53,12 @@ def validate_event(ev):
     ev_type = ev.pop('type')
     custom = get_custom_fields(doc_type, ev_type, doc.get("timestamp"))
     doc.update(custom)
+    # Adapt hostname
+    source = "client" if doc.get("state") == "QUEUED" else "worker"
+    doc[source] = doc.get("hostname")
+    # Adapt state
     return {
-        "_id": doc.get("uuid") if doc_type == "task" else doc.get("hostname"),
+        "_id": doc.get("uuid") if doc_type == "task" else doc.get("worker"),
         "doc": doc,
     }
 

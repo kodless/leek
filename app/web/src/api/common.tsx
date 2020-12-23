@@ -1,9 +1,9 @@
 import {search} from "./search";
 
 
+
 export interface Common {
     getSeenTasksAndWorkers(app_name: string): any;
-
 }
 
 export class CommonSearch implements Common {
@@ -18,7 +18,7 @@ export class CommonSearch implements Common {
                         "terms": {"field": "name", "size": 500}
                     },
                     "seen_workers": {
-                        "terms": {"field": "hostname", "size": 500}
+                        "terms": {"field": "worker", "size": 500}
                     },
                     "seen_states": {
                         "terms": {"field": "state", "size": 500}

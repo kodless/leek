@@ -55,7 +55,7 @@ class ListSiteMap(Resource):
 @manage_ns.route('/lifecycle')
 class IndexLifecycle(Resource):
 
-    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
+    # @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def put(self):
         """
         Update default index lifecycle

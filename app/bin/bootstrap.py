@@ -3,7 +3,6 @@ import logging
 import os
 import signal
 import subprocess
-import uuid
 
 import requests
 import time
@@ -31,6 +30,7 @@ def get_status(b):
 
 
 LEEK_VERSION = os.environ.get("LEEK_VERSION", "-.-.-")
+LEEK_ENV = os.environ.get("LEEK_ENV", "PROD")
 ENABLE_ES = get_bool("LEEK_ENABLE_ES")
 ENABLE_API = get_bool("LEEK_ENABLE_API")
 ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
@@ -70,7 +70,7 @@ SERVICES = f"""
 - ES        {get_status(ENABLE_ES)}    {LEEK_ES_URL}
 - API       {get_status(ENABLE_API)}    {LEEK_API_URL}
 - WEB       {get_status(ENABLE_WEB)}    {LEEK_WEB_URL}
-- AGENT     {get_status(ENABLE_ES)}    -
+- AGENT     {get_status(ENABLE_AGENT)}    -
 """
 
 printy(LOGO, "n>B")
@@ -81,7 +81,7 @@ printy(SERVICES)
 ADAPT/VALIDATE VARIABLES
 """
 # WEB VARIABLES
-if ENABLE_WEB:
+if ENABLE_WEB and LEEK_ENV == "PROD":
     LEEK_FIREBASE_PROJECT_ID = os.environ.get("LEEK_FIREBASE_PROJECT_ID")
     LEEK_FIREBASE_APP_ID = os.environ.get("LEEK_FIREBASE_APP_ID")
     LEEK_FIREBASE_API_KEY = os.environ.get("LEEK_FIREBASE_API_KEY")

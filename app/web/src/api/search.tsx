@@ -1,7 +1,7 @@
 import getFirebase from "../utils/firebase";
 import env from "../utils/vars";
 
-function buildQueryString(obj: {}) {
+export function buildQueryString(obj: {}) {
     const keyValuePairs: string[] = [];
     for (const key in obj) {
         keyValuePairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`);

@@ -1,6 +1,6 @@
 import {search} from "./search";
 
-export interface Task {
+export interface Worker {
     filter(
         app_name: string,
         hostname: string | null,
@@ -15,7 +15,7 @@ export interface Task {
     ): any;
 }
 
-export class WorkerSearch implements Task {
+export class WorkerSearch implements Worker {
     filter(
         app_name: string,
         hostname: string | null,

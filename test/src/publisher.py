@@ -1,6 +1,7 @@
 import time
 
-from leek_test.tasks import divide, rejected_task, retried_task
+from leek_test.tasks.low import divide, rejected_task
+from leek_test.tasks.high import retried_task
 
 while True:
     # Success

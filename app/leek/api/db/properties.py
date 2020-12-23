@@ -9,6 +9,9 @@ properties = {
     "hostname": {
         "type": "keyword",
     },
+    "worker": {
+        "type": "keyword",
+    },
     "timestamp": {
         "type": "long"
     },
@@ -37,11 +40,15 @@ properties = {
     "name": {
         "type": "keyword",
     },
+    "client": {
+        "type": "keyword",
+    },
+    # Times
     "eta": {
-        "type": "date"
+        "type": "long"
     },
     "expires": {
-        "type": "double"
+        "type": "long"
     },
     "sent_at": {
         "type": "long"
@@ -155,5 +162,8 @@ properties = {
     },
     "routing_key": {
         "type": "keyword",
-    }
+    },
+    "queue": {
+        "type": "keyword",
+    },
 }

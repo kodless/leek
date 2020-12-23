@@ -18,7 +18,7 @@ const IndexPage = () => {
             SEEN_WORKERS: seenWorkers.length,
             TASKS: 0,
             EVENTS: 0,
-            SENT: 0,
+            QUEUED: 0,
             RECEIVED: 0,
             STARTED: 0,
             SUCCEEDED: 0,

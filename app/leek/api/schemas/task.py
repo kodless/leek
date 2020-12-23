@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from schema import Schema, And, Or, Optional, Use
 
 TASK_EVENT_TYPES = (
@@ -12,7 +14,7 @@ TASK_EVENT_TYPES = (
 )
 
 TASK_STATE_MAPPING = {
-    "task-sent": "SENT",
+    "task-sent": "QUEUED",
     "task-received": "RECEIVED",
     "task-started": "STARTED",
     "task-succeeded": "SUCCEEDED",
@@ -22,9 +24,9 @@ TASK_STATE_MAPPING = {
     "task-retried": "RETRY",
 }
 
-STATES_SUCCESS = frozenset(["SUCCEEDED"])
+STATES_SUCCESS = frozenset(["SUCCEEDED", "RECOVERED"])
 STATES_EXCEPTION = frozenset(["FAILED", "RETRY", "REJECTED", "REVOKED"])
-STATES_UNREADY = frozenset(["SENT", "RECEIVED", "STARTED"])
+STATES_UNREADY = frozenset(["QUEUED", "RECEIVED", "STARTED"])
 
 TaskEventSchema = Schema(
     {
@@ -40,21 +42,31 @@ TaskEventSchema = Schema(
         Optional("name"): And(str, len),
         Optional("args"): And(str),
         Optional("kwargs"): And(str),
-        # If the exchange and routing keys are set
-        Optional("exchange"): And(str, len),
-        Optional("routing_key", default="#"): And(str, len),
+        # exchange/rq/queue are only available with task-sent events
+        Optional("exchange"): And(str),
+        Optional("routing_key"): And(str),
+        Optional("queue"): And(str),
         # If the task has a parent task caller
         Optional("root_id"): Or(None, And(str, len)),
         Optional("parent_id"): Or(None, And(str, len)),
-        Optional("eta"): Or(None, And(str, len)),  # iso date
-        Optional("expires"): Or(None, And(float, len)),
-        # In case of task-received
+        # countdown: If the task is scheduled or set to be retried after failure
+        Optional("eta"): Or(None,
+                            And(str,
+                                Use(lambda t: int(datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)))),
+        # When the task will expire (REVOKED by workers after this time)
+        Optional("expires"): Or(None,
+                                And(str,
+                                    Use(lambda t: int(
+                                        datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)))),
+        # Available with all event types.
+        # Indicates publisher-client in case of task-sent events and consumer-worker in other events
         Optional("hostname"): And(str, len),
-        # In case of task-succeeded
+        # Only available with task-succeeded events
         Optional("result"): And(str),
         Optional("runtime"): And(float),
-        # In case of task-failed, task-retried
+        # Only available with task-received events
         Optional("retries"): And(int),
+        # Only available with task-failed, task-retried
         Optional("exception"): And(str),
         Optional("traceback"): And(str),
     }

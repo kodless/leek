@@ -6,7 +6,13 @@ ENV LEEK_ENV=DEV
 ENV PYTHONUNBUFFERED=1
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends gnupg2 wget \
+    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
+    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y \
+    elasticsearch \
+    procps \
     build-essential \
     supervisor \
     netcat \
@@ -16,10 +22,6 @@ RUN apt-get update && apt-get install -y \
 # Install Backend Dependencies
 COPY leek/requirements.txt /opt/app/leek/
 RUN pip3 install -r /opt/app/leek/requirements.txt
-
-# Install Frontend Dependencies
-COPY web/package.json web/yarn.lock /opt/app/web/
-RUN yarn --ignore-optional --cwd /opt/app/web && yarn cache clean --force
 
 # Copy Application
 ADD . ./

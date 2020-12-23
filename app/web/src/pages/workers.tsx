@@ -12,7 +12,7 @@ import {WorkerSearch} from "../api/worker";
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 
 
-const TasksPage = () => {
+const WorkersPage = () => {
     // STATE
     const workerSearch = new WorkerSearch();
     const {currentApp} = useApplication();
@@ -199,4 +199,4 @@ const TasksPage = () => {
     )
 };
 
-export default TasksPage
+export default WorkersPage

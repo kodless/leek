@@ -41,7 +41,7 @@ def create_or_update_default_lifecycle_policy(
                         # https://www.elastic.co/guide/en/elasticsearch/reference/current/index-rollover.html
                         "rollover": {
                             "max_size": f"{hot_max_size}mb",
-                            "max_age": f"{hot_max_age}d"
+                            "max_age": f"{hot_max_age}m"
                         },
                     }
                 },
@@ -49,7 +49,7 @@ def create_or_update_default_lifecycle_policy(
                 "warm": {
                     # the current index (the one that just rolled over) will wait up to `warm_age` days since it was
                     # rolled over to enter the warm phase.
-                    "min_age": f"{warm_age}d",
+                    "min_age": f"{warm_age}m",
                     "actions": {
                         # set the index priority to a value lower than hot (but greater then cold)
                         "set_priority": {
@@ -76,7 +76,7 @@ def create_or_update_default_lifecycle_policy(
                 # searchable, but it’s okay if those queries are slower.
                 "cold": {
                     # wait `cold_age` days (since it was rolled over) to enter the cold phase.
-                    "min_age": f"{cold_age}d",
+                    "min_age": f"{cold_age}m",
                     "actions": {
                         # lower the index priority to ensure that hot and warm indexes recover first
                         "set_priority": {
@@ -95,7 +95,7 @@ def create_or_update_default_lifecycle_policy(
                 # ​the index is no longer needed and can safely be deleted.
                 "delete": {
                     # wait `delete_age` days (since it was rolled over) to enter the delete phase.
-                    "min_age": f"{delete_age}d",
+                    "min_age": f"{delete_age}m",
                     "actions": {
                         "delete": {}
                     }
@@ -104,6 +104,6 @@ def create_or_update_default_lifecycle_policy(
         }
     }
     try:
-        return es.connection.ilm.put_lifecycle("hot-warm-cold-delete-60days", body=policy), 200
+        return es.connection.ilm.put_lifecycle("default", body=policy), 200
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable

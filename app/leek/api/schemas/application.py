@@ -1,6 +1,6 @@
 from schema import Schema, And, Or, Optional, Use
 
-states = ["RECEIVED", "SENT", "STARTED", "SUCCEEDED", "RETRY", "REVOKED", "FAILED", "REJECTED"]
+states = ["QUEUED", "RECEIVED", "STARTED", "SUCCEEDED", "RETRY", "REVOKED", "FAILED", "REJECTED"]
 
 TriggerSchema = Schema({
     "enabled": And(bool),

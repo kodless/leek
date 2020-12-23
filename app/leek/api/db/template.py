@@ -1,3 +1,6 @@
+from datetime import timedelta
+import time
+
 from elasticsearch import exceptions as es_exceptions
 
 from leek.api.ext import es
@@ -28,7 +31,7 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
                     "number_of_replicas": "1",
                 },
                 "index.lifecycle.name": lifecycle_policy_name,
-                "index.lifecycle.rollover_alias": index_alias
+                "index.lifecycle.rollover_alias": f"{index_alias}-rolled"
             },
             "aliases": {
                 index_alias: {}
@@ -46,7 +49,7 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
     try:
         connection.indices.put_index_template(name=index_alias, body=body, create=True)
         # Create first index
-        connection.indices.create(f"{index_alias}-primary")
+        connection.indices.create(f"{index_alias}-000001")
         return meta, 201
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
@@ -152,12 +155,36 @@ def purge_application(index_alias):
     connection = es.connection
     try:
         connection.indices.delete(f"{index_alias}*")
-        connection.indices.create(f"{index_alias}-primary")
+        connection.indices.create(f"{index_alias}-000001")
         return "Done", 200
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist
+
+
+def clean_documents_older_than(index_alias, count=30, unit="seconds"):
+    connection = es.connection
+    try:
+        now = time.time()
+        old = timedelta(**{unit: int(count)}).total_seconds()
+        lte = int((now - old) * 1000)
+        query = {
+            "query": {
+                "range": {
+                    "timestamp": {
+                        "lte": lte
+                    }
+                }
+            }
+        }
+        d = connection.delete_by_query(index=index_alias, body=query,
+                                       params=dict(wait_for_completion="true", refresh="true"))
+        return d, 200
+    except es_exceptions.ConnectionError:
+        return responses.cache_backend_unavailable
+    except es_exceptions.NotFoundError:
+        return responses.application_not_found
 
 
 def get_application_indices(index_alias):

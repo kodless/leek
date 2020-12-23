@@ -31,6 +31,7 @@ class ProcessEvents(Resource):
         """
         # TODO: API Key validation should be moved to API Gateway
         payload = request.get_json()
+        print(payload)
         events = validate_payload(payload)
         result, status = upsert_payload(g.context["index_alias"], events, g.context["app_env"])
         if status == 201:
