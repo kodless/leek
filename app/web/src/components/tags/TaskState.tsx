@@ -16,9 +16,12 @@ const statusColorMap = {
 export const TaskState: React.FC<any> = (props) => {
     let state = props.state;
     let retries = props.retries;
+    let revocation_reason = props.revocation_reason;
+    let v = revocation_reason ? `${state} [${revocation_reason}]` :state;
+    v = retries ? `${v} (${retries})` :v;
     return (
         <Tag color={statusColorMap[state]} key={state}>
-            {retries ? `${state} (${retries})` :state}
+            {v}
         </Tag>
     );
 };
