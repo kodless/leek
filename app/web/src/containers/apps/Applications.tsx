@@ -178,7 +178,7 @@ const Applications = () => {
                     <Text>Clean events older than:</Text>
                     <Input.Group compact style={{marginTop: 16}}>
                         <FormItem name="count">
-                            <InputNumber min={1} max={1000} step={1} defaultValue={60}
+                            <InputNumber min={1} max={1000} step={1}
                                          placeholder="count"
                             />
                         </FormItem>

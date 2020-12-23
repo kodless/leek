@@ -47,14 +47,25 @@ const TasksPage: React.FC = () => {
             ...filters,
             ...timeFilters,
         };
+        console.log("called");
         let from_ = (pager.current - 1) * pager.pageSize;
         taskSearch.filter(currentApp, currentEnv, pager.pageSize, from_, order, allFilters)
             .then(handleAPIResponse)
             .then((result: any) => {
-                // Pagination
+                // Fix pagination current page excess, in this case there will certainly be 0 hits
+                let current = pager.current;
+                let available_pages = Math.ceil(result.hits.total.value / pager.pageSize);
+                if (result.hits.total.value === 0) {
+                    current = 1
+                }
+                else if (available_pages < current){
+                    filterTasks({current: available_pages, pageSize: 10});
+                    return;
+                }
+                // Continue
                 const p = {
                     pageSize: pager.pageSize,
-                    current: pager.current,
+                    current: current,
                     total: result.hits.total.value
                 };
                 setPagination(p);
@@ -95,9 +106,12 @@ const TasksPage: React.FC = () => {
     }, []);
 
 
+    useEffect(() => {
+        console.log(tasks)
+    }, [tasks]);
+
     // UI Callbacks
     function refresh(pager = {current: 1, pageSize: 10}) {
-        setTasks([]);
         filterTasks(pager)
     }
 
