@@ -30,7 +30,7 @@ const MonitorPage = () => {
     const monitorSearch = new MonitorSearch();
     const [totalHits, setTotalHits] = useState<number>(0);
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
-    const [routingKeysDistribution, setRoutingKeysDistribution] = useState<any>([]);
+    const [queuesDistribution, setQueuesDistribution] = useState<any>([]);
     const [tasksDistribution, setTasksDistribution] = useState<any>([]);
     const [tasksOverTimeDistribution, setTasksOverTimeDistribution] = useState<any>([]);
 
@@ -58,8 +58,8 @@ const MonitorPage = () => {
             .then(handleAPIResponse)
             .then((result: any) => {
                 setStatesDistribution(result.aggregations.statesDistribution.buckets);
-                setRoutingKeysDistribution(
-                    result.aggregations.routingKeysDistribution.buckets.map(
+                setQueuesDistribution(
+                    result.aggregations.queuesDistribution.buckets.map(
                         ({key, doc_count}) => ({id: key, value: doc_count})
                     )
                 );
@@ -129,9 +129,9 @@ const MonitorPage = () => {
                             <Card
                                 bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                                 size="small" style={{width: "100%"}}
-                                title="Routing keys distribution">
+                                title="Queues distribution">
                                 <Row style={{height: "400px"}}>
-                                    <LeekWaffle total={totalHits} data={routingKeysDistribution}/>
+                                    <LeekWaffle total={totalHits} data={queuesDistribution}/>
                                 </Row>
                             </Card>
                         </Col>

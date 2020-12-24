@@ -41,8 +41,8 @@ export class MonitorSearch implements Monitor {
                     statesDistribution: {
                         "terms": {"field": "state", "size": 1000}
                     },
-                    routingKeysDistribution: {
-                        "terms": {"field": "routing_key", "size": 1000}
+                    queuesDistribution: {
+                        "terms": {"field": "queue", "size": 1000}
                     },
                     timeDistribution: {
                         "auto_date_histogram": {

@@ -1,22 +1,43 @@
-import React from 'react'
-import {Row, Button, Typography, Col} from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Row, Button, Typography, Col, Image} from 'antd'
 import {GoogleOutlined} from "@ant-design/icons";
 
 
-import Image from "../components/Image";
+import Logo from "../components/Image";
 import {useAuth} from "../context/AuthProvider";
-import {Link} from "gatsby";
+import {getJokes} from "../data/jokes";
 
 
 const Title = Typography.Title;
+const jokes = getJokes();
 
 const AuthPage = () => {
 
     const {login, loading} = useAuth();
+    const [currentJokeIndex, setCurrentJokeIndex] = useState<number>(0);
 
     function handleAuth() {
         login()
     }
+
+    function showNextJoke() {
+        console.log(jokes);
+        if (currentJokeIndex == (jokes.length - 1))
+            setCurrentJokeIndex(0);
+        else
+            setCurrentJokeIndex(currentJokeIndex + 1);
+    }
+
+    useEffect(() => {
+        // Stop refreshing metadata
+        const timeout = setTimeout(() => {
+            showNextJoke()
+        }, 5000);
+
+        return () => {
+            clearTimeout(timeout);
+        }
+    }, [currentJokeIndex]);
 
     return (
         <Row justify="center" align="middle" style={{minHeight: '100vh'}}>
@@ -25,7 +46,7 @@ const AuthPage = () => {
                 <Row justify="center" style={{width: "100%", marginBottom: "10px"}}>
                     <Col>
                         <div style={{width: "40px"}}>
-                            <Image alt="Logo"/>
+                            <Logo alt="Logo"/>
                         </div>
                     </Col>
                     <Col><Title level={2}>LEEK</Title></Col>
@@ -44,8 +65,18 @@ const AuthPage = () => {
 
             <Col xxl={12} xl={12} md={12} lg={12} sm={0} xs={0}
                  style={{backgroundColor: "#00BFA6", minHeight: "100vh"}}>
-                <Row justify="center" style={{width: "100%", minHeight: "100vh"}} align="middle">
-                    <Title type="secondary">Make Leek Great Again</Title>
+                <Row justify="center" style={{width: "100%", minHeight: "100vh", padding: 30}} align="middle">
+                    <Row>
+                        <Row justify="center"  style={{width: "100%", marginBottom: 24}}>
+                            <Image
+                                width={200}
+                                src={`/veggies/${jokes[currentJokeIndex].img}`}
+                            />
+                        </Row>
+                        <Row justify="center" style={{width: "100%"}}>
+                            <Title type="secondary" style={{textAlign: "center"}}>{jokes[currentJokeIndex].joke}</Title>
+                        </Row>
+                    </Row>
                 </Row>
             </Col>
 
