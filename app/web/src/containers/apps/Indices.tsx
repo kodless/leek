@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import {Row, Col, Card, Typography, Table, Empty, Space} from 'antd'
+import {Row, Col, Card, Typography, Table, Empty, Space, Radio} from 'antd'
 import {BellOutlined} from "@ant-design/icons";
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import IndicesData from "../../components/app/IndicesData";
 
@@ -14,7 +16,26 @@ const Indices = (props) => {
 
     const application = new ApplicationSearch();
     const [indicesLoading, setIndicesLoading] = useState<boolean>();
+    const [indicesDetails, setIndicesDetails] = useState<any>('');
+    const [indicesSummary, setIndicesSummary] = useState<any>('');
+    const [indicesDetailsVisible, setIndicesDetailsVisible] = useState<boolean>(false);
 
+    const buildIndicesSummary = () => {
+        if (!(indicesDetails && indicesDetails.indices))
+            return;
+        setIndicesSummary(
+            Object.entries(indicesDetails.indices).map( ([name, details]: any) => {
+
+                return {
+                    name: name,
+                    docs_count: details.primaries.docs.count,
+                    size: `${Math.ceil( details.primaries.store.size_in_bytes / 1000000)}mb`,
+                    index_total: details.primaries.indexing.index_total,
+                    index_time: `${details.primaries.indexing.index_time_in_millis / 1000} sec`,
+                }
+            })
+        )
+    };
 
     useEffect(() => {
         listIndices();
@@ -26,7 +47,7 @@ const Indices = (props) => {
             application.listApplicationIndices(props.selectedApp.app_name)
                 .then(handleAPIResponse)
                 .then((result: any) => {
-                    console.log(result)
+                    setIndicesDetails(result)
                 }, handleAPIError)
                 .catch(handleAPIError)
                 .finally(() => {
@@ -35,10 +56,20 @@ const Indices = (props) => {
         }
     }
 
+    useEffect(() => {
+        buildIndicesSummary();
+    }, [indicesDetails]);
+
     return (
         <Row style={{width: "100%"}}>
             <Card size="small" style={{width: "100%"}}
                   bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
+                  extra={
+                      <Radio.Group onChange={v => {v.target.value==="SUMMARY"? setIndicesDetailsVisible(false): setIndicesDetailsVisible(true) }} defaultValue="SUMMARY" size="small">
+                          <Radio.Button value="SUMMARY">SUMMARY</Radio.Button>
+                          <Radio.Button value="DETAILS">DETAILS</Radio.Button>
+                      </Radio.Group>
+                  }
                   title={<Row justify="space-between">
                       <Col>
                           <Space>
@@ -48,12 +79,13 @@ const Indices = (props) => {
                       </Col>
                   </Row>}
             >
-                <Table dataSource={props.selectedApp.fo_triggers}
+                {!indicesDetailsVisible &&
+                <Table dataSource={indicesSummary}
                        columns={IndicesData()}
-                       showHeader={false}
+                       showHeader={true}
                        pagination={false}
                        size="small"
-                       rowKey="id"
+                       rowKey="name"
                        style={{width: "100%"}}
                        scroll={{x: "100%"}}
                        loading={indicesLoading}
@@ -67,7 +99,14 @@ const Indices = (props) => {
                                />
                            </div>
                        }}
-                />
+                />}
+
+                {indicesDetailsVisible && indicesDetails && indicesDetails.indices &&
+                <SyntaxHighlighter customStyle={{width: "100%"}} style={atelierCaveDark}
+                                   language="json">
+                    {JSON.stringify(indicesDetails.indices, null, 2)}
+                </SyntaxHighlighter>
+                }
             </Card>
         </Row>
     )

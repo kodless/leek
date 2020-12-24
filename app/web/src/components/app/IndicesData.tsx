@@ -15,22 +15,42 @@ function IndicesData() {
             },
         },
         {
-            title: 'Shards',
-            dataIndex: 'shards',
-            key: 'shards',
-            render: shards => {
+            title: 'Docs count',
+            dataIndex: 'docs_count',
+            key: 'docs_count',
+            render: docs_count => {
                 return (
-                    <Tag color="green">{shards}</Tag>
+                    <Tag>{docs_count}</Tag>
                 )
             },
         },
         {
-            title: 'Replicas',
-            dataIndex: 'replicas',
-            key: 'replicas',
-            render: replicas => {
+            title: 'Store size',
+            dataIndex: 'size',
+            key: 'size',
+            render: size => {
                 return (
-                    <Tag color="green">{replicas}</Tag>
+                    <Tag>{size}</Tag>
+                )
+            },
+        },
+        {
+            title: 'Total indexed',
+            dataIndex: 'index_total',
+            key: 'index_total',
+            render: index_total => {
+                return (
+                    <Tag>{index_total}</Tag>
+                )
+            },
+        },
+        {
+            title: 'Index time',
+            dataIndex: 'index_time',
+            key: 'index_time',
+            render: index_time => {
+                return (
+                    <Tag>{index_time}</Tag>
                 )
             },
         },
