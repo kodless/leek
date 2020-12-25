@@ -2,7 +2,7 @@ import React from "react";
 
 import {
     SyncOutlined, RobotFilled, RetweetOutlined, RollbackOutlined, CheckCircleOutlined, CloseCircleOutlined,
-    StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined,
+    StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined, EllipsisOutlined
 } from '@ant-design/icons';
 
 
@@ -13,7 +13,7 @@ function Stats(stats: any) {
             text: 'Total Tasks',
             icon: <UnorderedListOutlined style={{color: "#3f3d56"}}/>,
             bgColor: '#FFF',
-            tooltip: 'The total tasks in memory'
+            tooltip: 'Seen tasks names'
         },
         {
             number: stats.SEEN_WORKERS,
@@ -23,14 +23,14 @@ function Stats(stats: any) {
             tooltip: 'The total offline/online and beat workers'
         },
         {
-            number: stats.EVENTS,
-            text: 'Events Processed',
-            icon: <SendOutlined style={{color: "#3f3d56"}}/>,
+            number: stats.QUEUED,
+            text: 'Tasks Queued',
+            icon: <EllipsisOutlined style={{color: "#3f3d56"}}/>,
             bgColor: '#FFF',
-            tooltip: 'The total processed tasks/workers events'
+            tooltip: 'The total tasks in the queues'
         },
         {
-            number: stats.TASKS,
+            number: stats.PROCESSED_TASKS,
             text: 'Tasks Processed',
             icon: <SyncOutlined style={{color: "#333333"}}/>,
             bgColor: '#FFF',

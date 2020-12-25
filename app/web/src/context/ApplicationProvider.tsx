@@ -31,6 +31,7 @@ interface ApplicationContextData {
         key: string;
         doc_count: null;
     }[];
+    processedTasks: number;
     seenStates: {
         key: string;
         doc_count: null;
@@ -67,6 +68,7 @@ const initial = {
     currentEnv: undefined,
     seenWorkers: [],
     seenTasks: [],
+    processedTasks: 0,
     seenStates: [],
     seenTaskStates: [],
     seenRoutingKeys: [],
@@ -90,6 +92,7 @@ function ApplicationProvider({children}) {
     const commonSearch = new CommonSearch();
     const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
     const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
+    const [processedTasks, setProcessedTasks] = useState<ApplicationContextData["processedTasks"]>([]);
     const [seenStates, setSeenStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenTaskStates, setSeenTaskStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenRoutingKeys, setSeenRoutingKeys] = useState<ApplicationContextData["seenRoutingKeys"]>([]);
@@ -121,6 +124,7 @@ function ApplicationProvider({children}) {
             .then((result: any) => {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
+                setProcessedTasks(result.hits.total.value);
                 setSeenStates(result.aggregations.seen_states.buckets);
                 setSeenTaskStates(
                     result.aggregations.seen_states.buckets.filter(
@@ -193,6 +197,7 @@ function ApplicationProvider({children}) {
                 currentEnv: currentEnv,
                 seenWorkers: seenWorkers,
                 seenTasks: seenTasks,
+                processedTasks: processedTasks,
                 seenStates: seenStates,
                 seenTaskStates: seenTaskStates,
                 seenRoutingKeys: seenRoutingKeys,

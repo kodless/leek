@@ -8,7 +8,7 @@ import StatsWidgets from "../components/stats/Stats";
 import {useApplication} from "../context/ApplicationProvider";
 
 const IndexPage = () => {
-    const {seenTasks, seenWorkers, seenStates} = useApplication();
+    const {seenTasks, seenWorkers, seenStates, processedTasks} = useApplication();
     const [stats, setStats] = useState<any>({});
     const stats_widgets = StatsWidgets(stats);
 
@@ -16,6 +16,7 @@ const IndexPage = () => {
         let adapted = {
             SEEN_TASKS: seenTasks.length,
             SEEN_WORKERS: seenWorkers.length,
+            PROCESSED_TASKS: processedTasks,
             TASKS: 0,
             EVENTS: 0,
             QUEUED: 0,
