@@ -259,6 +259,23 @@ export default props => {
                         </List.Item>
                     </List>
                 </TabPane>
+                {/* Revocation */}
+                <TabPane tab="Rejection" key="rejection" disabled={props.task.state !== "REJECTED"}>
+                    <List size="small">
+                        <List.Item key="rejected">
+                            <List.Item.Meta
+                                title="Rejected"
+                                description="Yes"
+                            />
+                        </List.Item>
+                        <List.Item key="terminated">
+                            <List.Item.Meta
+                                title="Requeue"
+                                description={props.task.requeue? "Yes": "No"}
+                            />
+                        </List.Item>
+                    </List>
+                </TabPane>
             </Tabs>
         </TaskDetailsDrawer>
     );
