@@ -6,13 +6,10 @@ properties = {
     "state": {
         "type": "keyword",
     },
-    "hostname": {
-        "type": "keyword",
-    },
-    "worker": {
-        "type": "keyword",
-    },
     "timestamp": {
+        "type": "long"
+    },
+    "exact_timestamp": {
         "type": "long"
     },
     "utcoffset": {
@@ -38,6 +35,9 @@ properties = {
         "type": "keyword",
     },
     "name": {
+        "type": "keyword",
+    },
+    "worker": {
         "type": "keyword",
     },
     "client": {
@@ -126,6 +126,9 @@ properties = {
         }
     },
     # Workers specific
+    "hostname": {
+        "type": "keyword",
+    },
     "online_at": {
         "type": "double"
     },

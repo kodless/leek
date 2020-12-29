@@ -14,7 +14,3 @@ def divide(x, y):
 def rejected_task():
     raise Reject("Test rejection", requeue=False)
 
-
-@app.task()
-def rejected_task():
-    raise Reject("Test rejection", requeue=False)
