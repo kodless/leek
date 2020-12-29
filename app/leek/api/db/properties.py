@@ -169,6 +169,10 @@ properties = {
     "signum": {
         "type": "keyword",
     },
+    # -- For rejected tasks
+    "requeue": {
+        "type": "boolean",
+    },
     # Broker specific
     "exchange": {
         "type": "keyword",

@@ -10,7 +10,7 @@ def divide(x, y):
     return x / y
 
 
-@app.task()
-def rejected_task():
+@app.task(bind=True, acks_late=True)
+def rejected_task(self):
     raise Reject("Test rejection", requeue=False)
 

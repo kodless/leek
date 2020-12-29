@@ -153,7 +153,7 @@ def ensure_connection(target):
         except Exception as e:
             time.sleep(5)
             continue
-    raise abort(f"Could not connect to target {target}")
+    abort(f"Could not connect to target {target}")
 
 
 if ENABLE_ES:

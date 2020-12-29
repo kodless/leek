@@ -73,5 +73,7 @@ TaskEventSchema = Schema(
         Optional("terminated"): And(bool),
         Optional("expired"): And(bool),
         Optional("signum"): Or(None, And(int)),
+        # Only available with task-rejected events
+        Optional("requeue"): And(bool),
     }
 )

@@ -85,6 +85,8 @@ class Task(EV):
     terminated: bool = None
     expired: bool = None
     signum: int = None
+    # REJECTION
+    requeue: bool = None,
     # FAILURE
     exception: str = None
     traceback: str = None
