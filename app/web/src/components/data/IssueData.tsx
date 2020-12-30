@@ -10,30 +10,42 @@ function IssueData() {
             title: 'Exception',
             dataIndex: 'exception',
             key: 'exception',
-            render: name => {
-                return <Text strong style={{color: "rgb(156,45,51)"}}>{name}</Text>
+            render: exception => {
+                return <Text strong style={{color: "rgb(156,45,51)"}}>{exception}</Text>
             },
         },
         {
             title: 'Occurrence',
-            dataIndex: 'occurrence',
-            key: 'occurrence',
-            render: uuid => {
-                return <Tag><Text copyable>{uuid}</Text></Tag>
+            dataIndex: 'doc_count',
+            key: 'doc_count',
+            render: doc_count => {
+                return <Tag>{doc_count}</Tag>
             },
         },
         {
-            title: 'Last seen',
-            dataIndex: 'last_seen',
-            key: 'last_seen',
-            render: timestamp => {
-                return (
-                    <Text style={{color: "rgba(45,137,183,0.8)"}}>
-                        {timestamp ? <TimeAgo date={timestamp}/> : '-'}
-                    </Text>
-                );
+            title: 'Retry',
+            dataIndex: 'RETRY',
+            key: 'RETRY',
+            render: RETRY => {
+                return <Tag color="orange">{RETRY}</Tag>
             }
-        }
+        },
+        {
+            title: 'Failed',
+            dataIndex: 'FAILED',
+            key: 'FAILED',
+            render: FAILED => {
+                return <Tag color="red">{FAILED}</Tag>
+            }
+        },
+        {
+            title: 'Recovered',
+            dataIndex: 'SUCCEEDED',
+            key: 'SUCCEEDED',
+            render: SUCCEEDED => {
+                return <Tag color="green">{SUCCEEDED}</Tag>
+            }
+        },
     ];
 }
 

@@ -1,11 +1,19 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Card, Col, Row, Empty} from 'antd'
+import {Card, Col, Row, Empty, Table} from 'antd'
+
+import IssueDataColumns from "../components/data/IssueData"
 import TimeFilter from "../components/filters/TaskTimeFilter"
 import {useApplication} from "../context/ApplicationProvider"
+import {IssueSearch} from "../api/issue";
+import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
 const IssuesPage = () => {
 
+    const columns = IssueDataColumns();
+    const issueSearch = new IssueSearch();
+    const [loading, setLoading] = useState<boolean>();
+    const [issues, setIssues] = useState<any>([]);
     const {currentApp, currentEnv} = useApplication();
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
@@ -16,6 +24,38 @@ const IssuesPage = () => {
 
     useEffect(() => {
         if (!currentApp) return;
+        setLoading(true);
+        issueSearch.filter(currentApp, currentEnv, "desc", timeFilters)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setIssues(
+                    result.aggregations.exceptions.buckets.map(
+                        ({key, doc_count, state}) => {
+                            let tasksStatesSeries = {
+                                QUEUED: 0,
+                                RECEIVED: 0,
+                                STARTED: 0,
+                                SUCCEEDED: 0,
+                                FAILED: 0,
+                                REJECTED: 0,
+                                REVOKED: 0,
+                                RETRY: 0,
+                            };
+                            const states = state.buckets.reduce((result, item) => {
+                                result[item.key] = item.doc_count;
+                                return result;
+                            }, tasksStatesSeries);
+                            return {
+                                exception: key,
+                                doc_count: doc_count,
+                                ...states
+                            }
+                        }
+                    )
+                );
+            }, handleAPIError)
+            .catch(handleAPIError)
+            .finally(() => setLoading(false));
     }, [currentApp, currentEnv, timeFilters]);
 
     return (
@@ -35,7 +75,24 @@ const IssuesPage = () => {
             </Row>
 
             <Row justify="center" style={{width: "100%", marginTop: 13}}>
-
+                <Table dataSource={issues}
+                       columns={columns}
+                       loading={loading}
+                       size="small"
+                       rowKey="uuid"
+                       style={{width: "100%"}}
+                       scroll={{x: "100%"}}
+                       locale={{
+                           emptyText: <div style={{textAlign: 'center'}}>
+                               <Empty
+                                   image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                   description={
+                                       <span>No <a href="#API">issues</a> found</span>
+                                   }
+                               />
+                           </div>
+                       }}
+                />
             </Row>
         </>
     )

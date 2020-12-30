@@ -14,16 +14,16 @@ import {MonitorSearch} from "../api/monitor"
 import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
 
-const tasksStatesSeries = {
-    QUEUED: 0,
-    RECEIVED: 0,
-    STARTED: 0,
-    SUCCEEDED: 0,
-    FAILED: 0,
-    REJECTED: 0,
-    REVOKED: 0,
-    RETRY: 0,
-};
+let StatesKeys = [
+    "QUEUED",
+    "RECEIVED",
+    "STARTED",
+    "SUCCEEDED",
+    "FAILED",
+    "REJECTED",
+    "REVOKED",
+    "RETRY",
+];
 
 const MonitorPage = () => {
 
@@ -65,13 +65,27 @@ const MonitorPage = () => {
                 );
                 setTasksDistribution(
                     result.aggregations.tasksDistribution.buckets.map(
-                        ({key, statesDistribution, runtimeDistribution}) => (
-                            {
+                        ({key, statesDistribution, runtimeDistribution}) => {
+                            let tasksStatesSeries = {
+                                QUEUED: 0,
+                                RECEIVED: 0,
+                                STARTED: 0,
+                                SUCCEEDED: 0,
+                                FAILED: 0,
+                                REJECTED: 0,
+                                REVOKED: 0,
+                                RETRY: 0,
+                            };
+                            const states = statesDistribution.buckets.reduce((result, item) => {
+                                result[item.key] = item.doc_count;
+                                return result;
+                            }, tasksStatesSeries);
+                            return {
                                 id: key,
                                 runtime: runtimeDistribution.value,
-                                ...statesDistribution.buckets.reduce((obj, item) => _.extend((obj[item.key] = item.doc_count, obj), tasksStatesSeries), tasksStatesSeries)
+                                ...states
                             }
-                        )
+                        }
                     )
                 );
                 setTasksOverTimeDistribution([
@@ -111,7 +125,7 @@ const MonitorPage = () => {
                             <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
                         </Col>
                         <Col>
-                            <Statistic title="Total Filtered" value={totalHits} prefix={<FilterOutlined />}/>
+                            <Statistic title="Total Filtered" value={totalHits} prefix={<FilterOutlined/>}/>
                         </Col>
                     </Row>
                     <Row justify="center" style={{width: "100%", marginTop: 13}} gutter={10}>
@@ -142,7 +156,7 @@ const MonitorPage = () => {
                             size="small" style={{width: "100%"}}
                             title="Tasks distribution">
                             <Row style={{height: "400px"}}>
-                                <LeekBar data={tasksDistribution} keys={Object.keys(tasksStatesSeries)}/>
+                                <LeekBar data={tasksDistribution} keys={StatesKeys}/>
                             </Row>
                         </Card>
                     </Row>
