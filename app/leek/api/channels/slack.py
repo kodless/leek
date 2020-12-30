@@ -1,7 +1,9 @@
 import json
+from typing import Union
 
 import urllib3
 
+from leek.api.db.store import Task, Worker
 from leek.api.schemas.task import STATES_SUCCESS, STATES_EXCEPTION, STATES_UNREADY
 from leek.api.conf import settings
 
@@ -17,7 +19,7 @@ def get_color(state):
         return "yellow"
 
 
-def send_slack(app_name: str, app_env: str, event: dict, wh_url: str, extra: dict):
+def send_slack(app_name: str, event: Union[Task, Worker], wh_url: str, extra: dict):
     fields = [
         {
             "title": "Application",
@@ -26,22 +28,22 @@ def send_slack(app_name: str, app_env: str, event: dict, wh_url: str, extra: dic
         },
         {
             "title": "Environment",
-            "value": app_env,
+            "value": event.app_env,
             "short": True,
         },
         {
             "title": "Task worker",
-            "value": event["hostname"],
+            "value": event.worker,
             "short": True,
         },
         {
             "title": "Task state",
-            "value": event["state"],
+            "value": event.state,
             "short": True,
         },
         {
             "title": "Task uuid",
-            "value": event["uuid"],
+            "value": event.uuid,
             "short": False,
         }
     ]
@@ -56,9 +58,9 @@ def send_slack(app_name: str, app_env: str, event: dict, wh_url: str, extra: dic
     body = {
         "attachments": [
             {
-                "color": get_color(event['state']),
-                "title": f"Task: {event['name']}",
-                "title_link": f"{settings.LEEK_WEB_URL}/tasks?app={app_name}&uuid={event['uuid']}",
+                "color": get_color(event.state),
+                "title": f"Task: {event.name}",
+                "title_link": f"{settings.LEEK_WEB_URL}/tasks?app={app_name}&uuid={event.uuid}",
                 "fields": fields,
             },
         ],

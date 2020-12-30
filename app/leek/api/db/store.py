@@ -1,5 +1,5 @@
 from typing import List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 QUEUED = "QUEUED"
 RECEIVED = "RECEIVED"
@@ -86,10 +86,35 @@ class Task(EV):
     expired: bool = None
     signum: int = None
     # REJECTION
-    requeue: bool = None,
+    requeue: bool = None
     # FAILURE
     exception: str = None
     traceback: str = None
     # ORIGIN
     client: str = None
     worker: str = None
+
+
+@dataclass()
+class FanoutTrigger:
+    id: str
+    enabled: bool
+    slack_wh_url: str
+    type: str = "slack"
+    states: List = field(default_factory=lambda: [])
+    envs: List = field(default_factory=lambda: [])
+    exclude: str = field(default_factory=lambda: [])
+    include: str = field(default_factory=lambda: [])
+    runtime_upper_bound: float = 0
+
+
+@dataclass()
+class Application:
+    app_name: str
+    app_key: str
+    app_description: str
+    created_at: str
+    owner: str
+    broker: str
+    broker_version: str
+    fo_triggers: List[FanoutTrigger] = field(default_factory=lambda: [])

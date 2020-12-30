@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, List, Tuple
 
 from elasticsearch import exceptions as es_exceptions
 from elasticsearch.helpers import streaming_bulk, errors as bulk_errors
@@ -25,14 +25,16 @@ def build_actions(index_alias: str, events: Dict[str, Union[Task, Worker]]):
 
 def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
     connection = es.connection
-    print(events)
     try:
         actions = build_actions(index_alias, events)
         if len(actions):
             updated = []
             for ok, item in streaming_bulk(connection, actions, index=index_alias, _source=True):
                 if ok:
-                    updated.append(item["update"]["get"]["_source"])
+                    _id = item["update"]["_id"]
+                    merged = item["update"]["get"]["_source"]
+                    m = Task(id=_id, **merged) if merged["kind"] == "task" else Worker(id=_id, **merged)
+                    updated.append(m)
             return updated, 201
         else:
             return [], 201

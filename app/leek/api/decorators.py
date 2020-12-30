@@ -5,6 +5,7 @@ from elasticsearch import exceptions as es_exceptions
 from flask import g, request
 from jose import JWTError
 
+from leek.api.db.store import Application, FanoutTrigger
 from leek.api.errors import responses
 from leek.api.db.template import get_app
 from leek.api.conf import settings
@@ -73,8 +74,13 @@ def get_app_context(_route=None):
 
             # Get app
             try:
+                # Get/Build application
                 app = get_app(f"{org_name}-{app_name}")
-                if app_key not in [app.get("app_key"), settings.LEEK_AGENT_API_SECRET]:
+                fo_triggers = app.pop("fo_triggers")
+                triggers = [FanoutTrigger(**t) for t in fo_triggers]
+                application = Application(**app, fo_triggers=triggers)
+                # Authenticate
+                if app_key not in [application.app_key, settings.LEEK_AGENT_API_SECRET]:
                     return responses.wrong_application_app_key
             except es_exceptions.NotFoundError:
                 return responses.application_not_found
@@ -84,7 +90,7 @@ def get_app_context(_route=None):
             # Build context
             g.context = {
                 "index_alias": f"{org_name}-{app_name}",
-                "app": app,
+                "app": application,
                 "org_name": org_name,
                 "app_name": app_name,
                 "app_env": app_env,
