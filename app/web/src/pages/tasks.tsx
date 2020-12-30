@@ -12,6 +12,7 @@ import TaskDetailsDrawer from '../containers/tasks/TaskDetailsDrawer'
 import {useApplication} from "../context/ApplicationProvider"
 import {TaskSearch} from "../api/task"
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
+import {fixPagination} from "../utils/pagination";
 
 
 const TasksPage: React.FC = () => {
@@ -47,28 +48,14 @@ const TasksPage: React.FC = () => {
             ...filters,
             ...timeFilters,
         };
-        console.log("called");
         let from_ = (pager.current - 1) * pager.pageSize;
         taskSearch.filter(currentApp, currentEnv, pager.pageSize, from_, order, allFilters)
             .then(handleAPIResponse)
             .then((result: any) => {
-                // Fix pagination current page excess, in this case there will certainly be 0 hits
-                let current = pager.current;
-                let available_pages = Math.ceil(result.hits.total.value / pager.pageSize);
-                if (result.hits.total.value === 0) {
-                    current = 1
-                }
-                else if (available_pages < current){
-                    filterTasks({current: available_pages, pageSize: 10});
-                    return;
-                }
-                // Continue
-                const p = {
-                    pageSize: pager.pageSize,
-                    current: current,
-                    total: result.hits.total.value
-                };
-                setPagination(p);
+                // Prepare pagination
+                let p = fixPagination(result.hits.total.value, pager, filterTasks);
+                if (p) setPagination(p);
+                else return;
                 // Result
                 let tasksList: { any }[] = [];
                 result.hits.hits.forEach(function (hit) {

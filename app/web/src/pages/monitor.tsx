@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import _ from 'lodash'
 import {Card, Col, Row, Empty, Statistic} from 'antd'
 import {FilterOutlined} from "@ant-design/icons";
 import {LeekPie} from "../components/charts/Pie"

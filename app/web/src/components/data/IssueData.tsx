@@ -1,5 +1,4 @@
 import React from "react";
-import TimeAgo from 'react-timeago'
 import {Typography, Tag} from "antd";
 
 const Text = Typography.Text;
@@ -11,7 +10,7 @@ function IssueData() {
             dataIndex: 'exception',
             key: 'exception',
             render: exception => {
-                return <Text strong style={{color: "rgb(156,45,51)"}}>{exception}</Text>
+                return <Text strong style={{color: "rgb(156,17,45)"}}>{exception}</Text>
             },
         },
         {
@@ -28,6 +27,22 @@ function IssueData() {
             key: 'RETRY',
             render: RETRY => {
                 return <Tag color="orange">{RETRY}</Tag>
+            }
+        },
+        {
+            title: 'Revoked',
+            dataIndex: 'REVOKED',
+            key: 'REVOKED',
+            render: REVOKED => {
+                return <Tag color="purple">{REVOKED}</Tag>
+            }
+        },
+        {
+            title: 'In Progress',
+            dataIndex: 'QUEUED',
+            key: 'QUEUED',
+            render: (QUEUED, obj) => {
+                return <Tag color="blue">{obj.QUEUED + obj.RECEIVED + obj.STARTED}</Tag>
             }
         },
         {
