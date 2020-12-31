@@ -8,7 +8,6 @@ const Text = Typography.Text;
 
 
 export function adaptTime(time) {
-    console.log(time);
     return time ? <>
         {moment(time).format("MMM D HH:mm:ss")} <Text style={{color: "#00BFA6"}}> - <TimeAgo
         date={time}/></Text>

@@ -1,6 +1,17 @@
 import {TaskFilters, getFilterQuery} from "./task";
 import {search} from "./search";
 
+const state_timestamp_map = {
+    QUEUED: "sent_at",
+    RECEIVED: "received_at",
+    STARTED: "started_at",
+    SUCCEEDED: "succeeded_at",
+    FAILED: "failed_at",
+    REJECTED: "rejected_at",
+    REVOKED: "revoked_at",
+    RETRY: "retried_at",
+};
+
 export interface Monitor {
     charts(
         app_name: string,
@@ -46,7 +57,7 @@ export class MonitorSearch implements Monitor {
                     },
                     timeDistribution: {
                         "auto_date_histogram": {
-                            "field": "timestamp",
+                            "field": filters.state ? state_timestamp_map[filters.state] : "timestamp",
                             "buckets": 30,
                         }
                     },

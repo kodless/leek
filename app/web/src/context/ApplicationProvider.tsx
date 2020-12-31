@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Badge, Button, message, Spin} from 'antd';
+import {Button, message, Spin} from 'antd';
 import {StringParam, useQueryParam} from "use-query-params";
 
 import {ApplicationSearch} from "../api/application";
@@ -92,7 +92,7 @@ function ApplicationProvider({children}) {
     const commonSearch = new CommonSearch();
     const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
     const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
-    const [processedTasks, setProcessedTasks] = useState<ApplicationContextData["processedTasks"]>([]);
+    const [processedTasks, setProcessedTasks] = useState<ApplicationContextData["processedTasks"]>(0);
     const [seenStates, setSeenStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenTaskStates, setSeenTaskStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenRoutingKeys, setSeenRoutingKeys] = useState<ApplicationContextData["seenRoutingKeys"]>([]);
@@ -105,8 +105,12 @@ function ApplicationProvider({children}) {
             .then(response => response.json())
             .then((apps: any) => {
                 setApplications(apps);
-                if (apps.length !== 0 && !currentApp)
-                    setCurrentApp(apps[0]["app_name"]);
+                if (apps.length !== 0 && !currentApp) {
+                    if (qpApp)
+                        setCurrentApp(qpApp);
+                    else
+                        setCurrentApp(apps[0]["app_name"]);
+                }
                 setLoading(false);
             })
             .catch((error) => {
@@ -170,7 +174,9 @@ function ApplicationProvider({children}) {
 
     useEffect(() => {
         if (qpApp && qpApp !== currentApp)
-            setCurrentApp(qpApp)
+            setCurrentApp(qpApp);
+        else if (currentApp && !qpApp)
+            setQPApp(currentApp);
     }, [qpApp]);
 
     function deleteApplication(app_name) {

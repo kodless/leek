@@ -113,7 +113,7 @@ const IssuesPage = () => {
                            loading={loading}
                            pagination={{...pagination, showTotal: handleShowTotal}}
                            size="small"
-                           rowKey="uuid"
+                           rowKey="exception"
                            style={{width: "100%"}}
                            scroll={{x: "100%"}}
                            locale={{

@@ -50,7 +50,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                             {
                                 seenTasks.map((task, key) =>
                                     <Option key={task.key} value={task.key}>{task.key} <Badge count={task.doc_count}
-                                                                                              overflowCount={999}/></Option>
+                                                                                              overflowCount={9999}/></Option>
                                 )
                             }
                         </Select>
@@ -64,7 +64,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                             {
                                 seenTaskStates.map((state, key) =>
                                     <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={999}/></Option>
+                                                                                                 overflowCount={9999}/></Option>
                                 )
                             }
                         </Select>
@@ -78,7 +78,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                             {
                                 seenRoutingKeys.map((state, key) =>
                                     <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={999}/></Option>
+                                                                                                 overflowCount={9999}/></Option>
                                 )
                             }
                         </Select>
@@ -92,7 +92,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                             {
                                 seenQueues.map((state, key) =>
                                     <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={999}/></Option>
+                                                                                                 overflowCount={9999}/></Option>
                                 )
                             }
                         </Select>
@@ -106,7 +106,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                             {
                                 seenWorkers.map((worker, key) =>
                                     <Option key={worker.key} value={worker.key}>{worker.key} <Badge
-                                        count={worker.doc_count} overflowCount={999}/></Option>
+                                        count={worker.doc_count} overflowCount={9999}/></Option>
                                 )
                             }
                         </Select>

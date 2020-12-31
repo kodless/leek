@@ -16,7 +16,6 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         time_filter.range[filters.timestamp_type]["lte"] = moment().valueOf() + filters.offset;
         time_filter.range[filters.timestamp_type]["gte"] = moment().valueOf();
     }
-    console.log(time_filter)
     let f = [
         {"match": {"kind": "task"}},
         app_env && {"match": {"app_env": app_env}},
