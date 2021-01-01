@@ -23,7 +23,7 @@ function WorkerData() {
             render: processed => {
                 return <Space direction="horizontal">
                     <CheckOutlined/>
-                    <Badge count={processed} overflowCount={9999} style={{backgroundColor: '#21ccaf'}} showZero/>
+                    <Badge count={processed} overflowCount={9999999} style={{backgroundColor: '#21ccaf'}} showZero/>
                 </Space>
             },
         },
@@ -34,7 +34,7 @@ function WorkerData() {
             render: active => {
                 return <Space direction="horizontal">
                     <LoadingOutlined/>
-                    <Badge count={active} overflowCount={9999} style={{backgroundColor: '#adc6ff'}} showZero/>
+                    <Badge count={active} overflowCount={9999999} style={{backgroundColor: '#adc6ff'}} showZero/>
                 </Space>
             },
         },

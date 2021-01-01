@@ -41,23 +41,23 @@ export class MonitorSearch implements Monitor {
                 ],
                 aggs: {
                     tasksDistribution: {
-                        "terms": {"field": "name", "size": 1000},
+                        "terms": {"field": "name"},
                         aggs: {
                             statesDistribution: {
-                                "terms": {"field": "state", "size": 1000}
+                                "terms": {"field": "state"}
                             },
                             runtimeDistribution: {"avg": {"field": "runtime"}}
                         }
                     },
                     statesDistribution: {
-                        "terms": {"field": "state", "size": 1000}
+                        "terms": {"field": "state"}
                     },
                     queuesDistribution: {
-                        "terms": {"field": "queue", "size": 1000}
+                        "terms": {"field": "queue"}
                     },
                     timeDistribution: {
                         "auto_date_histogram": {
-                            "field": filters.state ? state_timestamp_map[filters.state] : "timestamp",
+                            "field": "timestamp",
                             "buckets": 30,
                         }
                     },

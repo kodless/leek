@@ -1,10 +1,30 @@
 import React from "react";
-import {Card, Input, Row, Select, Button, Form, Badge, InputNumber} from "antd";
+import {Card, Input, Row, Select, Button, Form, Badge, InputNumber, Col} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
 
 const {Option} = Select;
 const FormItem = Form.Item;
+const overflowCount = 999999;
+
+const badgeStyle = {
+    backgroundColor: "#fff",
+    color: "#fb8072",
+    boxShadow: "0 0 0 1px #d9d9d9 inset"
+};
+
+const badgedOption = (item) => {
+    return (<Option key={item.key} value={item.key}>
+        <Row style={{width: "100%"}} justify="space-between">
+            <Col>
+                {item.key}
+            </Col>
+            <Col>
+                <Badge count={item.doc_count} overflowCount={overflowCount} size="small" style={badgeStyle}/>
+            </Col>
+        </Row>
+    </Option>)
+};
 
 interface TasksFilterContextData {
     onFilter(value: {});
@@ -48,10 +68,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 showSearch
                                 dropdownMatchSelectWidth={false}>
                             {
-                                seenTasks.map((task, key) =>
-                                    <Option key={task.key} value={task.key}>{task.key} <Badge count={task.doc_count}
-                                                                                              overflowCount={9999}/></Option>
-                                )
+                                seenTasks.map((task, key) => badgedOption(task))
                             }
                         </Select>
                     </FormItem>
@@ -62,10 +79,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear>
                             {
-                                seenTaskStates.map((state, key) =>
-                                    <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={9999}/></Option>
-                                )
+                                seenTaskStates.map((state, key) => badgedOption(state))
                             }
                         </Select>
                     </FormItem>
@@ -76,10 +90,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear>
                             {
-                                seenRoutingKeys.map((state, key) =>
-                                    <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={9999}/></Option>
-                                )
+                                seenRoutingKeys.map((rq, key) => badgedOption(rq))
                             }
                         </Select>
                     </FormItem>
@@ -90,10 +101,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear>
                             {
-                                seenQueues.map((state, key) =>
-                                    <Option key={state.key} value={state.key}>{state.key} <Badge count={state.doc_count}
-                                                                                                 overflowCount={9999}/></Option>
-                                )
+                                seenQueues.map((queue, key) => badgedOption(queue))
                             }
                         </Select>
                     </FormItem>
@@ -104,10 +112,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear>
                             {
-                                seenWorkers.map((worker, key) =>
-                                    <Option key={worker.key} value={worker.key}>{worker.key} <Badge
-                                        count={worker.doc_count} overflowCount={9999}/></Option>
-                                )
+                                seenWorkers.map((worker, key) => badgedOption(worker))
                             }
                         </Select>
                     </FormItem>

@@ -17,7 +17,7 @@ export const LeekBar: React.FC<any> = (props) => {
             padding={0.8}
             layout="horizontal"
             valueScale={{ type: 'linear' }}
-            colors={{ scheme: 'blue_green' }}
+            colors={{ scheme: props.color || 'blue_green' }}
             defs={[
                 {
                     id: 'dots',

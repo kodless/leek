@@ -57,9 +57,13 @@ const MonitorPage = () => {
             .then(handleAPIResponse)
             .then((result: any) => {
                 setStatesDistribution(result.aggregations.statesDistribution.buckets);
+                let totalInQueues = 0;
                 setQueuesDistribution(
                     result.aggregations.queuesDistribution.buckets.map(
-                        ({key, doc_count}) => ({id: key, value: doc_count})
+                        ({key, doc_count}) => {
+                            totalInQueues += doc_count;
+                            return {id: key, value: doc_count}
+                        }
                     )
                 );
                 setTasksDistribution(
@@ -95,7 +99,7 @@ const MonitorPage = () => {
                         )
                     }
                 ]);
-                setTotalHits(result.hits.total.value);
+                setTotalHits(totalInQueues);
             }, handleAPIError)
             .catch(handleAPIError);
     }, [currentApp, currentEnv, filters, timeFilters]);
@@ -177,7 +181,7 @@ const MonitorPage = () => {
                             <Row style={{height: "400px"}}>
                                 {
                                     filters && filters.state && filters.state === "SUCCEEDED" ?
-                                        <LeekBar data={tasksDistribution} keys={["runtime",]}/>
+                                        <LeekBar data={tasksDistribution} keys={["runtime",]} color="set3"/>
                                         :
                                         <Row align="middle" justify="center" style={{width: "100%"}}>
                                             <Empty

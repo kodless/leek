@@ -8,6 +8,7 @@ import CreateApp from "../containers/apps/CreateApp";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
 let interval;
+const workerStates = ["HEARTBEAT", "ONLINE", "OFFLINE"];
 
 interface ApplicationContextData {
     applications: {
@@ -128,13 +129,18 @@ function ApplicationProvider({children}) {
             .then((result: any) => {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
-                setProcessedTasks(result.hits.total.value);
                 setSeenStates(result.aggregations.seen_states.buckets);
                 setSeenTaskStates(
                     result.aggregations.seen_states.buckets.filter(
-                        item => !["HEARTBEAT", "ONLINE", "OFFLINE"].includes(item.key)
+                        item => !workerStates.includes(item.key)
                     )
                 );
+                setProcessedTasks(result.aggregations.seen_states.buckets.reduce((result, item) => {
+                    if (!workerStates.includes(item.key)) {
+                        return result + item.doc_count;
+                    }
+                    return result;
+                }, 0));
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
                 setSeenQueues(result.aggregations.seen_queues.buckets);
                 setSeenEnvs(result.aggregations.seen_envs.buckets)

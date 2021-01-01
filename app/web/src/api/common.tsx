@@ -15,22 +15,22 @@ export class CommonSearch implements Common {
                 "size": 0,
                 "aggs": {
                     "seen_tasks": {
-                        "terms": {"field": "name", "size": 500}
+                        "terms": {"field": "name"}
                     },
                     "seen_workers": {
-                        "terms": {"field": "worker", "size": 500}
+                        "terms": {"field": "hostname"}
                     },
                     "seen_states": {
-                        "terms": {"field": "state", "size": 500}
+                        "terms": {"field": "state"}
                     },
                     "seen_envs": {
-                        "terms": {"field": "app_env", "size": 500}
+                        "terms": {"field": "app_env"}
                     },
                     "seen_routing_keys": {
-                        "terms": {"field": "routing_key", "size": 500}
+                        "terms": {"field": "routing_key"}
                     },
                     "seen_queues": {
-                        "terms": {"field": "queue", "size": 500}
+                        "terms": {"field": "queue"}
                     },
                 }
             },
