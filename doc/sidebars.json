@@ -1,0 +1,16 @@
+{
+  "docs": {
+    "Architecture": [
+      "architecture/components",
+      "architecture/authn-authz",
+      "architecture/configuration",
+      "architecture/indexing"
+    ],
+    "Getting Started": [
+      "getting-started/firebase",
+      "getting-started/agent",
+      "getting-started/api",
+      "getting-started/web"
+    ]
+  }
+}

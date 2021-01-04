@@ -127,6 +127,13 @@ function ApplicationProvider({children}) {
         commonSearch.getSeenTasksAndWorkers(currentApp)
             .then(handleAPIResponse)
             .then((result: any) => {
+                const processed = result.aggregations.seen_states.buckets.reduce((result, item) => {
+                    if (!workerStates.includes(item.key)) {
+                        return result + item.doc_count;
+                    }
+                    return result;
+                }, 0);
+                setProcessedTasks(processed);
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
                 setSeenStates(result.aggregations.seen_states.buckets);
@@ -135,12 +142,6 @@ function ApplicationProvider({children}) {
                         item => !workerStates.includes(item.key)
                     )
                 );
-                setProcessedTasks(result.aggregations.seen_states.buckets.reduce((result, item) => {
-                    if (!workerStates.includes(item.key)) {
-                        return result + item.doc_count;
-                    }
-                    return result;
-                }, 0));
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
                 setSeenQueues(result.aggregations.seen_queues.buckets);
                 setSeenEnvs(result.aggregations.seen_envs.buckets)

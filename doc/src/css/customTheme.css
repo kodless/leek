@@ -1,0 +1,30 @@
+:root{
+  --ifm-color-primary-lightest: #99e5db;
+  --ifm-color-primary-lighter: #66d9ca;
+  --ifm-color-primary-light: #33ccb8;
+  --ifm-color-primary: #00BFA6;
+  --ifm-color-primary-dark: #009985;
+  --ifm-color-primary-darker: #007364;
+  --ifm-color-primary-darkest: #004c42;
+}
+
+.navbar__title {
+  font-size: 25px;
+  font-style: italic;
+}
+
+.indexButton {
+  margin-top: 24px;
+  font-size: 16px;
+  color: #333;
+  background-color: #99e5db;
+  padding: 10px;
+  border: 0;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.indexButton:hover {
+  background-color: #33ccb8;
+}
+
