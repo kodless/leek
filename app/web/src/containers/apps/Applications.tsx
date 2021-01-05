@@ -99,10 +99,10 @@ const Applications = () => {
             confirm({
                 title: 'Clean application',
                 icon: <ExclamationCircleOutlined/>,
-                content: `Do you really want to clean want to clean application events older than ${clean.count} ${clean.unit}`,
+                content: `Do you really want to clean want to clean application ${clean.kind} older than ${clean.count} ${clean.unit}`,
                 onOk() {
                     setApplicationPurging(true);
-                    applicationSearch.cleanApplication(selectedApp.app_name, clean.count, clean.unit)
+                    applicationSearch.cleanApplication(selectedApp.app_name, clean.kind, clean.count, clean.unit)
                         .then(handleAPIResponse)
                         .then((_: any) => {
                             message.info("Application old events cleaned!")
@@ -174,16 +174,24 @@ const Applications = () => {
                 visible={isCleanModalVisible}
             >
                 <Form id="cleanForm" onFinish={handleCleanApp}
-                      initialValues={{count: 60, unit: "days"}}>
-                    <Text>Clean events older than:</Text>
+                      initialValues={{count: 60, unit: "days", kind: "task"}}
+                      style={{marginTop: 20}}
+                >
+                    <FormItem label="Clean" name="kind" style={{width: 130}}>
+                        <Select>
+                            <Option value="task">Tasks</Option>
+                            <Option value="worker">Workers</Option>
+                        </Select>
+                    </FormItem>
                     <Input.Group compact style={{marginTop: 16}}>
+                        <Text style={{marginTop: 4, marginRight: 4}}>Older than: </Text>
                         <FormItem name="count">
                             <InputNumber min={1} max={1000} step={1}
                                          placeholder="count"
                             />
                         </FormItem>
                         <FormItem name="unit">
-                            <Select>
+                            <Select style={{width: 80}}>
                                 <Option value="minutes">Minutes</Option>
                                 <Option value="hours">Hours</Option>
                                 <Option value="days">Days</Option>

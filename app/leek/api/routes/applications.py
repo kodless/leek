@@ -102,7 +102,12 @@ class CleanApplication(Resource):
         Clean application
         """
         data = request.args.to_dict()
-        return apps.clean_documents_older_than(f"{g.org_name}-{app_name}", count=data["count"], unit=data["unit"])
+        return apps.clean_documents_older_than(
+            f"{g.org_name}-{app_name}",
+            kind=data["kind"],
+            count=data["count"],
+            unit=data["unit"]
+        )
 
 
 @applications_ns.route('/<string:app_name>/indices')

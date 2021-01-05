@@ -148,7 +148,7 @@ class Task(EV):
     # REVOCATION
     terminated: bool = None
     expired: bool = None
-    signum: int = None
+    signum: str = None
     # REJECTION
     requeue: bool = None
     # FAILURE

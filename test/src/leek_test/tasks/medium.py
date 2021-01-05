@@ -2,5 +2,5 @@ from leek_test.app import app
 
 
 @app.task
-def child():
+def child_task():
     return "I'm a child"

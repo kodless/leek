@@ -11,7 +11,7 @@ export interface Application {
 
     purgeApplication(app_name: string): any;
 
-    cleanApplication(app_name: string, count: number, unit: string): any;
+    cleanApplication(app_name: string, kind: string, count: number, unit: string): any;
 
     deleteApplication(app_name: string): any;
 
@@ -70,9 +70,10 @@ export class ApplicationSearch implements Application {
         }
     }
 
-    cleanApplication(app_name, count, unit="minutes") {
+    cleanApplication(app_name, kind, count, unit="minutes") {
         let fb = getFirebase();
         let params = {
+            kind: kind,
             count: count,
             unit: unit
         };

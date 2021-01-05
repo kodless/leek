@@ -16,6 +16,13 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         time_filter.range[filters.timestamp_type]["lte"] = moment().valueOf() + filters.offset;
         time_filter.range[filters.timestamp_type]["gte"] = moment().valueOf();
     }
+    let revocation_filter;
+    if (filters.revocation_reason){
+        if (filters.revocation_reason === "terminated")
+            revocation_filter = {"match": {"terminated": {"query": true}}};
+        else if (filters.revocation_reason === "expired")
+            revocation_filter = {"match": {"expired": {"query": true}}};
+    }
     let f = [
         {"match": {"kind": "task"}},
         app_env && {"match": {"app_env": app_env}},
@@ -33,7 +40,8 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         filters.args && {"match": {"args": {"query": filters.args}}},
         filters.kwargs && {"match": {"kwargs": {"query": filters.kwargs}}},
         filters.result && {"match": {"result": {"query": filters.result}}},
-        time_filter
+        time_filter,
+        revocation_filter
     ];
     return f.filter(Boolean);
 }
@@ -60,6 +68,7 @@ export interface TaskFilters {
     args: string | null,
     kwargs: string | null,
     result: string | null,
+    revocation_reason: string | null,
 }
 
 export interface Task {
@@ -87,14 +96,16 @@ export class TaskSearch implements Task {
         order: string | "desc",
         filters: TaskFilters,
     ) {
+        let query = {
+            "bool": {
+                "must": getFilterQuery(app_env, filters)
+            }
+        }
+        console.log(query);
         return search(
             app_name,
             {
-                query: {
-                    "bool": {
-                        "must": getFilterQuery(app_env, filters)
-                    }
-                },
+                query: query,
                 sort: [
                     {"timestamp": {"order": order}},
                 ]

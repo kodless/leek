@@ -175,6 +175,14 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Input placeholder="Result"/>
                     </FormItem>
                 </Row>
+                <Row>
+                    <FormItem name="revocation_reason" style={{width: "100%"}}>
+                        <Select placeholder="Revocation reason">
+                            <Option value="expired">{"Expired"}</Option>
+                            <Option value="terminated">{"Terminated"}</Option>
+                        </Select>
+                    </FormItem>
+                </Row>
             </Form>
         </Card>
     );

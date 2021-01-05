@@ -1,16 +1,15 @@
 import time
 
-from leek_test.tasks.low import divide, rejected_task
-from leek_test.tasks.high import retried_task
+from leek_test.tasks.low import failed_task, succeeded_task, rejected_task, parent_task
+from leek_test.tasks.high import critical_task, revoked_expired_task, recovered_task, revoked_terminated_task
 
 while True:
-    # Success
-    divide.delay(4, 4)
-    # Failure
-    divide.delay(4, 0)
-    # Rejected
+    succeeded_task.delay(4, 4)
+    failed_task.delay()
     rejected_task.delay()
-    # Retried
-    retried_task.delay()
-    # Sleep
+    critical_task.delay()
+    revoked_expired_task.delay()
+    revoked_terminated_task.delay()
+    recovered_task.delay()
+    parent_task.delay()
     time.sleep(30)

@@ -163,7 +163,7 @@ def purge_application(index_alias):
         return responses.application_already_exist
 
 
-def clean_documents_older_than(index_alias, count=30, unit="seconds"):
+def clean_documents_older_than(index_alias, kind="task", count=30, unit="seconds"):
     connection = es.connection
     try:
         now = time.time()
@@ -171,11 +171,18 @@ def clean_documents_older_than(index_alias, count=30, unit="seconds"):
         lte = int((now - old) * 1000)
         query = {
             "query": {
-                "range": {
-                    "timestamp": {
-                        "lte": lte
-                    }
-                }
+                "bool": {
+                    "must": [
+                        {
+                            "range": {
+                                "timestamp": {
+                                    "lte": lte
+                                }
+                            }
+                        },
+                        {"match": {"kind": kind}}
+                    ]
+                },
             }
         }
         d = connection.delete_by_query(index=index_alias, body=query,
