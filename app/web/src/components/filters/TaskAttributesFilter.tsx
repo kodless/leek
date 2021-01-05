@@ -183,6 +183,26 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         </Select>
                     </FormItem>
                 </Row>
+                <Row>
+                    <FormItem name="rejection_outcome" style={{width: "100%"}}>
+                        <Select placeholder="Rejection outcome">
+                            <Option value="requeued">{"Requeued"}</Option>
+                            <Option value="ignored">{"Ignored"}</Option>
+                        </Select>
+                    </FormItem>
+                </Row>
+                <Row>
+                    <FormItem name="root_id" style={{width: "100%"}}>
+                        <Select placeholder="Root ID (soon)" disabled={true}>
+                        </Select>
+                    </FormItem>
+                </Row>
+                <Row>
+                    <FormItem name="parent_id" style={{width: "100%"}}>
+                        <Select placeholder="Parent ID (soon)" disabled={true}>
+                        </Select>
+                    </FormItem>
+                </Row>
             </Form>
         </Card>
     );

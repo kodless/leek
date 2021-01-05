@@ -27,6 +27,6 @@ def revoked_terminated_task():
 @app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
 def recovered_task():
     """Will fail/retry/.../succeed"""
-    if revoked_terminated_task.request.retries > 2:
+    if recovered_task.request.retries > 1:
         return "I'm a survival"
     raise Exception("I'm retrying my self")

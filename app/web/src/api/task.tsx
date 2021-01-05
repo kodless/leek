@@ -23,6 +23,13 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         else if (filters.revocation_reason === "expired")
             revocation_filter = {"match": {"expired": {"query": true}}};
     }
+    let rejection_filter;
+    if (filters.rejection_outcome){
+        if (filters.rejection_outcome === "requeued")
+            rejection_filter = {"match": {"requeue": {"query": true}}};
+        else if (filters.rejection_outcome === "ignored")
+            rejection_filter = {"match": {"requeue": {"query": false}}};
+    }
     let f = [
         {"match": {"kind": "task"}},
         app_env && {"match": {"app_env": app_env}},
@@ -41,7 +48,8 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         filters.kwargs && {"match": {"kwargs": {"query": filters.kwargs}}},
         filters.result && {"match": {"result": {"query": filters.result}}},
         time_filter,
-        revocation_filter
+        revocation_filter,
+        rejection_filter
     ];
     return f.filter(Boolean);
 }
@@ -69,6 +77,7 @@ export interface TaskFilters {
     kwargs: string | null,
     result: string | null,
     revocation_reason: string | null,
+    rejection_outcome: string | null
 }
 
 export interface Task {
