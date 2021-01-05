@@ -5,8 +5,7 @@ const StickerWidgetWrapper = styled.div`
   display: flex;
   align-items: stretch;
   overflow: hidden;
-  background-color: #fff;
-  border: 1px solid #333;
+  border: 1px solid;
   border-radius: 8px;
 
   .leekIconWrapper {
@@ -15,8 +14,6 @@ const StickerWidgetWrapper = styled.div`
     justify-content: center;
     width: 80px;
     flex-shrink: 0;
-    background-color: rgba(0, 0, 0, 0.1);
-    color: white;
     font-size: 30px;
     border-right: 1px solid gray;
   }

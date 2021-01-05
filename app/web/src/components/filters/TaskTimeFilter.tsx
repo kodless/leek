@@ -51,7 +51,7 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
                 {props.timeFilter.interval_type !== "next" &&
                     <>
                         <Option value="timestamp">Seen</Option>
-                        <Option value="sent_at">Sent</Option>
+                        <Option value="sent_at">Queued</Option>
                         <Option value="received_at">Received</Option>
                         <Option value="started_at">Started</Option>
                         <Option value="succeeded_at">Succeeded</Option>

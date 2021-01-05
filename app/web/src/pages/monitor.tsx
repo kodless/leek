@@ -123,15 +123,17 @@ const MonitorPage = () => {
                     />
                 </Col>
                 <Col xxl={19} xl={18} md={17} lg={16} sm={24} xs={24}>
-                    <Row align="middle" style={{textAlign: "center"}} justify="space-between">
-                        <Col>
-                            <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
-                        </Col>
-                        <Col>
-                            <Statistic title="Total Filtered" value={totalHits} prefix={<FilterOutlined/>}/>
-                        </Col>
-                    </Row>
-                    <Row justify="center" style={{width: "100%", marginTop: 13}} gutter={10}>
+                    <Card size="small">
+                        <Row align="middle" style={{textAlign: "center"}} justify="space-between">
+                            <Col>
+                                <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
+                            </Col>
+                            <Col>
+                                <Statistic title="Total Filtered" value={totalHits} prefix={<FilterOutlined/>}/>
+                            </Col>
+                        </Row>
+                    </Card>
+                    <Row style={{width: "100%", marginTop: 13}} gutter={[10, 0]}>
                         <Col span={12}>
                             <Card
                                 bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}

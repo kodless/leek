@@ -52,7 +52,7 @@ const AppsList = (props) => {
                 dataSource={applications}
                 renderItem={app =>
                     props.selectedApp && app["app_name"] === props.selectedApp.app_name ?
-                        <List.Item style={{paddingRight: 0, backgroundColor: "#eee"}}
+                        <List.Item style={{paddingRight: 0}}
                                    extra={<Row style={{
                                        backgroundColor: "#00BFA6",
                                        height: "50px",

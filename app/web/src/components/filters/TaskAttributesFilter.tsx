@@ -7,10 +7,10 @@ const {Option} = Select;
 const FormItem = Form.Item;
 const overflowCount = 999999;
 
-const badgeStyle = {
-    backgroundColor: "#fff",
-    color: "#fb8072",
-    boxShadow: "0 0 0 1px #d9d9d9 inset"
+let badgeStyle = {
+    backgroundColor: "#00BFA6",
+    color: "#333",
+    fontWeight: 600
 };
 
 const badgedOption = (item) => {

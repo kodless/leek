@@ -98,8 +98,7 @@ const Header = () => {
                         position: 'fixed',
                         zIndex: 1,
                         width: '100%',
-                        background: '#fff',
-                        borderBottom: "1px solid #f0f0f0"
+                        // borderBottom: "1px solid #f0f0f0"
                     }}>
                     <div style={{
                         width: '40px',

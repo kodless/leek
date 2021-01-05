@@ -13,6 +13,7 @@ def build_actions(index_alias: str, events: Dict[str, Union[Task, Worker]]):
     actions = []
     for _, event in events.items():
         _id, doc = event.to_doc()
+        print(doc)
         actions.append({
             "_id": _id,
             "_op_type": "update",

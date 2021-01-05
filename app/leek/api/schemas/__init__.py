@@ -7,7 +7,7 @@ from leek.api.schemas.task import TASK_EVENT_TYPES, TASK_STATE_MAPPING, TaskEven
 from leek.api.schemas.worker import WORKER_EVENT_TYPES, WORKER_STATE_MAPPING, WorkerEventSchema
 
 HISTORICAL_TS_NAMES = {
-    "task-sent": "sent_at",
+    "task-sent": "queued_at",
     "task-received": "received_at",
     "task-started": "started_at",
     "task-succeeded": "succeeded_at",

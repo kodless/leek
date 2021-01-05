@@ -2,7 +2,7 @@ import {TaskFilters, getFilterQuery} from "./task";
 import {search} from "./search";
 
 const state_timestamp_map = {
-    QUEUED: "sent_at",
+    QUEUED: "queued_at",
     RECEIVED: "received_at",
     STARTED: "started_at",
     SUCCEEDED: "succeeded_at",

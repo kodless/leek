@@ -1,6 +1,7 @@
 import React from 'react';
 import {Typography, Tabs, List, Row, Col} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
+import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import {adaptTime} from '../../utils/date'
 import {TaskState} from '../../components/tags/TaskState'
@@ -68,7 +69,7 @@ export default props => {
                         <List.Item key="sent">
                             <List.Item.Meta
                                 title="Sent"
-                                description={adaptTime(props.task.sent_at)}
+                                description={adaptTime(props.task.queued_at)}
                             />
                         </List.Item>
                         <List.Item key="received">
@@ -228,7 +229,7 @@ export default props => {
                                 style={{width: "100%"}}
                                 title="Traceback"
                                 description={props.task.traceback &&
-                                <SyntaxHighlighter>
+                                <SyntaxHighlighter style={atelierCaveDark}>
                                     {props.task.traceback}
                                 </SyntaxHighlighter>
                                 }

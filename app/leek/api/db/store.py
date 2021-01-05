@@ -13,6 +13,24 @@ RETRY = "RETRY"
 TERMINAL = (SUCCEEDED, FAILED, REJECTED, REVOKED)
 
 
+class StateFields:
+    # -- No need to update this fields if coming task is out of order
+    SHARED = ("_id", "app_env", "kind", "state", "uuid", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid")
+    # -- Shared between states
+    QUEUED_RECEIVED = ("name", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries")
+    FAILED_RETRY = ("exception", "traceback")
+    # -- Safe
+    NOT_QUEUED = ("worker",)
+    QUEUED = ("queued_at", "exchange", "routing_key", "queue", "client",)
+    RECEIVED = ("received_at",)
+    STARTED = ("started_at",)
+    SUCCEEDED = ("succeeded_at", "result", "runtime",)
+    FAILED = ("failed_at",)
+    RETRY = ("retried_at",)
+    REJECTED = ("rejected_at", "requeue",)
+    REVOKED = ("revoked_at", "terminated", "expired", "signum")
+
+
 @dataclass()
 class EV:
     id: str
@@ -73,7 +91,7 @@ class Task(EV):
     expires: int = None
     retries: int = None
     # TIMESTAMPS
-    sent_at: int = None
+    queued_at: int = None
     received_at: int = None
     started_at: int = None
     succeeded_at: int = None
@@ -93,6 +111,43 @@ class Task(EV):
     # ORIGIN
     client: str = None
     worker: str = None
+
+    def update(self, coming: "Task"):
+        for key, value in coming.__dict__.items():
+            if value:
+                setattr(self, key, value)
+
+    def resolve_conflict(self, coming: "Task"):
+        attrs_to_upsert = []
+        # Get safe attrs from coming task
+        attrs_to_upsert += list(getattr(StateFields, coming.state))
+        # States with same attrs
+        if coming.state in [FAILED, RETRY]:
+            if self.state not in [FAILED, RETRY]:
+                attrs_to_upsert += list(StateFields.FAILED_RETRY)
+        elif coming.state in [QUEUED, RECEIVED]:
+            if self.state not in [QUEUED, RECEIVED]:
+                attrs_to_upsert += list(StateFields.QUEUED_RECEIVED)
+        # Merge
+        for key, value in coming.__dict__.items():
+            if value and key in attrs_to_upsert:
+                setattr(self, key, value)
+
+    def merge(self, coming: "Task"):
+        in_order = self.exact_timestamp < coming.exact_timestamp
+        # self is the currently stored/indexed doc
+        if in_order:
+            # The two documents are in order, Safe to merge
+            self.update(coming)
+            merged = True
+        elif not in_order and self.state == coming.state:
+            # The two documents are out of order and has the same state => Skip
+            merged = False
+        else:
+            # The two documents are out of order and has different state => Resolve conflict and merge
+            self.resolve_conflict(coming)
+            merged = True
+        return merged
 
 
 @dataclass()

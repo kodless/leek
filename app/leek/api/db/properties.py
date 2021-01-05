@@ -50,7 +50,7 @@ properties = {
     "expires": {
         "type": "long"
     },
-    "sent_at": {
+    "queued_at": {
         "type": "long"
     },
     "received_at": {
