@@ -30,7 +30,7 @@ export class IssueSearch implements Issue {
                 ],
                 aggs: {
                     exceptions: {
-                        terms: {field: "exception"},
+                        terms: {field: "exception.keyword"},
                         aggs: {
                             state: {
                                 terms: {field: "state"}

@@ -108,7 +108,13 @@ properties = {
         "type": "long"
     },
     "exception": {
-        "type": "keyword",
+        "type": "text",
+        "fields": {
+            "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+            }
+        }
     },
     "traceback": {
         "type": "text",
