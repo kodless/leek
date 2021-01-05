@@ -32,7 +32,7 @@ const TasksPage: React.FC = () => {
 
     // Data
     const columns = TaskDataColumns();
-    const [pagination, setPagination] = useState<any>({pageSize: 10, current: 1});
+    const [pagination, setPagination] = useState<any>({pageSize: 20, current: 1});
     const [loading, setLoading] = useState<boolean>();
     const [tasks, setTasks] = useState<any[]>([]);
     const [currentTask, setCurrentTask] = useState({});
@@ -41,7 +41,7 @@ const TasksPage: React.FC = () => {
     const [taskDetailsVisible, setDetailsVisible] = useState(false);
 
     // API Calls
-    function filterTasks(pager = {current: 1, pageSize: 10}) {
+    function filterTasks(pager = {current: 1, pageSize: 20}) {
         if (!currentApp) return;
         setLoading(true);
         let allFilters = {
@@ -98,7 +98,7 @@ const TasksPage: React.FC = () => {
     }, [tasks]);
 
     // UI Callbacks
-    function refresh(pager = {current: 1, pageSize: 10}) {
+    function refresh(pager = {current: 1, pageSize: 20}) {
         filterTasks(pager)
     }
 

@@ -10,7 +10,7 @@ properties = {
         "type": "long"
     },
     "exact_timestamp": {
-        "type": "long"
+        "type": "double"
     },
     "utcoffset": {
         "type": "long"

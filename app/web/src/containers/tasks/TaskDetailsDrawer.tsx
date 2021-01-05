@@ -68,7 +68,7 @@ export default props => {
                     <List size="small">
                         <List.Item key="sent">
                             <List.Item.Meta
-                                title="Sent"
+                                title="Queued"
                                 description={adaptTime(props.task.queued_at)}
                             />
                         </List.Item>

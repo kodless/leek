@@ -1,4 +1,4 @@
-from typing import Dict, Union, List, Tuple
+from typing import Dict, Union
 
 from elasticsearch import exceptions as es_exceptions
 from elasticsearch.helpers import streaming_bulk, errors as bulk_errors
@@ -9,33 +9,69 @@ from leek.api.errors import responses
 from leek.api.ext import es
 
 
+def retrieve_indexed(index_alias, new_events: Dict[str, Union[Task, Worker]]):
+    connection = es.connection
+    # Retrieving existing events
+    ids = []
+    for _id in new_events.keys():
+        ids.append(_id)
+    # Impossible
+    if len(ids) != len(set(ids)):
+        print("Found events with the same id")
+        return responses.cache_backend_unavailable
+    return connection.mget(
+        body={'ids': ids},
+        index=index_alias
+    )["docs"]
+
+
+def upsert_concurrently(index_alias, new_events: Dict[str, Union[Task, Worker]]):
+    indexed_events = retrieve_indexed(index_alias, new_events)
+    # Precedence check
+    updated = {}
+    for event in indexed_events:
+        # If the task is already indexed, update it
+        _id = event["_id"]
+        new_doc = new_events[_id]
+        if event["found"]:
+            source = event["_source"]
+            if source["kind"] == "task":
+                task = Task(id=_id, **source, )
+                task.merge(new_doc)
+                updated[_id] = task
+            elif source["kind"] == "worker":
+                worker = Worker(id=_id, **source, )
+                worker.merge(new_doc)
+                updated[_id] = worker
+        else:
+            updated[_id] = new_doc
+    return updated
+
+
 def build_actions(index_alias: str, events: Dict[str, Union[Task, Worker]]):
     actions = []
     for _, event in events.items():
         _id, doc = event.to_doc()
-        print(doc)
         actions.append({
             "_id": _id,
-            "_op_type": "update",
+            "_op_type": "index",
             "_index": index_alias,
-            "doc": doc,
-            "doc_as_upsert": True,
+            "_source": doc,
         })
     return actions
 
 
 def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
     connection = es.connection
+    safe_events = upsert_concurrently(index_alias, events)
     try:
-        actions = build_actions(index_alias, events)
+        actions = build_actions(index_alias, safe_events)
         if len(actions):
             updated = []
             for ok, item in streaming_bulk(connection, actions, index=index_alias, _source=True):
                 if ok:
-                    _id = item["update"]["_id"]
-                    merged = item["update"]["get"]["_source"]
-                    m = Task(id=_id, **merged) if merged["kind"] == "task" else Worker(id=_id, **merged)
-                    updated.append(m)
+                    _id = item["index"]["_id"]
+                    updated.append(safe_events[_id])
             return updated, 201
         else:
             return [], 201
