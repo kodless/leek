@@ -124,7 +124,7 @@ function ApplicationProvider({children}) {
 
     function getMetadata() {
         if (!currentApp) return;
-        commonSearch.getSeenTasksAndWorkers(currentApp)
+        commonSearch.getSeenTasksAndWorkers(currentApp, currentEnv)
             .then(handleAPIResponse)
             .then((result: any) => {
                 const processed = result.aggregations.seen_states.buckets.reduce((result, item) => {
@@ -177,7 +177,7 @@ function ApplicationProvider({children}) {
         interval = setInterval(() => {
             getMetadata();
         }, 10000);
-    }, [currentApp]);
+    }, [currentApp, currentEnv]);
 
     useEffect(() => {
         if (qpApp && qpApp !== currentApp)

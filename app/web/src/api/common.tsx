@@ -1,18 +1,21 @@
 import {search} from "./search";
 
 
-
 export interface Common {
-    getSeenTasksAndWorkers(app_name: string): any;
+    getSeenTasksAndWorkers(app_name: string, app_env: string): any;
 }
 
 export class CommonSearch implements Common {
 
-    getSeenTasksAndWorkers(app_name) {
+    getSeenTasksAndWorkers(app_name, app_env) {
+        let query;
+        if (app_env)
+            query = {"match": {"app_env": app_env}};
         return search(
             app_name,
             {
                 "size": 0,
+                "query": query,
                 "aggs": {
                     "seen_tasks": {
                         "terms": {"field": "name"}

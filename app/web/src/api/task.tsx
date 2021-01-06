@@ -105,16 +105,14 @@ export class TaskSearch implements Task {
         order: string | "desc",
         filters: TaskFilters,
     ) {
-        let query = {
-            "bool": {
-                "must": getFilterQuery(app_env, filters)
-            }
-        }
-        console.log(query);
         return search(
             app_name,
             {
-                query: query,
+                query: {
+                    "bool": {
+                        "must": getFilterQuery(app_env, filters)
+                    }
+                },
                 sort: [
                     {"timestamp": {"order": order}},
                 ]
