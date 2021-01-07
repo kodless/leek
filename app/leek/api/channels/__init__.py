@@ -1,7 +1,7 @@
 from typing import List, Union
 import re
 
-from leek.api.db.store import Task, Worker, Application
+from leek.api.db.store import Task, Worker, Application, STATES_SUCCESS
 from .slack import send_slack
 
 
@@ -37,7 +37,7 @@ def notify(app: Application, env, events: List[Union[Task, Worker]]):
             # Skip: task not included
             elif len(inclusions) and any(re.match(inclusion, event.name) for inclusion in inclusions):
                 continue
-            if state == "SUCCEEDED" and runtime_upper_bound:
+            if state in STATES_SUCCESS and runtime_upper_bound:
                 runtime = event.runtime or 0
                 # Skip: task runtime did not exceed runtime upper bound
                 if runtime <= runtime_upper_bound:

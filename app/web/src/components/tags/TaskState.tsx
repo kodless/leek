@@ -6,11 +6,12 @@ const statusColorMap = {
     RECEIVED: "green",
     STARTED: "geekblue",
     SUCCEEDED: "blue",
-    RECOVERED: "purple",
     FAILED: "red",
     REJECTED: "magenta",
     REVOKED: "magenta",
     RETRY: "gold",
+    RECOVERED: "purple",
+    CRITICAL: "red",
 };
 
 export const TaskState: React.FC<any> = (props) => {

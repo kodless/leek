@@ -22,6 +22,8 @@ let StatesKeys = [
     "REJECTED",
     "REVOKED",
     "RETRY",
+    "RECOVERED",
+    "CRITICAL",
 ];
 
 const MonitorPage = () => {
@@ -78,6 +80,8 @@ const MonitorPage = () => {
                                 REJECTED: 0,
                                 REVOKED: 0,
                                 RETRY: 0,
+                                RECOVERED: 0,
+                                CRITICAL: 0,
                             };
                             const states = statesDistribution.buckets.reduce((result, item) => {
                                 result[item.key] = item.doc_count;
@@ -182,14 +186,14 @@ const MonitorPage = () => {
                             title={"Latency distribution - Just success tasks"}>
                             <Row style={{height: "400px"}}>
                                 {
-                                    filters && filters.state && filters.state === "SUCCEEDED" ?
+                                    filters && filters.state && ["SUCCEEDED", "RECOVERED"].includes(filters.state) ?
                                         <LeekBar data={tasksDistribution} keys={["runtime",]} color="set3"/>
                                         :
                                         <Row align="middle" justify="center" style={{width: "100%"}}>
                                             <Empty
                                                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                                                 description={
-                                                    <span>Filter by <a href="#API">SUCCEEDED</a> state to show this chart</span>
+                                                    <span>Filter by <a href="#API">SUCCEEDED|RECOVERED</a> states to show this chart</span>
                                                 }
                                             />
                                         </Row>

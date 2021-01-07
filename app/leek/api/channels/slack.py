@@ -3,8 +3,7 @@ from typing import Union
 
 import urllib3
 
-from leek.api.db.store import Task, Worker
-from leek.api.schemas.task import STATES_SUCCESS, STATES_EXCEPTION, STATES_UNREADY
+from leek.api.db.store import Task, Worker, STATES_SUCCESS, STATES_EXCEPTION, STATES_UNREADY
 from leek.api.conf import settings
 
 

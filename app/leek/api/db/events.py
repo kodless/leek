@@ -9,6 +9,10 @@ from leek.api.errors import responses
 from leek.api.ext import es
 
 
+class RetrieveIndexedError(Exception):
+    pass
+
+
 def retrieve_indexed(index_alias, new_events: Dict[str, Union[Task, Worker]]):
     connection = es.connection
     # Retrieving existing events
@@ -17,8 +21,7 @@ def retrieve_indexed(index_alias, new_events: Dict[str, Union[Task, Worker]]):
         ids.append(_id)
     # Impossible
     if len(ids) != len(set(ids)):
-        print("Found events with the same id")
-        return responses.cache_backend_unavailable
+        raise RetrieveIndexedError("Found events with the same id in the payload")
     return connection.mget(
         body={'ids': ids},
         index=index_alias
@@ -33,7 +36,11 @@ def upsert_concurrently(index_alias, new_events: Dict[str, Union[Task, Worker]])
         # If the task is already indexed, update it
         _id = event["_id"]
         new_doc = new_events[_id]
-        if event["found"]:
+        try:
+            found = event["found"]
+        except KeyError:
+            raise RetrieveIndexedError("Index not found")
+        if found:
             source = event["_source"]
             if source["kind"] == "task":
                 task = Task(id=_id, **source, )
@@ -63,8 +70,8 @@ def build_actions(index_alias: str, events: Dict[str, Union[Task, Worker]]):
 
 def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
     connection = es.connection
-    safe_events = upsert_concurrently(index_alias, events)
     try:
+        safe_events = upsert_concurrently(index_alias, events)
         actions = build_actions(index_alias, safe_events)
         if len(actions):
             updated = []
@@ -83,3 +90,5 @@ def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
     except bulk_errors.BulkIndexError as e:
         print(json.dumps(e.errors, indent=4))
         return f"Update error", 409
+    except RetrieveIndexedError as e:
+        return responses.application_not_found

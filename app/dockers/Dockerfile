@@ -26,7 +26,9 @@ RUN yarn --cwd /opt/app/web build \
     && mv /opt/app/web/public /opt/app/public \
     && rm -rf /opt/app/web
 
-ADD bin conf leek ./
+ADD bin /opt/app/bin
+ADD conf /opt/app/conf
+ADD leek /opt/app/leek
 
 FROM python:3.8-slim-buster AS runtime-image
 

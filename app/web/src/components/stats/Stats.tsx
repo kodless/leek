@@ -2,7 +2,8 @@ import React from "react";
 
 import {
     SyncOutlined, RobotFilled, RetweetOutlined, RollbackOutlined, CheckCircleOutlined, CloseCircleOutlined,
-    StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined, EllipsisOutlined
+    StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined, EllipsisOutlined,
+    IssuesCloseOutlined, WarningOutlined
 } from '@ant-design/icons';
 
 
@@ -39,12 +40,6 @@ function Stats(stats: any) {
             tooltip: 'Tasks were received by a worker. but not yet started'
         },
         {
-            number: stats.IGNORED,
-            text: 'Ignored',
-            icon: <ExclamationCircleOutlined style={{color: "#FF5626"}}/>,
-            tooltip: 'Tasks that were ignored due to expiration'
-        },
-        {
             number: stats.STARTED,
             text: 'Active',
             icon: <LoadingOutlined style={{color: "#536DFE"}}/>,
@@ -53,20 +48,32 @@ function Stats(stats: any) {
         {
             number: stats.SUCCEEDED,
             text: 'Succeeded',
-            icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
+            icon: <CheckCircleOutlined style={{color: "#00FFFF"}}/>,
             tooltip: 'Tasks that were succeeded'
         },
         {
-            number: stats.RETRY,
-            text: 'Retried',
-            icon: <RetweetOutlined style={{color: "#007B9E"}}/>,
-            tooltip: 'Tasks that are failed and waiting for retry'
+            number: stats.RECOVERED,
+            text: 'Recovered',
+            icon: <IssuesCloseOutlined style={{color: "#00BFA6"}}/>,
+            tooltip: 'Tasks that were succeeded after retries.'
         },
         {
             number: stats.FAILED,
             text: 'Failed',
-            icon: <CloseCircleOutlined style={{color: "#F50057"}}/>,
+            icon: <WarningOutlined style={{color: "#FF00FF"}}/>,
             tooltip: 'Tasks that were failed'
+        },
+        {
+            number: stats.CRITICAL,
+            text: 'Critical',
+            icon: <CloseCircleOutlined style={{color: "#F50057"}}/>,
+            tooltip: 'Tasks that were failed after max retries.'
+        },
+        {
+            number: stats.REJECTED,
+            text: 'Rejected',
+            icon: <RollbackOutlined style={{color: "#F9A826"}}/>,
+            tooltip: 'Tasks that were rejected by workers and requeued, or moved to a dead letter queue'
         },
         {
             number: stats.REVOKED,
@@ -75,10 +82,16 @@ function Stats(stats: any) {
             tooltip: 'Tasks that were revoked by workers, but still in the queue.'
         },
         {
-            number: stats.REJECTED,
-            text: 'Rejected',
-            icon: <RollbackOutlined style={{color: "#F9A826"}}/>,
-            tooltip: 'Tasks that were rejected by workers and requeued, or moved to a dead letter queue'
+            number: stats.RETRY,
+            text: 'To Retry',
+            icon: <RetweetOutlined style={{color: "#007B9E"}}/>,
+            tooltip: 'Tasks that are failed and waiting for retry'
+        },
+        {
+            number: stats.IGNORED,
+            text: 'Ignored',
+            icon: <ExclamationCircleOutlined style={{color: "#FF5626"}}/>,
+            tooltip: 'Tasks that were ignored due to expiration'
         },
     ];
 }

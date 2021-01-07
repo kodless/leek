@@ -27,5 +27,5 @@ RUN pip3 install -r /opt/app/leek/requirements.txt
 ADD . ./
 
 # Expose Backend/Frontend ports
-EXPOSE 5000 8000
+EXPOSE 5000 8000 9200
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

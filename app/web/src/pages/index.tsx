@@ -19,6 +19,7 @@ const IndexPage = () => {
             PROCESSED_TASKS: processedTasks,
             TASKS: 0,
             EVENTS: 0,
+            // Tasks
             QUEUED: 0,
             RECEIVED: 0,
             STARTED: 0,
@@ -28,6 +29,9 @@ const IndexPage = () => {
             REVOKED: 0,
             IGNORED: 0,
             RETRY: 0,
+            RECOVERED: 0,
+            CRITICAL: 0,
+            // Worker
             ONLINE: 0,
             HEARTBEAT: 0,
             OFFLINE: 0,
@@ -57,7 +61,6 @@ const IndexPage = () => {
                             number={widget.number}
                             text={widget.text}
                             icon={widget.icon}
-                            bgColor={widget.bgColor}
                             tooltip={widget.tooltip}
                         />
                     </Col>

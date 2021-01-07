@@ -54,11 +54,19 @@ function IssueData() {
             }
         },
         {
+            title: 'Critical',
+            dataIndex: 'CRITICAL',
+            key: 'CRITICAL',
+            render: CRITICAL => {
+                return <Tag color="red">{CRITICAL}</Tag>
+            }
+        },
+        {
             title: 'Recovered',
-            dataIndex: 'SUCCEEDED',
-            key: 'SUCCEEDED',
-            render: SUCCEEDED => {
-                return <Tag color="green">{SUCCEEDED}</Tag>
+            dataIndex: 'RECOVERED',
+            key: 'RECOVERED',
+            render: RECOVERED => {
+                return <Tag color="green">{RECOVERED}</Tag>
             }
         },
     ];

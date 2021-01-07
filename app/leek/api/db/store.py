@@ -11,7 +11,14 @@ REJECTED = "REJECTED"
 REVOKED = "REVOKED"
 RETRY = "RETRY"
 
-TERMINAL = (SUCCEEDED, FAILED, REJECTED, REVOKED)
+# CUSTOM STATES
+RECOVERED = "RECOVERED"  # Succeeded after many retries
+CRITICAL = "CRITICAL"  # Failed after max retries
+
+STATES_TERMINAL = frozenset([SUCCEEDED, FAILED, REJECTED, REVOKED, RECOVERED, CRITICAL])
+STATES_SUCCESS = frozenset([SUCCEEDED, RECOVERED])
+STATES_EXCEPTION = frozenset([FAILED, RETRY, REJECTED, REVOKED, CRITICAL])
+STATES_UNREADY = frozenset([QUEUED, RECEIVED, STARTED])
 
 
 class WorkerStateFields:
@@ -70,22 +77,6 @@ class EV:
             if value is not None:
                 setattr(self, key, value)
 
-    def merge(self, coming: Union["Task", "Worker"]):
-        in_order = self.exact_timestamp < coming.exact_timestamp
-        # self is the currently stored/indexed doc
-        if in_order:
-            # The two documents are in order, Safe to merge
-            self.update(coming)
-            merged = True
-        elif not in_order and self.state == coming.state:
-            # The two documents are out of order and has the same state => Skip
-            merged = False
-        else:
-            # The two documents are out of order and has different states => Resolve conflict and merge
-            self.resolve_conflict(coming)
-            merged = True
-        return merged
-
 
 @dataclass
 class Worker(EV):
@@ -112,6 +103,22 @@ class Worker(EV):
         for key, value in coming.__dict__.items():
             if value is not None and key in attrs_to_upsert:
                 setattr(self, key, value)
+
+    def merge(self, coming: Union["Task", "Worker"]):
+        in_order = self.exact_timestamp < coming.exact_timestamp
+        # self is the currently stored/indexed doc
+        if in_order:
+            # The two documents are in order, Safe to merge
+            self.update(coming)
+            merged = True
+        elif not in_order and self.state == coming.state:
+            # The two documents are out of order and has the same state => Skip
+            merged = False
+        else:
+            # The two documents are out of order and has different states => Resolve conflict and merge
+            self.resolve_conflict(coming)
+            merged = True
+        return merged
 
 
 @dataclass
@@ -165,7 +172,7 @@ class Task(EV):
         attrs_to_upsert += list(getattr(TaskStateFields, coming.state))
         # States with same attrs
         if coming.state in [FAILED, RETRY]:
-            if self.state not in [FAILED, RETRY]:
+            if self.state not in [FAILED, RETRY, CRITICAL]:
                 attrs_to_upsert += list(TaskStateFields.FAILED_RETRY)
         elif coming.state in [QUEUED, RECEIVED]:
             if self.state not in [QUEUED, RECEIVED]:
@@ -174,6 +181,36 @@ class Task(EV):
         for key, value in coming.__dict__.items():
             if value is not None and key in attrs_to_upsert:
                 setattr(self, key, value)
+
+    def merge(self, coming: Union["Task", "Worker"]):
+        in_order = self.exact_timestamp < coming.exact_timestamp
+        # self is the currently stored/indexed doc
+        if in_order:
+            if self.state in STATES_TERMINAL:
+                # The task is already in terminal state, Resolve conflict and merge
+                # This can be caused if the timestamp of the new event is inaccurate
+                # Or if the workers/clients are not synchronized
+                self.resolve_conflict(coming)
+                merged = True
+            else:
+                # The two documents are in physical clock order and in state order, Safe to merge
+                self.update(coming)
+                merged = True
+        elif not in_order and self.state == coming.state:
+            # The two documents are out of order and has the same state => Skip
+            merged = False
+        else:
+            # The two documents are out of order and has different states => Resolve conflict and merge
+            self.resolve_conflict(coming)
+            merged = True
+
+        # Introduce custom states
+        if self.retries:
+            if self.state == FAILED:
+                self.state = CRITICAL
+            if self.state == SUCCEEDED:
+                self.state = RECOVERED
+        return merged
 
 
 @dataclass()

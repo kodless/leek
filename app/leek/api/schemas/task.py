@@ -24,10 +24,6 @@ TASK_STATE_MAPPING = {
     "task-retried": "RETRY",
 }
 
-STATES_SUCCESS = frozenset(["SUCCEEDED", "RECOVERED"])
-STATES_EXCEPTION = frozenset(["FAILED", "RETRY", "REJECTED", "REVOKED"])
-STATES_UNREADY = frozenset(["QUEUED", "RECEIVED", "STARTED"])
-
 TaskEventSchema = Schema(
     {
         # in case of task-sent, task-received

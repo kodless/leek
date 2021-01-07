@@ -24,7 +24,10 @@ const statesOptions = [
     {value: "FAILED"},
     {value: "REJECTED"},
     {value: "REVOKED"},
-    {value: "RETRY"},];
+    {value: "RETRY"},
+    {value: "RECOVERED"},
+    {value: "CRITICAL"},
+];
 
 const Triggers = (props) => {
 

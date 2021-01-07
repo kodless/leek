@@ -8,7 +8,7 @@ from flask_restx import Resource
 from leek.api.channels import notify
 from leek.api.decorators import get_app_context
 from leek.api.db.events import merge_events
-from leek.api.schemas import validate_payload
+from leek.api.schemas.serializer import validate_payload
 from leek.api.routes.api_v1 import api_v1
 
 events_bp = Blueprint('events', __name__, url_prefix='/v1/events')

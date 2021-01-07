@@ -42,9 +42,7 @@ function TaskData() {
             dataIndex: 'state',
             key: 'state',
             render: (state, row) => {
-                if (state === "SUCCEEDED" && row.retried_at)
-                    return <TaskState state="RECOVERED" retries={row.retries}/>;
-                else if (state === "REVOKED" && row.expired)
+                if (state === "REVOKED" && row.expired)
                     return <TaskState state={state} retries={row.retries} revocation_reason="E"/>;
                 else if (state === "REVOKED" && row.terminated)
                     return <TaskState state={state} retries={row.retries} revocation_reason="T"/>;

@@ -3,6 +3,7 @@ import logging
 import os
 import signal
 import subprocess
+import sys
 
 import requests
 import time
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 def abort(msg):
     logger.error(msg)
     os.kill(1, signal.SIGTERM)
+    sys.exit(1)
 
 
 def get_bool(env_name, default="false"):
@@ -30,6 +32,7 @@ def get_status(b):
 
 
 LEEK_VERSION = os.environ.get("LEEK_VERSION", "-.-.-")
+LEEK_RELEASE_DATE = os.environ.get("LEEK_RELEASE_DATE", "-.-.-")
 LEEK_ENV = os.environ.get("LEEK_ENV", "PROD")
 ENABLE_ES = get_bool("LEEK_ENABLE_ES")
 ENABLE_API = get_bool("LEEK_ENABLE_API")
@@ -123,7 +126,11 @@ if ENABLE_AGENT:
         if ENABLE_API and ENABLE_AGENT:
             # Agent and API in the same runtime, prepare a shared secret for communication between them
             for subscription_name, subscription in subscriptions.items():
-                subscription["app_key"] = os.environ["LEEK_AGENT_API_SECRET"]
+                try:
+                    subscription["app_key"] = os.environ["LEEK_AGENT_API_SECRET"]
+                except KeyError:
+                    abort("Agent and API are both enabled in same container, LEEK_AGENT_API_SECRET env variable should "
+                          "be specified for inter-communication between agent and API")
                 subscription["api_url"] = LEEK_API_URL
 
         # Validate each subscription

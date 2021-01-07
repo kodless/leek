@@ -43,6 +43,8 @@ const IssuesPage = () => {
                                 REJECTED: 0,
                                 REVOKED: 0,
                                 RETRY: 0,
+                                RECOVERED: 0,
+                                CRITICAL: 0,
                             };
                             const states = state.buckets.reduce((result, item) => {
                                 result[item.key] = item.doc_count;
