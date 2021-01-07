@@ -1,5 +1,5 @@
 import abc
-from typing import List, Union
+from typing import List, Union, Optional
 from dataclasses import dataclass, field
 
 QUEUED = "QUEUED"
@@ -19,6 +19,11 @@ STATES_TERMINAL = frozenset([SUCCEEDED, FAILED, REJECTED, REVOKED, RECOVERED, CR
 STATES_SUCCESS = frozenset([SUCCEEDED, RECOVERED])
 STATES_EXCEPTION = frozenset([FAILED, RETRY, REJECTED, REVOKED, CRITICAL])
 STATES_UNREADY = frozenset([QUEUED, RECEIVED, STARTED])
+
+
+class EventKind:
+    TASK = "task"
+    WORKER = "worker"
 
 
 class WorkerStateFields:
@@ -125,45 +130,45 @@ class Worker(EV):
 class Task(EV):
     # BASIC
     uuid: str
-    name: str = None
+    name: Optional[str] = None
     # INPUT
-    args: str = None
-    kwargs: str = None
+    args: Optional[str] = None
+    kwargs: Optional[str] = None
     # OUTPUT
-    result: str = None
-    runtime: float = None
+    result: Optional[str] = None
+    runtime: Optional[float] = None
     # DEPENDENCIES
-    root_id: str = None
-    parent_id: str = None
+    root_id: Optional[str] = None
+    parent_id: Optional[str] = None
     # ROUTING
-    exchange: str = None
-    routing_key: str = None
-    queue: str = None
+    exchange: Optional[str] = None
+    routing_key: Optional[str] = None
+    queue: Optional[str] = None
     # RETRIES
-    eta: int = None
-    expires: int = None
-    retries: int = None
+    eta: Optional[int] = None
+    expires: Optional[int] = None
+    retries: Optional[int] = None
     # TIMESTAMPS
-    queued_at: int = None
-    received_at: int = None
-    started_at: int = None
-    succeeded_at: int = None
-    failed_at: int = None
-    rejected_at: int = None
-    revoked_at: int = None
-    retried_at: int = None
+    queued_at: Optional[int] = None
+    received_at: Optional[int] = None
+    started_at: Optional[int] = None
+    succeeded_at: Optional[int] = None
+    failed_at: Optional[int] = None
+    rejected_at: Optional[int] = None
+    revoked_at: Optional[int] = None
+    retried_at: Optional[int] = None
     # REVOCATION
-    terminated: bool = None
-    expired: bool = None
-    signum: str = None
+    terminated: Optional[bool] = None
+    expired: Optional[bool] = None
+    signum: Optional[str] = None
     # REJECTION
-    requeue: bool = None
+    requeue: Optional[bool] = None
     # FAILURE
-    exception: str = None
-    traceback: str = None
+    exception: Optional[str] = None
+    traceback: Optional[str] = None
     # ORIGIN
-    client: str = None
-    worker: str = None
+    client: Optional[str] = None
+    worker: Optional[str] = None
 
     def resolve_conflict(self, coming: "Task"):
         # print(f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid}")
@@ -190,6 +195,11 @@ class Task(EV):
                 # The task is already in terminal state, Resolve conflict and merge
                 # This can be caused if the timestamp of the new event is inaccurate
                 # Or if the workers/clients are not synchronized
+                if self.state != REVOKED:
+                    print(
+                        f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid} {self.exact_timestamp} {coming.exact_timestamp}")
+                    print(self)
+                    print(coming)
                 self.resolve_conflict(coming)
                 merged = True
             else:
@@ -210,6 +220,13 @@ class Task(EV):
                 self.state = CRITICAL
             if self.state == SUCCEEDED:
                 self.state = RECOVERED
+
+        # If parent/root is self fix
+        if self.root_id and self.root_id == self.id:
+            self.root_id = None
+        if self.parent_id and self.parent_id == self.id:
+            self.parent_id = None
+
         return merged
 
 

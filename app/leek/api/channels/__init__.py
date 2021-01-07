@@ -1,8 +1,12 @@
 from typing import List, Union
 import re
 
-from leek.api.db.store import Task, Worker, Application, STATES_SUCCESS
+from leek.api.db.store import Task, Worker, Application, STATES_SUCCESS, EventKind
 from .slack import send_slack
+
+
+class Channels:
+    SLACK = "slack"
 
 
 def notify(app: Application, env, events: List[Union[Task, Worker]]):
@@ -26,7 +30,7 @@ def notify(app: Application, env, events: List[Union[Task, Worker]]):
             note = None
             state = event.state
             # Skip: event is not related to task
-            if event.kind != 'task':
+            if event.kind != EventKind.TASK:
                 continue
             # Skip: State not matched
             if len(states) and state not in states:
@@ -45,5 +49,5 @@ def notify(app: Application, env, events: List[Union[Task, Worker]]):
                 else:
                     note = f"Runtime upper bound exceeded: `{runtime} seconds`"
             # Finally: notify
-            if trigger.type == "slack":
+            if trigger.type == Channels.SLACK:
                 send_slack(app.app_name, event, trigger.slack_wh_url, extra={"note": note})

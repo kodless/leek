@@ -191,7 +191,7 @@ export default props => {
                                         <a target="_blank"
                                            href={`/tasks/?uuid=${props.task.root_id}`}>
                                             {`${props.task.root_id} <${props.task.root_id}>`}
-                                        </a> : "-"
+                                        </a> : "SELF"
                                 }
                             />
                         </List.Item>

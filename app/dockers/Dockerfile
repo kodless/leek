@@ -50,6 +50,12 @@ RUN apt-get update \
     elasticsearch \
     procps
 COPY --from=compile-image /opt /opt
+
+ARG LEEK_VERSION="-.-.-"
+ARG LEEK_RELEASE_DATE="0000/00/00 00:00:00"
+ENV LEEK_VERSION=$LEEK_VERSION
+ENV LEEK_RELEASE_DATE=$LEEK_RELEASE_DATE
+
 # Expose Backend/Frontend ports
 EXPOSE 9200 5000 8000
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

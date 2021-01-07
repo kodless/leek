@@ -32,7 +32,7 @@ def get_status(b):
 
 
 LEEK_VERSION = os.environ.get("LEEK_VERSION", "-.-.-")
-LEEK_RELEASE_DATE = os.environ.get("LEEK_RELEASE_DATE", "-.-.-")
+LEEK_RELEASE_DATE = os.environ.get("LEEK_RELEASE_DATE", "0000/00/00 00:00:00")
 LEEK_ENV = os.environ.get("LEEK_ENV", "PROD")
 ENABLE_ES = get_bool("LEEK_ENABLE_ES")
 ENABLE_API = get_bool("LEEK_ENABLE_API")
@@ -57,7 +57,7 @@ LOGO = """
 USAGE = f"""
 [b>]|#|@     [y>]Leek Celery Monitoring Tool@                     [b>]|#|@
 [b>]|#|@     [n>]Versions:@ {LEEK_VERSION}                                 [b>]|#|@
-[b>]|#|@     [n>]Release date:@ 1.0.0                             [b>]|#|@
+[b>]|#|@     [n>]Release date:@ {LEEK_RELEASE_DATE}                             [b>]|#|@
 [b>]|#|@     [n>]Codename:@ Fennec                                [b>]|#|@
 [b>]|#|@     [n>]Repository:@ https://github.com/kodless/leek     [b>]|#|@
 [b>]|#|@     [n>]Homepage:@ https://leek.kodhive.com              [b>]|#|@

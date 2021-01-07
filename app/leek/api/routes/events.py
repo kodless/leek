@@ -38,7 +38,7 @@ class ProcessEvents(Resource):
             return "Nothing to be processed", 200
         events = validate_payload(payload, env)
         result, status = merge_events(g.context["index_alias"], events)
-        print("--- Store %s seconds ---" % (time.time() - start_time))
+        # print("--- Store %s seconds ---" % (time.time() - start_time))
         if status == 201:
             notify(g.context["app"], env, result)
             return "Processed", status

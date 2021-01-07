@@ -101,7 +101,6 @@ class LeekConsumer(ConsumerMixin):
         :param body: Message body
         :param message: Message
         """
-        logger.info(f"Received message...")
         # print(message.properties)
         for i in range(self.MAX_RETRIES):
             try:
@@ -129,7 +128,6 @@ class LeekConsumer(ConsumerMixin):
             else:
                 if response.status_code in self.SUCCESS_STATUS_CODES:
                     message.ack()
-                    logger.info("Message sent!")
                     return
 
     def ensure_connection_to_api(self):

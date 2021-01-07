@@ -139,7 +139,7 @@ const WorkersPage = () => {
                     title={
                         <Row align="middle">
                             <Col span={21}>
-                                <Radio.Group onChange={handleStateFilterChange} defaultValue="" size="small"
+                                <Radio.Group onChange={handleStateFilterChange} defaultValue="HEARTBEAT" size="small"
                                              style={{fontWeight: 400}}>
                                     <Radio.Button value="" style={{fontStyle: "normal"}}>ANY</Radio.Button>
                                     <Radio.Button value="HEARTBEAT">HEARTBEAT</Radio.Button>
