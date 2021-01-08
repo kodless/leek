@@ -33,6 +33,7 @@ const Triggers = (props) => {
 
     const [form] = Form.useForm();
     const application = new ApplicationSearch();
+
     const [createTriggerModalVisible, setCreateTriggerModalVisible] = useState<boolean>(false);
     const [editTriggerModalVisible, setEditTriggerModalVisible] = useState<boolean>(false);
     const [patternType, setPatternType] = useState<string>("all");
@@ -44,7 +45,7 @@ const Triggers = (props) => {
 
     }, []);
 
-    function handleAddTrigger(trigger) {
+    function doAddTrigger(trigger) {
         delete trigger.patterns;
         setLoading(true);
         application.addFanoutTrigger(props.selectedApp.app_name, trigger)
@@ -59,7 +60,7 @@ const Triggers = (props) => {
             });
     }
 
-    function handleUpdateTrigger(trigger) {
+    function doEditTrigger(trigger) {
         delete trigger.patterns;
         setLoading(true);
         application.editFanoutTrigger(props.selectedApp.app_name, triggerId, trigger)
@@ -74,7 +75,7 @@ const Triggers = (props) => {
             });
     }
 
-    function handleDeleteTrigger(trigger_id) {
+    function doDeleteTrigger(trigger_id) {
         setLoading(true);
         application.deleteFanoutTrigger(props.selectedApp.app_name, trigger_id)
             .then(handleAPIResponse)
@@ -198,7 +199,7 @@ const Triggers = (props) => {
                     </Button>
                 ]}
             >
-                <Form onFinish={handleAddTrigger}
+                <Form onFinish={doAddTrigger}
                       form={form} id="createTrigger"
                       initialValues={{type: "slack", patterns: "all", enabled: false}}>
                     {formItems}
@@ -224,7 +225,7 @@ const Triggers = (props) => {
                     </Button>
                 ]}
             >
-                <Form onFinish={handleUpdateTrigger}
+                <Form onFinish={doEditTrigger}
                       form={form} id="editTrigger">
                     {formItems}
                 </Form>
@@ -252,7 +253,7 @@ const Triggers = (props) => {
                 <Table dataSource={props.selectedApp.fo_triggers}
                        columns={TriggerDataColumns({
                            handleEditTrigger: handleEditTrigger,
-                           handleDeleteTrigger: handleDeleteTrigger,
+                           handleDeleteTrigger: doDeleteTrigger,
                            triggersModifying: loading
                        })}
                        showHeader={false}

@@ -64,7 +64,7 @@ const agentSubscriptionsSnippet = (app) => {
         }
     }
     `
-}
+};
 
 const Applications = () => {
 
@@ -81,13 +81,21 @@ const Applications = () => {
         broker: string,
         broker_version: string,
         fo_triggers: [any]
-    } | undefined>(applications[0]);
+    } | undefined>();
 
     const [isCleanModalVisible, setIsCleanModalVisible] = useState(false);
 
     useEffect(() => {
         listApplications();
     }, []);
+
+    useEffect(() => {
+        // Initialise selected app when the apps are fetched and the selectedApp is null
+        if (applications.length && !selectedApp)
+            setSelectedApp(applications.find(app => {
+                return app.app_name === currentApp;
+            }));
+    }, [applications]);
 
     function handleSelectApp(app) {
         setSelectedApp(app);
