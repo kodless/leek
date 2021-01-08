@@ -190,7 +190,7 @@ export default props => {
                                     props.task.root_id ?
                                         <a target="_blank"
                                            href={`/tasks/?uuid=${props.task.root_id}`}>
-                                            {`${props.task.root_id} <${props.task.root_id}>`}
+                                            {`<${props.task.root_id}>`}
                                         </a> : "SELF"
                                 }
                             />
@@ -202,7 +202,7 @@ export default props => {
                                     props.task.parent_id ?
                                         <a target="_blank"
                                            href={`/tasks/?uuid=${props.task.parent_id}`}>
-                                            {`${props.task.parent_id} <${props.task.parent_id}>`}
+                                            {`<${props.task.parent_id}>`}
                                         </a> : "-"
                                 }
                             />

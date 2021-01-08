@@ -261,7 +261,7 @@ const Applications = () => {
                             <Row>
                                 <Space direction="horizontal">
                                     <Text strong>Broker</Text>
-                                    <Text copyable code>{selectedApp.broker} ({selectedApp.broker_version})</Text>
+                                    <Text code>{selectedApp.broker} ({selectedApp.broker_version})</Text>
                                 </Space>
                             </Row>
 

@@ -57,7 +57,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                   initialValues={{runtime_op: "gte", retries_op: "gte"}}>
                 <Row>
                     <FormItem name="uuid" style={{width: "100%"}}>
-                        <Input placeholder="uuid"/>
+                        <Input placeholder="uuid" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
@@ -152,32 +152,32 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 </Row>
                 <Row>
                     <FormItem name="exception" style={{width: "100%"}}>
-                        <Input placeholder="Exception"/>
+                        <Input placeholder="Exception" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="traceback" style={{width: "100%"}}>
-                        <Input placeholder="Traceback"/>
+                        <Input placeholder="Traceback" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="args" style={{width: "100%"}}>
-                        <Input placeholder="args"/>
+                        <Input placeholder="args" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="kwargs" style={{width: "100%"}}>
-                        <Input placeholder="kwargs"/>
+                        <Input placeholder="kwargs" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="result" style={{width: "100%"}}>
-                        <Input placeholder="Result"/>
+                        <Input placeholder="Result" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="revocation_reason" style={{width: "100%"}}>
-                        <Select placeholder="Revocation reason">
+                        <Select placeholder="Revocation reason" allowClear>
                             <Option value="expired">{"Expired"}</Option>
                             <Option value="terminated">{"Terminated"}</Option>
                         </Select>
@@ -185,7 +185,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 </Row>
                 <Row>
                     <FormItem name="rejection_outcome" style={{width: "100%"}}>
-                        <Select placeholder="Rejection outcome">
+                        <Select placeholder="Rejection outcome" allowClear>
                             <Option value="requeued">{"Requeued"}</Option>
                             <Option value="ignored">{"Ignored"}</Option>
                         </Select>
@@ -193,13 +193,23 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 </Row>
                 <Row>
                     <FormItem name="root_id" style={{width: "100%"}}>
-                        <Select placeholder="Root ID (soon)" disabled={true}>
-                        </Select>
+                        <Input placeholder="Root id" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="parent_id" style={{width: "100%"}}>
-                        <Select placeholder="Parent ID (soon)" disabled={true}>
+                        <Input placeholder="Parent id" allowClear/>
+                    </FormItem>
+                </Row>
+                <Row>
+                    <FormItem name="root_name" style={{width: "100%"}}>
+                        <Select placeholder="Root name (soon)" disabled={true}>
+                        </Select>
+                    </FormItem>
+                </Row>
+                <Row>
+                    <FormItem name="parent_name" style={{width: "100%"}}>
+                        <Select placeholder="Parent name (soon)" disabled={true}>
                         </Select>
                     </FormItem>
                 </Row>

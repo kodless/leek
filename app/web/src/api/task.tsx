@@ -47,6 +47,8 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         filters.args && {"match": {"args": {"query": filters.args}}},
         filters.kwargs && {"match": {"kwargs": {"query": filters.kwargs}}},
         filters.result && {"match": {"result": {"query": filters.result}}},
+        filters.root_id && {"match": {"root_id": filters.root_id}},
+        filters.parent_id && {"match": {"parent_id": filters.parent_id}},
         time_filter,
         revocation_filter,
         rejection_filter
@@ -76,6 +78,8 @@ export interface TaskFilters {
     args: string | null,
     kwargs: string | null,
     result: string | null,
+    root_id: string | null,
+    parent_id: string | null,
     revocation_reason: string | null,
     rejection_outcome: string | null
 }
