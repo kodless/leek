@@ -10,6 +10,7 @@ import {TaskStateClosable} from '../../components/tags/TaskState';
 
 import {ApplicationSearch} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
+import {useApplication} from "../../context/ApplicationProvider";
 
 
 const Text = Typography.Text;
@@ -33,6 +34,7 @@ const Triggers = (props) => {
 
     const [form] = Form.useForm();
     const application = new ApplicationSearch();
+    const {updateApplication} = useApplication();
 
     const [createTriggerModalVisible, setCreateTriggerModalVisible] = useState<boolean>(false);
     const [editTriggerModalVisible, setEditTriggerModalVisible] = useState<boolean>(false);
@@ -51,6 +53,7 @@ const Triggers = (props) => {
         application.addFanoutTrigger(props.selectedApp.app_name, trigger)
             .then(handleAPIResponse)
             .then((application: any) => {
+                updateApplication(application);
                 props.setSelectedApp(application);
                 reset();
             }, handleAPIError)
@@ -66,6 +69,7 @@ const Triggers = (props) => {
         application.editFanoutTrigger(props.selectedApp.app_name, triggerId, trigger)
             .then(handleAPIResponse)
             .then((application: any) => {
+                updateApplication(application);
                 props.setSelectedApp(application);
                 reset();
             }, handleAPIError)
@@ -80,6 +84,7 @@ const Triggers = (props) => {
         application.deleteFanoutTrigger(props.selectedApp.app_name, trigger_id)
             .then(handleAPIResponse)
             .then((application: any) => {
+                updateApplication(application);
                 props.setSelectedApp(application)
             }, handleAPIError)
             .catch(handleAPIError)

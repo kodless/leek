@@ -61,6 +61,8 @@ interface ApplicationContextData {
     deleteApplication(app_name: string);
 
     selectEnv(name: string);
+
+    updateApplication(app);
 }
 
 const initial = {
@@ -198,6 +200,13 @@ function ApplicationProvider({children}) {
                 setCurrentApp(undefined);
     }
 
+    function updateApplication(app) {
+        let appIndex = applications.findIndex((obj => obj.app_name == app.app_name));
+        let newApplications = [...applications];
+        newApplications[appIndex] = app;
+        setApplications(newApplications)
+    }
+
     function setCreateAppModalVisible(visible) {
 
     }
@@ -218,6 +227,7 @@ function ApplicationProvider({children}) {
                 seenEnvs: seenEnvs,
                 listApplications: listApplications,
                 deleteApplication: deleteApplication,
+                updateApplication: updateApplication,
                 selectApplication: selectApplication,
                 selectEnv: selectEnv
             }
