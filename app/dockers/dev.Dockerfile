@@ -25,6 +25,7 @@ RUN pip3 install -r /opt/app/leek/requirements.txt
 
 # Copy Application
 ADD . ./
+ADD conf/es /etc/elasticsearch
 
 # Expose Backend/Frontend ports
 EXPOSE 5000 8000 9200
