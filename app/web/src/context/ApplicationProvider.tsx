@@ -105,7 +105,7 @@ function ApplicationProvider({children}) {
     function listApplications() {
         setLoading(true);
         applicationSearch.listApplications()
-            .then(response => response.json())
+            .then(handleAPIResponse)
             .then((apps: any) => {
                 setApplications(apps);
                 if (apps.length !== 0 && !currentApp) {
@@ -115,13 +115,11 @@ function ApplicationProvider({children}) {
                         setCurrentApp(apps[0]["app_name"]);
                 }
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.log(error);
-                message.error(<>{"Unable to connect to backend, retry after 10 seconds"} <Button>Retry
-                    now</Button></>, 10);
-                setTimeout(listApplications, 10000)
-            });
+            }, handleAPIError)
+            .catch(handleAPIError)
+            // .finally(() => {
+            //     setLoading(false);
+            // });
     }
 
     function getMetadata() {

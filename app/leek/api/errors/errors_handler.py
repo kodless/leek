@@ -25,7 +25,7 @@ def handle_errors(api):
     def handle_jwt_exception(error):
         return {
                    'error': {
-                       'code': '401001',
+                       'code': '401003',
                        'title': 'Unauthorized',
                        'message': 'Access Unauthorized!',
                        'reason': str(error),
@@ -39,7 +39,7 @@ def handle_errors(api):
     def handle_exception(error):
         return {
                    'error': {
-                       'code': '001500',
+                       'code': '500001',
                        'title': 'Internal error',
                        'message': 'Oops, something went wrong!',
                        'reason': str(error),

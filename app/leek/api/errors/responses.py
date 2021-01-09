@@ -6,6 +6,14 @@ cache_backend_unavailable = {
                                 }
                             }, 503
 
+application_already_exist = {
+                                "error": {
+                                    "code": "412001",
+                                    "message": "Application already exist",
+                                    "reason": "A template with the same name already exist"
+                                }
+                            }, 412
+
 application_not_found = {
                             "error": {
                                 "code": "404001",
@@ -13,14 +21,6 @@ application_not_found = {
                                 "reason": "Index not yet created"
                             }
                         }, 404
-
-application_already_exist = {
-                                "error": {
-                                    "code": "401001",
-                                    "message": "Application already exist",
-                                    "reason": "A template with the same name already exist"
-                                }
-                            }, 401
 
 wrong_application_app_key = {
                                 "error": {
@@ -30,9 +30,16 @@ wrong_application_app_key = {
                                 }
                             }, 401
 
+insufficient_permission = {
+                              "error": {
+                                  "code": "401002",
+                                  "message": "Insufficient permission",
+                                  "reason": "You don't have enough permission for this action"
+                              }
+                          }, 401
 missing_headers = {
                       "error": {
-                          "code": "401001",
+                          "code": "400001",
                           "message": "Invalid request",
                           "reason": "One or more headers are messing"
                       }

@@ -94,7 +94,7 @@ const TasksPage: React.FC = () => {
 
 
     useEffect(() => {
-        console.log(tasks)
+        // console.log(tasks)
     }, [tasks]);
 
     // UI Callbacks

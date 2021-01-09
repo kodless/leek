@@ -21,7 +21,6 @@ const AuthPage = () => {
     }
 
     function showNextJoke() {
-        console.log(jokes);
         if (currentJokeIndex == (jokes.length - 1))
             setCurrentJokeIndex(0);
         else

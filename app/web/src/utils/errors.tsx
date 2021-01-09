@@ -1,5 +1,9 @@
-import {message} from "antd";
+import {message, Typography} from "antd";
+import React from "react";
+import getFirebase from '../utils/firebase';
+import {navigate} from '@reach/router';
 
+const Text = Typography.Text;
 
 export function handleAPIResponse(response) {
     if (response.ok) {
@@ -12,14 +16,25 @@ export function handleAPIResponse(response) {
 
 export function handleAPIError(error) {
     if (error && error.message) {
-        // Network error
-        if (error.name == 'TypeError')
-            message.error("Network error, maybe you are offline");
+        // Network error (API DOWN / OFFLINE)
+        if (error.name == "TypeError") {
+            message.error(<>Unable to connect to backend <Text type="secondary">- retry in a while ...</Text> </>, 10);
+            //navigate('/503/');
+        }
+        // Authorization error
+        else if (error.code == "401003") {
+            message.error(<><Text>{`${error.message}`}</Text> <Text type="secondary">- {error.reason}</Text></>);
+            // Logout
+            const fb = getFirebase();
+            fb.auth().signOut().then(function () {
+            }).catch(function (error) {
+                console.log(error)
+            });
+        }
         // API Error
         else
             message.error(error.message);
     } else {
-        console.log(error);
         message.error("Something went wrong")
     }
 }
