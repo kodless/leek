@@ -73,7 +73,7 @@ const AuthPage = () => {
                             />
                         </Row>
                         <Row justify="center" style={{width: "100%"}}>
-                            <Title type="secondary" style={{textAlign: "center"}}>{jokes[currentJokeIndex].joke}</Title>
+                            <Title style={{textAlign: "center", color: "#444"}}>{jokes[currentJokeIndex].joke}</Title>
                         </Row>
                     </Row>
                 </Row>
