@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Row, Col, Card, Typography, Table, Empty, Space, Radio} from 'antd'
-import {BellOutlined} from "@ant-design/icons";
+import {BellOutlined, NodeIndexOutlined} from "@ant-design/icons";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -73,7 +73,7 @@ const Indices = (props) => {
                   title={<Row justify="space-between">
                       <Col>
                           <Space>
-                              <BellOutlined/>
+                              <NodeIndexOutlined />
                               <Text strong>Indices</Text>
                           </Space>
                       </Col>

@@ -40,27 +40,16 @@ export class MonitorSearch implements Monitor {
                     {"timestamp": {"order": order}},
                 ],
                 aggs: {
+                    statesDistribution: {"terms": {"field": "state"}}, // Chart: States distribution
+                    queuesDistribution: {"terms": {"field": "queue"}}, // Chart: Queues distribution
                     tasksDistribution: {
-                        "terms": {"field": "name"},
+                        "terms": {"field": "name", size: 5}, // Chart: TOP 5 Executed Tasks
                         aggs: {
-                            statesDistribution: {
-                                "terms": {"field": "state"}
-                            },
-                            runtimeDistribution: {"avg": {"field": "runtime"}}
+                            statesDistribution: {"terms": {"field": "state"}}, // Bar subsets
+                            runtimeDistribution: {"avg": {"field": "runtime"}} // Chart: Top 5 Slow Tasks
                         }
                     },
-                    statesDistribution: {
-                        "terms": {"field": "state"}
-                    },
-                    queuesDistribution: {
-                        "terms": {"field": "queue"}
-                    },
-                    timeDistribution: {
-                        "auto_date_histogram": {
-                            "field": "timestamp",
-                            "buckets": 30,
-                        }
-                    },
+                    timeDistribution: {"auto_date_histogram": {"field": "timestamp", "buckets": 30,}}, // Chart: Time-Occurrences
                 }
             },
             {

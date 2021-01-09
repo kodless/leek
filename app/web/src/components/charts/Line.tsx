@@ -1,20 +1,22 @@
 import React from 'react';
 import { ResponsiveLine } from '@nivo/line';
+import theme from "./Themes";
 
 export const LeekLine: React.FC<any> = (props) => {
-    console.log(props.data);
     return (
         <ResponsiveLine
             data={props.data}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+            // Key/Value Formats
+            xFormat="time:%Y-%m-%d %H:%M:%S"
+            yFormat=" >-.2f"
+            // Key/Value Scales
             xScale={{
                 type: "time",
                 format: "%Y-%m-%d %H:%M:%S",
                 useUTC: false,
             }}
-            xFormat="time:%Y-%m-%d %H:%M:%S"
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
-            yFormat=" >-.2f"
+            // Axis
             axisTop={null}
             axisRight={null}
             axisBottom={null}
@@ -27,15 +29,21 @@ export const LeekLine: React.FC<any> = (props) => {
                 legendOffset: -40,
                 legendPosition: 'middle'
             }}
-            pointSize={10}
-            lineWidth={4}
+            // Colors
+            theme={theme}
+            colors={{ scheme: 'set3' }}
+            // Points
             pointColor={{ theme: 'background' }}
+            pointSize={10}
             pointBorderWidth={2}
             pointBorderColor={{ from: 'serieColor' }}
             pointLabelYOffset={-12}
+            // Line
+            lineWidth={4}
             useMesh={true}
             curve="monotoneX"
-            colors={{ scheme: 'set3' }}
+            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+            // Legend
             legends={[
                 {
                     anchor: 'bottom-right',

@@ -1,5 +1,6 @@
 import React from 'react';
 import {ResponsivePie} from '@nivo/pie';
+import theme, {getColors} from "./Themes";
 
 
 // make sure parent container have a defined height when using
@@ -13,115 +14,33 @@ export const LeekPie: React.FC<any> = (props) => {
             data={props.data}
             id="key"
             value="doc_count"
-            margin={{top: 40, right: 80, bottom: 80, left: 80}}
+            // Dimensions
             innerRadius={0.5}
             padAngle={0.7}
             cornerRadius={3}
-            colors={{scheme: 'set3'}}
             borderWidth={1}
-            // @ts-ignore
-            borderColor={{from: 'color', modifiers: [['darker', '0.2']]}}
-            radialLabelsSkipAngle={10}
-            radialLabelsTextXOffset={6}
-            radialLabelsTextColor="#333333"
-            radialLabelsLinkOffset={0}
-            radialLabelsLinkDiagonalLength={16}
-            radialLabelsLinkHorizontalLength={24}
-            radialLabelsLinkStrokeWidth={2}
-            radialLabelsLinkColor={{theme: 'grid.line.stroke'}}
-            slicesLabelsSkipAngle={10}
-            slicesLabelsTextColor="#333333"
-            animate={true}
-            motionStiffness={90}
-            motionDamping={15}
-            defs={[
-                {
-                    id: 'dots',
-                    type: 'patternDots',
-                    background: 'inherit',
-                    color: 'rgba(255, 255, 255, 0.3)',
-                    size: 4,
-                    padding: 1,
-                    stagger: true
-                },
-                {
-                    id: 'lines',
-                    type: 'patternLines',
-                    background: 'inherit',
-                    color: 'rgba(255, 255, 255, 0.3)',
-                    rotation: -45,
-                    lineWidth: 6,
-                    spacing: 10
-                }
-            ]}
-            fill={[
-                {
-                    match: {
-                        id: 'ruby'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'c'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'go'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'python'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'scala'
-                    },
-                    id: 'lines'
-                },
-                {
-                    match: {
-                        id: 'lisp'
-                    },
-                    id: 'lines'
-                },
-                {
-                    match: {
-                        id: 'elixir'
-                    },
-                    id: 'lines'
-                },
-                {
-                    match: {
-                        id: 'javascript'
-                    },
-                    id: 'lines'
-                }
-            ]}
+            margin={{top: 10, right: 10, bottom: 10, left: 120}}
+            enableRadialLabels={false}
+            sliceLabelsSkipAngle={10}
+            // Colors
+            theme={theme}
+            colors={getColors}
+            borderColor={{from: 'color', modifiers: [['darker', 0.2]]}}
+            sliceLabelsTextColor="#333333"
+            // Legends
             legends={[
                 {
-                    anchor: 'bottom',
-                    direction: 'row',
-                    translateY: 56,
+                    anchor: 'top-left',
+                    direction: 'column',
+                    justify: false,
+                    translateX: -100,
+                    translateY: 0,
                     itemWidth: 100,
-                    itemHeight: 18,
-                    itemTextColor: '#999',
-                    symbolSize: 18,
+                    itemHeight: 20,
+                    itemsSpacing: 4,
+                    symbolSize: 16,
+                    itemDirection: 'left-to-right',
                     symbolShape: 'circle',
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemTextColor: '#000'
-                            }
-                        }
-                    ]
                 }
             ]}
         />

@@ -64,7 +64,7 @@ const MonitorPage = () => {
                     result.aggregations.queuesDistribution.buckets.map(
                         ({key, doc_count}) => {
                             totalInQueues += doc_count;
-                            return {id: key, value: doc_count}
+                            return {id: key, label: key, value: doc_count}
                         }
                     )
                 );
@@ -163,7 +163,7 @@ const MonitorPage = () => {
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                             size="small" style={{width: "100%"}}
-                            title="Tasks distribution">
+                            title="Top 5 Executed Tasks">
                             <Row style={{height: "400px"}}>
                                 <LeekBar data={tasksDistribution} keys={StatesKeys}/>
                             </Row>
@@ -183,11 +183,11 @@ const MonitorPage = () => {
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                             size="small" style={{width: "100%"}}
-                            title={"Latency distribution - Just success tasks"}>
+                            title={"Top 5 Slow Tasks"}>
                             <Row style={{height: "400px"}}>
                                 {
                                     filters && filters.state && ["SUCCEEDED", "RECOVERED"].includes(filters.state) ?
-                                        <LeekBar data={tasksDistribution} keys={["runtime",]} color="set3"/>
+                                        <LeekBar data={tasksDistribution} keys={["runtime",]} color="yellow_orange_red"/>
                                         :
                                         <Row align="middle" justify="center" style={{width: "100%"}}>
                                             <Empty

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ResponsiveBar } from '@nivo/bar';
+import theme, {getColors} from "./Themes";
 
 
 // make sure parent container have a defined height when using
@@ -13,49 +14,20 @@ export const LeekBar: React.FC<any> = (props) => {
             data={props.data}
             keys={props.keys}
             indexBy="id"
+            // Dimensions
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
             padding={0.8}
             layout="horizontal"
             valueScale={{ type: 'linear' }}
-            colors={{ scheme: props.color || 'blue_green' }}
-            defs={[
-                {
-                    id: 'dots',
-                    type: 'patternDots',
-                    background: 'inherit',
-                    color: '#38bcb2',
-                    size: 4,
-                    padding: 1,
-                    stagger: true
-                },
-                {
-                    id: 'lines',
-                    type: 'patternLines',
-                    background: 'inherit',
-                    color: '#eed312',
-                    rotation: -45,
-                    lineWidth: 6,
-                    spacing: 10
-                }
-            ]}
-            fill={[
-                {
-                    match: {
-                        id: 'SUCCEEDED'
-                    },
-                    id: 'dots'
-                },
-                {
-                    match: {
-                        id: 'FAILED'
-                    },
-                    id: 'lines'
-                }
-            ]}
-            borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             borderRadius={5}
-            axisTop={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
+            // Colors
+            theme={theme}
+            colors={props.color? {scheme: props.color} : getColors}
+            borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
+            // Axis
             axisRight={null}
+            axisLeft={null}
+            axisTop={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
             axisBottom={{
                 tickSize: 5,
                 tickPadding: 5,
@@ -64,10 +36,11 @@ export const LeekBar: React.FC<any> = (props) => {
                 legendPosition: 'middle',
                 legendOffset: 32
             }}
-            axisLeft={null}
+            // Labels
             labelSkipWidth={12}
             labelSkipHeight={12}
             labelTextColor="black"
+            // Legends
             legends={[
                 {
                     dataFrom: 'keys',
@@ -92,9 +65,11 @@ export const LeekBar: React.FC<any> = (props) => {
                     ]
                 }
             ]}
+            // Grid
             enableGridX={true}
             enableGridY={false}
-            animate={true}
+            // Animation
+            animate={false}
             motionStiffness={90}
             motionDamping={15}
         />

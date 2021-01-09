@@ -5,6 +5,7 @@ import {
     StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined, EllipsisOutlined,
     IssuesCloseOutlined, WarningOutlined
 } from '@ant-design/icons';
+import {STATES_COLORS} from "../../data/states";
 
 
 function Stats(stats: any) {
@@ -36,55 +37,55 @@ function Stats(stats: any) {
         {
             number: stats.RECEIVED,
             text: 'Received',
-            icon: <SendOutlined style={{color: "#42A5F6"}}/>,
+            icon: <SendOutlined style={{color: STATES_COLORS.RECEIVED}}/>,
             tooltip: 'Tasks were received by a worker. but not yet started'
         },
         {
             number: stats.STARTED,
-            text: 'Active',
-            icon: <LoadingOutlined style={{color: "#536DFE"}}/>,
+            text: 'Started',
+            icon: <LoadingOutlined style={{color: STATES_COLORS.STARTED}}/>,
             tooltip: 'Tasks that were started by a worker and still active, set (task_track_started) to True on worker level to report started tasks'
         },
         {
             number: stats.SUCCEEDED,
             text: 'Succeeded',
-            icon: <CheckCircleOutlined style={{color: "#00FFFF"}}/>,
+            icon: <CheckCircleOutlined style={{color: STATES_COLORS.SUCCEEDED}}/>,
             tooltip: 'Tasks that were succeeded'
         },
         {
             number: stats.RECOVERED,
             text: 'Recovered',
-            icon: <IssuesCloseOutlined style={{color: "#00BFA6"}}/>,
+            icon: <IssuesCloseOutlined style={{color: STATES_COLORS.RECOVERED}}/>,
             tooltip: 'Tasks that were succeeded after retries.'
         },
         {
             number: stats.FAILED,
             text: 'Failed',
-            icon: <WarningOutlined style={{color: "#FF00FF"}}/>,
+            icon: <WarningOutlined style={{color: STATES_COLORS.FAILED}}/>,
             tooltip: 'Tasks that were failed'
         },
         {
             number: stats.CRITICAL,
             text: 'Critical',
-            icon: <CloseCircleOutlined style={{color: "#F50057"}}/>,
+            icon: <CloseCircleOutlined style={{color: STATES_COLORS.CRITICAL}}/>,
             tooltip: 'Tasks that were failed after max retries.'
         },
         {
             number: stats.REJECTED,
             text: 'Rejected',
-            icon: <RollbackOutlined style={{color: "#F9A826"}}/>,
+            icon: <RollbackOutlined style={{color: STATES_COLORS.REJECTED}}/>,
             tooltip: 'Tasks that were rejected by workers and requeued, or moved to a dead letter queue'
         },
         {
             number: stats.REVOKED,
             text: 'Revoked',
-            icon: <StopOutlined style={{color: "#7266BA"}}/>,
+            icon: <StopOutlined style={{color: STATES_COLORS.REVOKED}}/>,
             tooltip: 'Tasks that were revoked by workers, but still in the queue.'
         },
         {
             number: stats.RETRY,
             text: 'To Retry',
-            icon: <RetweetOutlined style={{color: "#007B9E"}}/>,
+            icon: <RetweetOutlined style={{color: STATES_COLORS.RETRY}}/>,
             tooltip: 'Tasks that are failed and waiting for retry'
         },
         {
