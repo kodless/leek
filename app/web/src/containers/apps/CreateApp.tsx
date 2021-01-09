@@ -23,12 +23,14 @@ const CreateApp = (props) => {
         applicationSearch.createApplication(application)
             .then(handleAPIResponse)
             .then((application: any) => {
-                setApplicationCreating(false);
                 props.setCreateAppModalVisible(false);
                 form.resetFields();
                 listApplications();
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => {
+                setApplicationCreating(false);
+            });
     }
 
     function reset() {
