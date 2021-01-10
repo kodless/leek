@@ -3,7 +3,7 @@ import React from "react";
 import {
     SyncOutlined, RobotFilled, RetweetOutlined, RollbackOutlined, CheckCircleOutlined, CloseCircleOutlined,
     StopOutlined, SendOutlined, UnorderedListOutlined, LoadingOutlined, ExclamationCircleOutlined, EllipsisOutlined,
-    IssuesCloseOutlined, WarningOutlined
+    IssuesCloseOutlined, WarningOutlined, ThunderboltOutlined
 } from '@ant-design/icons';
 import {STATES_COLORS} from "../../data/states";
 
@@ -23,16 +23,28 @@ function Stats(stats: any) {
             tooltip: 'The total offline/online and beat workers'
         },
         {
-            number: stats.QUEUED,
-            text: 'Tasks Queued',
-            icon: <EllipsisOutlined/>,
-            tooltip: 'The total tasks in the queues'
+            number: stats.PROCESSED_EVENTS,
+            text: 'Events Processed',
+            icon: <ThunderboltOutlined/>,
+            tooltip: 'The total processed events'
         },
         {
             number: stats.PROCESSED_TASKS,
             text: 'Tasks Processed',
             icon: <SyncOutlined/>,
             tooltip: 'The total processed tasks'
+        },
+        {
+            number: stats.QUEUED,
+            text: 'Tasks Queued',
+            icon: <EllipsisOutlined/>,
+            tooltip: 'The total tasks in the queues'
+        },
+        {
+            number: stats.RETRY,
+            text: 'To Retry',
+            icon: <RetweetOutlined style={{color: STATES_COLORS.RETRY}}/>,
+            tooltip: 'Tasks that are failed and waiting for retry'
         },
         {
             number: stats.RECEIVED,
@@ -81,18 +93,6 @@ function Stats(stats: any) {
             text: 'Revoked',
             icon: <StopOutlined style={{color: STATES_COLORS.REVOKED}}/>,
             tooltip: 'Tasks that were revoked by workers, but still in the queue.'
-        },
-        {
-            number: stats.RETRY,
-            text: 'To Retry',
-            icon: <RetweetOutlined style={{color: STATES_COLORS.RETRY}}/>,
-            tooltip: 'Tasks that are failed and waiting for retry'
-        },
-        {
-            number: stats.IGNORED,
-            text: 'Ignored',
-            icon: <ExclamationCircleOutlined style={{color: "#FF5626"}}/>,
-            tooltip: 'Tasks that were ignored due to expiration'
         },
     ];
 }

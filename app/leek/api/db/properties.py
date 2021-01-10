@@ -24,6 +24,9 @@ properties = {
     "app_env": {
         "type": "keyword"
     },
+    "events_count": {
+        "type": "long"
+    },
     # Tasks specific
     "uuid": {
         "type": "keyword",

@@ -32,6 +32,7 @@ interface ApplicationContextData {
         key: string;
         doc_count: null;
     }[];
+    processedEvents: number;
     processedTasks: number;
     seenStates: {
         key: string;
@@ -71,6 +72,7 @@ const initial = {
     currentEnv: undefined,
     seenWorkers: [],
     seenTasks: [],
+    processedEvents: 0,
     processedTasks: 0,
     seenStates: [],
     seenTaskStates: [],
@@ -95,6 +97,7 @@ function ApplicationProvider({children}) {
     const commonSearch = new CommonSearch();
     const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
     const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
+    const [processedEvents, setProcessedEvents] = useState<ApplicationContextData["processedEvents"]>(0);
     const [processedTasks, setProcessedTasks] = useState<ApplicationContextData["processedTasks"]>(0);
     const [seenStates, setSeenStates] = useState<ApplicationContextData["seenStates"]>([]);
     const [seenTaskStates, setSeenTaskStates] = useState<ApplicationContextData["seenStates"]>([]);
@@ -127,6 +130,7 @@ function ApplicationProvider({children}) {
         commonSearch.getSeenTasksAndWorkers(currentApp, currentEnv)
             .then(handleAPIResponse)
             .then((result: any) => {
+                setProcessedEvents(result.aggregations.processed_events.value);
                 const processed = result.aggregations.seen_states.buckets.reduce((result, item) => {
                     if (!workerStates.includes(item.key)) {
                         return result + item.doc_count;
@@ -217,6 +221,7 @@ function ApplicationProvider({children}) {
                 currentEnv: currentEnv,
                 seenWorkers: seenWorkers,
                 seenTasks: seenTasks,
+                processedEvents: processedEvents,
                 processedTasks: processedTasks,
                 seenStates: seenStates,
                 seenTaskStates: seenTaskStates,

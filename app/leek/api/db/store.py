@@ -100,6 +100,7 @@ class Worker(EV):
     active: int = None
     freq: float = None
     loadavg: List[float] = None
+    events_count: Optional[int] = 1
 
     def resolve_conflict(self, coming: "Worker"):
         # Get safe attrs from coming task
@@ -110,6 +111,7 @@ class Worker(EV):
                 setattr(self, key, value)
 
     def merge(self, coming: Union["Task", "Worker"]):
+        events_count = self.events_count
         in_order = self.exact_timestamp < coming.exact_timestamp
         # self is the currently stored/indexed doc
         if in_order:
@@ -123,6 +125,10 @@ class Worker(EV):
             # The two documents are out of order and has different states => Resolve conflict and merge
             self.resolve_conflict(coming)
             merged = True
+
+        # Increment events count
+        self.events_count = events_count + 1
+
         return merged
 
 
@@ -169,6 +175,7 @@ class Task(EV):
     # ORIGIN
     client: Optional[str] = None
     worker: Optional[str] = None
+    events_count: Optional[int] = 1
 
     def resolve_conflict(self, coming: "Task"):
         # print(f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid}")
@@ -188,6 +195,7 @@ class Task(EV):
                 setattr(self, key, value)
 
     def merge(self, coming: Union["Task", "Worker"]):
+        events_count = self.events_count
         in_order = self.exact_timestamp < coming.exact_timestamp
         # self is the currently stored/indexed doc
         if in_order:
@@ -226,6 +234,9 @@ class Task(EV):
             self.root_id = None
         if self.parent_id and self.parent_id == self.id:
             self.parent_id = None
+
+        # Increment events count
+        self.events_count = events_count + 1
 
         return merged
 

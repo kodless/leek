@@ -17,9 +17,9 @@ export const STATES_COLORS = {
     STARTED: "#536DFE",
     SUCCEEDED: "#00FFFF",
     FAILED: "#FF00FF",
-    REJECTED: "#F9A826",
+    REJECTED: "#007B9E",
     REVOKED: "#7266BA",
-    RETRY: "#007B9E",
+    RETRY: "#F9A826",
     RECOVERED: "#00BFA6",
     CRITICAL: "#F50057",
 };

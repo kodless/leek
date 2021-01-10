@@ -35,6 +35,9 @@ export class CommonSearch implements Common {
                     "seen_queues": {
                         "terms": {"field": "queue"}
                     },
+                    "processed_events": {
+                        "sum": {"field": "events_count"}
+                    }
                 }
             },
             {

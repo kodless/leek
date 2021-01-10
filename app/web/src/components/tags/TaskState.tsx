@@ -2,23 +2,23 @@ import React from 'react';
 import {Tag} from "antd";
 
 const statusColorMap = {
-    QUEUED: "cyan",
-    RECEIVED: "green",
+    QUEUED: "lime",
+    RECEIVED: "blue",
     STARTED: "geekblue",
-    SUCCEEDED: "blue",
-    FAILED: "red",
-    REJECTED: "magenta",
-    REVOKED: "magenta",
+    SUCCEEDED: "cyan",
+    RECOVERED: "green",
     RETRY: "gold",
-    RECOVERED: "purple",
+    FAILED: "magenta",
     CRITICAL: "red",
+    REJECTED: "geekblue",
+    REVOKED: "purple",
 };
 
 export const TaskState: React.FC<any> = (props) => {
     let state = props.state;
     let retries = props.retries;
-    let revocation_reason = props.revocation_reason;
-    let v = revocation_reason ? `${state} [${revocation_reason}]` :state;
+    let note = props.note;
+    let v = note ? `${state} [${note}]` :state;
     v = retries ? `${v} (${retries})` :v;
     return (
         <Tag color={statusColorMap[state]} key={state}>

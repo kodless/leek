@@ -1,5 +1,5 @@
 import React from 'react';
-import {Typography, Tabs, List} from 'antd'
+import {Typography, Tabs, List, Col, Tag, Row} from 'antd'
 
 import {adaptTime} from '../../utils/date'
 import {WorkerState} from '../../components/tags/WorkerState'
@@ -11,8 +11,11 @@ export default props => {
     return (
         <>
             {/* Header */}
-            <WorkerState state={props.worker.state}/> {adaptTime(props.worker.timestamp)}
-            <Text copyable={{text: window.location.href}} strong/>
+
+            <Row justify="space-between">
+                <Col><WorkerState state={props.worker.state}/> {adaptTime(props.worker.timestamp)}</Col>
+                <Col><Tag>{`${props.worker.events_count} EVENTS`}</Tag> <Text copyable={{text: window.location.href}} strong/> LINK </Col>
+            </Row>
 
             <Tabs defaultActiveKey="basic">
                 <TabPane tab="Basic" key="basic">

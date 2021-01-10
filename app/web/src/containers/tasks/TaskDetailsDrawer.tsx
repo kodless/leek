@@ -1,11 +1,11 @@
 import React from 'react';
-import {Typography, Tabs, List, Row, Col} from 'antd';
+import {Typography, Tabs, List, Row, Col, Tag} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import {adaptTime} from '../../utils/date'
-import {TaskState} from '../../components/tags/TaskState'
 import TaskDetailsDrawer from './TaskDetailsDrawer.style'
+import {buildTag} from "../../components/data/TaskData";
 
 const Text = Typography.Text;
 const {TabPane} = Tabs;
@@ -17,8 +17,8 @@ export default props => {
             {/* Header */}
 
             <Row justify="space-between">
-                <Col><TaskState state={props.task.state}/> {adaptTime(props.task.timestamp)}</Col>
-                <Col><Text copyable={{text: window.location.href}} strong/> LINK </Col>
+                <Col>{buildTag(props.task.state, props.task)} {adaptTime(props.task.timestamp)}</Col>
+                <Col><Tag>{`${props.task.events_count} EVENTS`}</Tag> <Text copyable={{text: window.location.href}} strong/> LINK </Col>
             </Row>
 
             <Tabs defaultActiveKey="basic">

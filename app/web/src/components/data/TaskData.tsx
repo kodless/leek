@@ -7,6 +7,19 @@ import moment from "moment";
 
 const Text = Typography.Text;
 
+export const buildTag = (state, task) => {
+    if (state === "REVOKED" && task.expired)
+        return <TaskState state={state} retries={task.retries} note="E"/>;
+    else if (state === "REVOKED" && task.terminated)
+        return <TaskState state={state} retries={task.retries} note="T"/>;
+    else if (state === "REJECTED" && task.requeue)
+        return <TaskState state={state} retries={task.retries} note="Q"/>;
+    else if (state === "REJECTED" && !task.requeue)
+        return <TaskState state={state} retries={task.retries} note="I"/>;
+    else
+        return <TaskState state={state} retries={task.retries}/>;
+};
+
 function TaskData() {
     return [
         {
@@ -14,7 +27,7 @@ function TaskData() {
             dataIndex: 'timestamp',
             key: 'timestamp',
             render: timestamp => {
-                return  <Text style={{color: "rgba(45,137,183,0.8)"}} strong>
+                return <Text style={{color: "rgba(45,137,183,0.8)"}} strong>
                     {timestamp ? moment(timestamp).format("MMM D HH:mm:ss") : '-'} - <Text>
                     {timestamp ? <TimeAgo date={timestamp}/> : '-'}
                 </Text>
@@ -41,14 +54,7 @@ function TaskData() {
             title: 'State',
             dataIndex: 'state',
             key: 'state',
-            render: (state, row) => {
-                if (state === "REVOKED" && row.expired)
-                    return <TaskState state={state} retries={row.retries} revocation_reason="E"/>;
-                else if (state === "REVOKED" && row.terminated)
-                    return <TaskState state={state} retries={row.retries} revocation_reason="T"/>;
-                else
-                    return <TaskState state={state} retries={row.retries}/>;
-            },
+            render: buildTag,
         }
     ];
 }
