@@ -32,7 +32,8 @@ const MonitorPage = () => {
     const [totalHits, setTotalHits] = useState<number>(0);
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
     const [queuesDistribution, setQueuesDistribution] = useState<any>([]);
-    const [tasksDistribution, setTasksDistribution] = useState<any>([]);
+    const [topExecutions, setTopExecutions] = useState<any>([]);
+    const [topSlow, setTopSlow] = useState<any>([]);
     const [tasksOverTimeDistribution, setTasksOverTimeDistribution] = useState<any>([]);
 
     // Filters
@@ -68,33 +69,38 @@ const MonitorPage = () => {
                         }
                     )
                 );
-                setTasksDistribution(
-                    result.aggregations.tasksDistribution.buckets.map(
-                        ({key, statesDistribution, runtimeDistribution}) => {
-                            let tasksStatesSeries = {
-                                QUEUED: 0,
-                                RECEIVED: 0,
-                                STARTED: 0,
-                                SUCCEEDED: 0,
-                                FAILED: 0,
-                                REJECTED: 0,
-                                REVOKED: 0,
-                                RETRY: 0,
-                                RECOVERED: 0,
-                                CRITICAL: 0,
-                            };
-                            const states = statesDistribution.buckets.reduce((result, item) => {
-                                result[item.key] = item.doc_count;
-                                return result;
-                            }, tasksStatesSeries);
-                            return {
-                                id: key,
-                                runtime: runtimeDistribution.value,
-                                ...states
-                            }
+                let tasksDistribution = result.aggregations.tasksDistribution.buckets.map(
+                    ({key, statesDistribution, runtimeDistribution, doc_count}) => {
+                        let tasksStatesSeries = {
+                            QUEUED: 0,
+                            RECEIVED: 0,
+                            STARTED: 0,
+                            SUCCEEDED: 0,
+                            FAILED: 0,
+                            REJECTED: 0,
+                            REVOKED: 0,
+                            RETRY: 0,
+                            RECOVERED: 0,
+                            CRITICAL: 0,
+                        };
+                        const states = statesDistribution.buckets.reduce((result, item) => {
+                            result[item.key] = item.doc_count;
+                            return result;
+                        }, tasksStatesSeries);
+                        return {
+                            id: key,
+                            runtime: runtimeDistribution.value,
+                            executions: doc_count,
+                            ...states
                         }
-                    )
+                    }
                 );
+                setTopExecutions(tasksDistribution.slice(0, 5));
+                setTopSlow([...tasksDistribution].sort(function(a, b) {
+                    return b.runtime - a.runtime ;
+                }).slice(0, 5).filter(task => {
+                    return task.runtime;
+                }));
                 setTasksOverTimeDistribution([
                     {
                         id: "tasks",
@@ -165,7 +171,7 @@ const MonitorPage = () => {
                             size="small" style={{width: "100%"}}
                             title="Top 5 Executed Tasks">
                             <Row style={{height: "400px"}}>
-                                <LeekBar data={tasksDistribution} keys={StatesKeys}/>
+                                <LeekBar data={topExecutions} keys={StatesKeys}/>
                             </Row>
                         </Card>
                     </Row>
@@ -187,7 +193,7 @@ const MonitorPage = () => {
                             <Row style={{height: "400px"}}>
                                 {
                                     filters && filters.state && ["SUCCEEDED", "RECOVERED"].includes(filters.state) ?
-                                        <LeekBar data={tasksDistribution} keys={["runtime",]} color="yellow_orange_red"/>
+                                        <LeekBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"/>
                                         :
                                         <Row align="middle" justify="center" style={{width: "100%"}}>
                                             <Empty

@@ -43,7 +43,7 @@ export class MonitorSearch implements Monitor {
                     statesDistribution: {"terms": {"field": "state"}}, // Chart: States distribution
                     queuesDistribution: {"terms": {"field": "queue"}}, // Chart: Queues distribution
                     tasksDistribution: {
-                        "terms": {"field": "name", size: 5}, // Chart: TOP 5 Executed Tasks
+                        "terms": {"field": "name"}, // Chart: TOP 5 Executed Tasks
                         aggs: {
                             statesDistribution: {"terms": {"field": "state"}}, // Bar subsets
                             runtimeDistribution: {"avg": {"field": "runtime"}} // Chart: Top 5 Slow Tasks
