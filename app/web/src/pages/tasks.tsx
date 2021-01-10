@@ -161,8 +161,9 @@ const TasksPage: React.FC = () => {
                                                     setOrder(e ? "desc" : "asc")
                                                 }}
                                                 size="small"
-                                                checkedChildren={<CaretUpOutlined/>}
-                                                unCheckedChildren={<CaretDownOutlined/>}
+                                                checkedChildren={<CaretUpOutlined style={{color: "#333"}}/>}
+                                                unCheckedChildren={<CaretDownOutlined/>
+                                                }
                                         />
                                     </Col>
                                     <Col span={18} style={{textAlign: "center"}}>

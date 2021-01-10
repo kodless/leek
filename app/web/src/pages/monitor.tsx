@@ -4,6 +4,7 @@ import {Card, Col, Row, Empty, Statistic} from 'antd'
 import {FilterOutlined} from "@ant-design/icons";
 import {LeekPie} from "../components/charts/Pie"
 import {LeekBar} from "../components/charts/Bar"
+import {LeekVerticalBar} from "../components/charts/VerticalBar"
 import {LeekWaffle} from "../components/charts/Waffle"
 import {LeekLine} from "../components/charts/Line"
 import AttributesFilter from "../components/filters/TaskAttributesFilter"
@@ -12,6 +13,7 @@ import {handleAPIError, handleAPIResponse} from "../utils/errors"
 import {MonitorSearch} from "../api/monitor"
 import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
+import {TaskState} from "../components/tags/TaskState";
 
 let StatesKeys = [
     "QUEUED",
@@ -189,21 +191,10 @@ const MonitorPage = () => {
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                             size="small" style={{width: "100%"}}
-                            title={"Top 5 Slow Tasks"}>
+                            title={<>Top 5 Slow <TaskState state={"SUCCEEDED"}/><TaskState state={"RECOVERED"}/>Tasks</>}
+                        >
                             <Row style={{height: "400px"}}>
-                                {
-                                    filters && filters.state && ["SUCCEEDED", "RECOVERED"].includes(filters.state) ?
-                                        <LeekBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"/>
-                                        :
-                                        <Row align="middle" justify="center" style={{width: "100%"}}>
-                                            <Empty
-                                                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                                description={
-                                                    <span>Filter by <a href="#API">SUCCEEDED|RECOVERED</a> states to show this chart</span>
-                                                }
-                                            />
-                                        </Row>
-                                }
+                                <LeekVerticalBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"/>
                             </Row>
                         </Card>
                     </Row>

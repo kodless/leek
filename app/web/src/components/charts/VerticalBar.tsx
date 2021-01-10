@@ -8,7 +8,7 @@ import theme, {getColors} from "./Themes";
 // no chart will be rendered.
 // website examples showcase many properties,
 // you'll often use just a few of them.
-export const LeekBar: React.FC<any> = (props) => {
+export const LeekVerticalBar: React.FC<any> = (props) => {
     return (
         <ResponsiveBar
             data={props.data}
@@ -17,7 +17,7 @@ export const LeekBar: React.FC<any> = (props) => {
             // Dimensions
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
             padding={0.8}
-            layout="horizontal"
+            layout="vertical"
             valueScale={{ type: 'linear' }}
             borderRadius={5}
             // Colors
@@ -26,20 +26,18 @@ export const LeekBar: React.FC<any> = (props) => {
             borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             // Axis
             axisRight={null}
-            axisLeft={null}
-            axisTop={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
-            axisBottom={{
+            axisLeft={{
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'Executions - States',
+                legend: 'Runtime',
                 legendPosition: 'middle',
                 legendOffset: 32
             }}
+            axisTop={null}
+            axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
             // Labels
-            labelSkipWidth={12}
-            labelSkipHeight={12}
-            labelTextColor="black"
+            enableLabel={false}
             // Legends
             legends={[
                 {
