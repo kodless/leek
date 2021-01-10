@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Card, Col, Row, Empty, Statistic} from 'antd'
+import {Card, Col, Row, Select, Statistic} from 'antd'
 import {FilterOutlined} from "@ant-design/icons";
 import {LeekPie} from "../components/charts/Pie"
 import {LeekBar} from "../components/charts/Bar"
@@ -15,7 +15,8 @@ import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
 import {TaskState} from "../components/tags/TaskState";
 
-let StatesKeys = [
+const {Option} = Select;
+const StatesKeys = [
     "QUEUED",
     "RECEIVED",
     "STARTED",
@@ -41,6 +42,7 @@ const MonitorPage = () => {
     // Filters
     const {currentApp, currentEnv} = useApplication();
     const [filters, setFilters] = useState<any>();
+    const [timeDistributionTSType, setTimeDistributionTSType] = useState<any>("timestamp");
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
         interval_type: "at",
@@ -58,7 +60,7 @@ const MonitorPage = () => {
             ...filters,
             ...timeFilters,
         };
-        monitorSearch.charts(currentApp, currentEnv, "desc", allFilters)
+        monitorSearch.charts(currentApp, currentEnv, "desc", allFilters, timeDistributionTSType)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setStatesDistribution(result.aggregations.statesDistribution.buckets);
@@ -98,8 +100,8 @@ const MonitorPage = () => {
                     }
                 );
                 setTopExecutions(tasksDistribution.slice(0, 5));
-                setTopSlow([...tasksDistribution].sort(function(a, b) {
-                    return b.runtime - a.runtime ;
+                setTopSlow([...tasksDistribution].sort(function (a, b) {
+                    return b.runtime - a.runtime;
                 }).slice(0, 5).filter(task => {
                     return task.runtime;
                 }));
@@ -114,7 +116,7 @@ const MonitorPage = () => {
                 setTotalHits(totalInQueues);
             }, handleAPIError)
             .catch(handleAPIError);
-    }, [currentApp, currentEnv, filters, timeFilters]);
+    }, [currentApp, currentEnv, filters, timeFilters, timeDistributionTSType]);
 
     return (
         <>
@@ -181,7 +183,28 @@ const MonitorPage = () => {
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                             size="small" style={{width: "100%"}}
-                            title="Tasks over time distribution">
+                            title="Tasks over time distribution"
+                            extra={[
+                                <Select defaultValue="timestamp"
+                                        dropdownMatchSelectWidth
+                                        style={{width: 115}}
+                                        size="small"
+                                        onChange={type => setTimeDistributionTSType(type)}
+                                >
+                                    <Option value="timestamp">Seen</Option>
+                                    <Option value="queued_at">Queued</Option>
+                                    <Option value="received_at">Received</Option>
+                                    <Option value="started_at">Started</Option>
+                                    <Option value="succeeded_at">Succeeded</Option>
+                                    <Option value="failed_at">Failed</Option>
+                                    <Option value="retried_at">Retried</Option>
+                                    <Option value="rejected_at">Rejected</Option>
+                                    <Option value="revoked_at">Revoked</Option>
+                                    <Option value="eta">ETA</Option>
+                                    <Option value="expires">Expires</Option>
+                                </Select>
+                            ]}
+                        >
                             <Row style={{height: "400px"}}>
                                 <LeekLine data={tasksOverTimeDistribution}/>
                             </Row>
@@ -191,7 +214,8 @@ const MonitorPage = () => {
                         <Card
                             bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                             size="small" style={{width: "100%"}}
-                            title={<>Top 5 Slow <TaskState state={"SUCCEEDED"}/><TaskState state={"RECOVERED"}/>Tasks</>}
+                            title={<>Top 5 Slow <TaskState state={"SUCCEEDED"}/><TaskState
+                                state={"RECOVERED"}/>Tasks</>}
                         >
                             <Row style={{height: "400px"}}>
                                 <LeekVerticalBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"/>

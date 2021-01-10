@@ -1,23 +1,13 @@
 import {TaskFilters, getFilterQuery} from "./task";
 import {search} from "./search";
 
-const state_timestamp_map = {
-    QUEUED: "queued_at",
-    RECEIVED: "received_at",
-    STARTED: "started_at",
-    SUCCEEDED: "succeeded_at",
-    FAILED: "failed_at",
-    REJECTED: "rejected_at",
-    REVOKED: "revoked_at",
-    RETRY: "retried_at",
-};
-
 export interface Monitor {
     charts(
         app_name: string,
         app_env: string | undefined,
         order: string | "desc",
         filters: TaskFilters,
+        timeDistributionTSType: string
     ): any;
 }
 
@@ -27,6 +17,7 @@ export class MonitorSearch implements Monitor {
         app_env: string | undefined,
         order: string | "desc",
         filters: TaskFilters,
+        timeDistributionTSType
     ) {
         return search(
             app_name,
@@ -49,7 +40,7 @@ export class MonitorSearch implements Monitor {
                             runtimeDistribution: {"avg": {"field": "runtime"}} // Chart: Top 5 Slow Tasks
                         }
                     },
-                    timeDistribution: {"auto_date_histogram": {"field": "timestamp", "buckets": 30,}}, // Chart: Time-Occurrences
+                    timeDistribution: {"auto_date_histogram": {"field": timeDistributionTSType, "buckets": 30,}}, // Chart: Time-Occurrences
                 }
             },
             {
