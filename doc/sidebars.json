@@ -19,7 +19,7 @@
     ],
     "Architecture": [
       "architecture/components",
-      "architecture/authn-authz",
+      "architecture/access-control",
       "architecture/configuration",
       "architecture/indexing"
     ],

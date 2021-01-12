@@ -4,7 +4,8 @@ title: Features
 sidebar_label: Features
 ---
 
-As opposed to many other alternatives, leek offers many features:
+As opposed to many other alternatives, leek came to fix the issue existing in other tool and offers many other cool 
+features that does not exist in other tool:
 
 - `Google SSO`: | you can connect to leek using GSuite accounts for organization and standard GMail account for
 individuals.
