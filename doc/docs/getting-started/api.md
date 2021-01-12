@@ -4,6 +4,8 @@ title: API
 sidebar_label: API
 ---
 
+ Leek API acts as a proxy between Leek WEB and elastic
+
 Leek API is a Flask Restful Application served with Gunicorn web server. it is built as a docker a image and published 
 to DockerHub [public repository](https://hub.docker.com/repository/docker/kodhive/leek).
 

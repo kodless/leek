@@ -25,19 +25,23 @@ return application that starts with `ramp.com-*`
 
 When creating the index template, Leek will add a metadata to the index template with:
 
-- Application owner: the application owner is the email of the user who created the application, this metadata field is 
+- **Application owner** - the application owner is the email of the user who created the application, this metadata field is 
 useful to control who can perform write permission against the application, like deleting application, purging application
 and managing triggers.
 
-- Creation time: when the application was first created.
+- **Creation time** - when the application was first created.
 
-- Supported broker type: the only supported broker for now is rabbitmq, SQS and redis will be supported in the future.
+- **Broker type** - the only supported broker for now is rabbitmq, SQS and redis will be supported in the future.
 
-- API Key: the API key that will be used for Leek agent to fanout celery event to Leek API, this is only used with 
+- **API Key** - the API key that will be used for Leek agent to fanout celery event to Leek API, this is only used with 
 standalone agents, local agents is using a shared secret between Agent and API and provided as an environment variable.
+
+![Application](/img/docs/agent.png)
 
 After creating the application (index template), leek will create an initial index with the name `orgname-appname-00001`
 and the index template will automatically be applied to it because it matches the index pattern in the template.
+
+![Indices](/img/docs/indices.png)
 
 ### Environment separation
 
