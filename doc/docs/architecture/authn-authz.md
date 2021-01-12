@@ -1,7 +1,7 @@
 ---
 id: authn-authz
-title: authn/authz
-sidebar_label: authn-authz
+title: Access control
+sidebar_label: Access Control
 ---
 
 Communication between Leek components is secured with different Authentication and Authorization mechanisms.

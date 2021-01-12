@@ -1,5 +1,22 @@
 {
   "docs": {
+    "Introduction": [
+      "introduction/leek",
+      "introduction/features",
+      "introduction/requirements"
+    ],
+    "Features": [
+      "features/login",
+      "features/applications",
+      "features/triggers",
+      "features/filters",
+      "features/issues",
+      "features/metrics",
+      "features/tasks",
+      "features/workers",
+      "features/charts",
+      "features/states"
+    ],
     "Architecture": [
       "architecture/components",
       "architecture/authn-authz",

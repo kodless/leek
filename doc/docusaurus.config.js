@@ -31,6 +31,7 @@ module.exports = {
   ],
   plugins: [],
   themeConfig: {
+    sidebarCollapsible: false,
     navbar: {
       title: "Leek",
       logo: {
@@ -59,7 +60,7 @@ module.exports = {
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: false,
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
       switchConfig: {
         darkIcon: '🌙',
         lightIcon: '\u2600',
