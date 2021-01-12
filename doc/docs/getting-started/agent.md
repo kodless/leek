@@ -36,6 +36,8 @@ always fallback to the `LEEK_AGENT_API_SECRET` when using local agent, to enable
 Leek subscriptions is a json object with one or more subscription, each subscription has a unique name and a set of 
 parameters to connect to the broker and API.
 
+![Agent](/img/docs/agent.png)
+
 - Required parameters:
     - **broker** - the amqp url of the broker (only rabbitmq is supported for now).
     - **backend** - the result backend url
@@ -48,6 +50,8 @@ parameters to connect to the broker and API.
 - Optional parameters - only required for standalone agents:
     - **app_key** - the app key generated when creating the application
     - **api_url** - Leek api url
+
+Using the agent you can subscribe to multiple brokers like this:
 
 ```json
 {

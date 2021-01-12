@@ -1,5 +1,5 @@
 ---
-id: authn-authz
+id: access-control
 title: Access control
 sidebar_label: Access Control
 ---
