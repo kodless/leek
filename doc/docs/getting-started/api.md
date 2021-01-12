@@ -4,57 +4,56 @@ title: API
 sidebar_label: API
 ---
 
- Leek API acts as a proxy between Leek WEB and elastic
+Leek API is a Flask Restful Application build using python and served by Gunicorn web server. it acts as a proxy between 
+Leek Agent and Elasticsearch and between Leek WEB and Elasticsearch. Leek API receives events from the Leek Agent and 
+index them into Elasticsearch.
 
-Leek API is a Flask Restful Application served with Gunicorn web server. it is built as a docker a image and published 
-to DockerHub [public repository](https://hub.docker.com/repository/docker/kodhive/leek).
+### Process events:
 
-This is an example on how you we can spin up a new server from Leek API Docker:
+Leek API expose the `/v1/events/process` webhooks endpoint to Leek Agents, this endpoint is secured using API key 
+header, for every wehbhook event this event:
 
-```yaml
-version: "2.4"
-services:
-  api:
-    image: kodhive/leek
-    command: make run_gunicorn
-    environment:
-      - LEEK_API_LOG_LEVEL=INFO
-      - LEEK_ES_URL=http://es01:9200
-      - LEEK_WEB_URL=http://0.0.0.0:8000
-      - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
-      - LEEK_API_OWNER_ORG=ramp.com
-      - LEEK_API_WHITELISTED_ORGS=ramp.com,leek.com
-    ports:
-      - 5000:5000
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "5000" ]
-      interval: 2s
-      timeout: 4s
-      retries: 20
-    depends_on:
-      es01:
-        condition: service_healthy
+- Authenticate/Authorize the request by searching for an application with the same value in `x-leek-app-key`, 
+`x-leek-app-name` and `x-leek-org-name` headers, if not found will return `UNAUTHORIZED`, otherwise it will get the 
+application and add it to the request context.
 
-  # Just for local development!! (Test index db)
-  es01:
-    image: elasticsearch:7.8.0
-    container_name: es01
-    environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - cluster.initial_master_nodes=es01
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    command: ["elasticsearch", "-Elogger.level=ERROR"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - 9200:9200
-```
+- Validate the webhook events with `TaskSchema` and `WorkerSchema`.
+
+- Adapt the json validated events into `Task` and `Worker` objects.
+
+- Search in elastic search for tasks with similar ids:
+    - Index the new event if no document found.
+    - Upsert the existing document with new event if a document is found and there is no conflict.
+    - If a conflict is detected, resolve conflict, merge and reindex the document. 
+
+- Go through notification pipeline and notify any event matching the rules in the trigger.
+
+### Search events:
+
+Leek API expose the `/v1/search` proxy endpoint to Leek WEB, this endpoint is secured using JWT tokens authorizer and
+it is used for:
+
+- Filtering tasks
+- Filtering workers
+- Running basic metrics aggregations
+- Running issues aggregations
+- Running charts aggregations
+
+### Applications management:
+
+Leek API expose multiple endpoints for managing applications, these endpoints are secured using JWT tokens authorized
+and used for:
+
+- Listing applications and triggers - `permissions:all`
+- Creating applications - `permissions:all`
+
+- Creating triggers - `permissions:owner`
+- Editing triggers - `permissions:owner`
+- Deleting triggers - `permissions:owner`
+- Deleting application - `permissions:owner`
+- Purging application - `permissions:owner`
+- Cleaning application - `permissions:owner`
+
+Some actions can be called by all authenticated users and some can only be called by the application owner (the user 
+create the application the first time)
+
