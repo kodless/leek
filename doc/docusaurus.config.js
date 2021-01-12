@@ -39,7 +39,7 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/architecture/components",
+          to: "docs/introduction/leek",
           label: "Documentation",
           position: "left",
         },

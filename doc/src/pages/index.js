@@ -51,7 +51,7 @@ export default () => {
                 </h3>
 
                 <div>
-                    <Link to="/dashboard">
+                    <Link to={useBaseUrl("/docs/getting-started/docker")}>
                         <button className="indexButton">Getting started</button>
                     </Link>
                     <Link to="https://www.buymeacoffee.com/fennec">

@@ -24,10 +24,12 @@
       "architecture/indexing"
     ],
     "Getting Started": [
+      "getting-started/docker",
       "getting-started/firebase",
       "getting-started/agent",
       "getting-started/api",
-      "getting-started/web"
+      "getting-started/web",
+      "getting-started/es"
     ]
   }
 }

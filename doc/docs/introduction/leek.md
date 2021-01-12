@@ -21,3 +21,5 @@ features to ease the process of monitoring your celery cluster, finding and resp
 
 Leek is not a celery tasks/workers control tool and you cannot use leek to revoke/terminate tasks or restart your 
 workers fleet, but control features could be supported with the future releases.
+
+Leek is not package but a full stack application docker image.
