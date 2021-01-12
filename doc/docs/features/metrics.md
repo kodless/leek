@@ -5,7 +5,7 @@ sidebar_label: Metrics
 ---
 
 Leek provides a set of basic metrics on its dashboard, you can have a general idea about your application state by 
-looking at these metrics, you can also filter by environment to load metrics for specific environment, these metric 
+looking at these metrics, you can also filter by environment to load metrics for a specific environment, these metrics
 includes:
 
 ![Login](/img/docs/metrics.png)
@@ -23,8 +23,8 @@ report started tasks
 
 - **Received** - Tasks were received by a worker. but not yet started.
 
-- **Started** - Tasks that were started by a worker and still active, set `task_track_started` to `True` on worker level 
-to report started tasks.
+- **Started** - Tasks were started by a worker and still active, set `task_track_started` to `True` on worker level to 
+report started tasks.
 
 - **Succeeded** - Tasks that were succeeded without any retries/failure.
 

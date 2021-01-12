@@ -7,8 +7,6 @@ sidebar_label: States
 ### Tasks states
 
 A task can be in the following celery states:
- Task is succeeded    
-
 
 - <img src="/img/docs/task-queued.png" height="28" align="center" /> - Task queued
 - <img src="/img/docs/task-received.png" height="28" align="center" /> - Task received by worker
@@ -25,18 +23,18 @@ task states, these custom states includes:
 - <img src="/img/docs/task-recovered.png" height="28" align="center" /> - Task succeeded after one or many retries.
 - <img src="/img/docs/task-critical.png" height="28" align="center" /> - Task failed after max retries.
 
-Leek also adds multiple tags to tasks state to give you a more insight about what happened to the task before reaching 
-that state. these are some examples of states with tags:
+Leek also adds multiple tags to tasks state to give you insights about what happened to the task before reaching that 
+state. these are some examples of states with tags:
 
 - <img src="/img/docs/task-recovered-tag.png" height="28" align="center" /> - Task recovered after 2 retries.
 - <img src="/img/docs/task-critical-tag.png" height="28" align="center" /> - Task failed after 3 max retries.
 - <img src="/img/docs/task-revoked-expired.png" height="28" align="center" /> - Task revoked because it's (E)xpired 
 after 1 retry.
-- <img src="/img/docs/task-revoked-terminated.png" height="28" align="center" /> - Task revoked because it's was 
+- <img src="/img/docs/task-revoked-terminated.png" height="28" align="center" /> - Task revoked because it was 
 (T)erminated
 - <img src="/img/docs/task-rejected-ignored.png" height="28" align="center" /> - Task rejected and (I)gnored.
 - <img src="/img/docs/task-rejected-requeued.png" height="28" align="center" /> - Task rejected and re(Q)ueued.
-- <img src="/img/docs/task-retry-tag.png" height="28" align="center" /> - Task waiting to retry for third time.
+- <img src="/img/docs/task-retry-tag.png" height="28" align="center" /> - Task waiting to retry for the third time.
 - <img src="/img/docs/task-received-tag.png" height="28" align="center" /> - Task received by worked after 1 failed 
 execution.
 

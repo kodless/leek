@@ -4,14 +4,14 @@ title: Tasks
 sidebar_label: Tasks
 ---
 
-Leeks provides an awesome UI for tasks listing. it's divided into a paginated list, a time filter, attributes filter, 
-task details drawer.
+Leeks provides an awesome UI for tasks listing. it's divided into a paginated list, a time filter, attributes filter and
+a task details drawer.
 
 ![Tasks](/img/docs/tasks.png)
 
 ### Tasks list
 
-Tasks list is a paginated list of task last timestamp, task name, task uuid and task state. you can:
+Tasks list is a paginated list of task last seen timestamp, task name, task uuid and task state. you can:
 
 - Change page size using the bottom right combobox.
 - Refresh the page with the top right button.
@@ -23,8 +23,8 @@ Tasks list is a paginated list of task last timestamp, task name, task uuid and 
 
 ![Basic Details](/img/docs/task-details.png)
 
-If you want to see more details about a task, you can click on target task and a task details drawer will be opened with
-details that include:
+If you want to see more details about a task, you can click on a target task and a task details drawer will be opened 
+with more information that includes:
 
 - Basic details
 
@@ -47,7 +47,7 @@ processed the task
 
 - Relation
 
-With this tab you can get task dependencies including the root task and the parent task that called the task.
+With this tab you can see task dependencies including the root task and the parent task that called the task.
 
 ![Relation Details](/img/docs/task-details-relation.png)
 

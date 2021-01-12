@@ -4,14 +4,14 @@ title: API
 sidebar_label: API
 ---
 
-Leek API is a Flask Restful Application build using python and served by Gunicorn web server. it acts as a proxy between 
+Leek API is a Flask Restful Application built using python and served by Gunicorn web server. it acts as a proxy between 
 Leek Agent and Elasticsearch and between Leek WEB and Elasticsearch. Leek API receives events from the Leek Agent and 
 index them into Elasticsearch.
 
 ### Process events:
 
 Leek API expose the `/v1/events/process` webhooks endpoint to Leek Agents, this endpoint is secured using API key 
-header, for every wehbhook event this event:
+header, for every wehbhook event this endpoint:
 
 - Authenticate/Authorize the request by searching for an application with the same value in `x-leek-app-key`, 
 `x-leek-app-name` and `x-leek-org-name` headers, if not found will return `UNAUTHORIZED`, otherwise it will get the 
@@ -21,10 +21,10 @@ application and add it to the request context.
 
 - Adapt the json validated events into `Task` and `Worker` objects.
 
-- Search in elastic search for tasks with similar ids:
-    - Index the new event if no document found.
-    - Upsert the existing document with new event if a document is found and there is no conflict.
-    - If a conflict is detected, resolve conflict, merge and reindex the document. 
+- Search in elasticsearch for tasks with similar IDs:
+    - Index the new event if no document matching the is found.
+    - Upsert the existing document with new event if a document is found and there are no conflicts.
+    - If a conflict is detected, Leek resolves the conflict, merge and reindex the document.
 
 - Go through notification pipeline and notify any event matching the rules in the trigger.
 
@@ -41,7 +41,7 @@ it is used for:
 
 ### Applications management:
 
-Leek API expose multiple endpoints for managing applications, these endpoints are secured using JWT tokens authorized
+Leek API expose multiple endpoints for managing applications, these endpoints are secured using JWT tokens authorizer
 and used for:
 
 - Listing applications and triggers - `permissions:all`
@@ -55,5 +55,5 @@ and used for:
 - Cleaning application - `permissions:owner`
 
 Some actions can be called by all authenticated users and some can only be called by the application owner (the user 
-create the application the first time)
+who created the application the first time)
 

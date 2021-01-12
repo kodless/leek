@@ -8,7 +8,7 @@ Leek uses elasticsearch to index the events, you can learn more on how Leek inde
 you can use elasticsearch as a standalone instance or use the pre-installed local elasticsearch service:
 
 - Standalone ES: a standalone ES is an ES instance running separately from Leek container. using a standalone ES is 
-useful if you don't want to lose indexed data when rolling updates to Leek or if Leek crashes. don't forget to disable
+useful if you don't want to lose indexed data when rolling updates to Leek or if Leek crashes. disable
 local ES by setting `LEEK_ENABLE_ES` to false if you wish to use a standalone ES instance.
 
 - Local ES: a local ES instance is a local ES running in the same container with Leek API, this is a good option if you

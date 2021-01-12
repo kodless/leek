@@ -13,9 +13,9 @@
       "features/issues",
       "features/metrics",
       "features/tasks",
+      "features/states",
       "features/workers",
-      "features/charts",
-      "features/states"
+      "features/charts"
     ],
     "Architecture": [
       "architecture/components",

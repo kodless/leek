@@ -13,7 +13,7 @@ their attributes.
 
 ![Time filter](/img/docs/time-filter.png)
 
-You can use the time filter to filter tasks by these timestamps fields:
+You can use the time filter to filter tasks by these timestamp fields:
 
 - **Seen**
 - **Queued**
@@ -31,8 +31,8 @@ You can use the time filter to filter tasks by these timestamps fields:
 
 There are three time filter types:
 
-- **at** - To filter the chosen timestamp filed using date range.
-- **past** - To filter the chosen timestamp field using past time rang. 
+- **at** - To filter the chosen timestamp field using date range.
+- **past** - To filter the chosen timestamp field using past time range (15 mins ago, 2 hours ago ...). 
 - **next** - To filter the chosen timestamp field using future time range (for scheduled tasks with countdown or tasks 
 set to expire in future time)
 

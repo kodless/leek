@@ -4,7 +4,7 @@ title: Applications
 sidebar_label: Applications
 ---
 
-Leek application is basically an elasticsearch index template, Leek uses the index template to create the application
+Leek applications are basically elasticsearch index templates, Leek uses the index template to create the application
 indices where the events will be indexed.
 
 With leek you can create multiple applications and each application can accept events from different brokers after 
@@ -15,7 +15,7 @@ and you can have another application to monitor tasks from **qa** and **producti
 
 ### Create application
 
-If the are no leek applications or you didn't create an application yet, after login, Leek will prompt you with a Modal 
+If there are no leek applications or you didn't create an application yet, after login, Leek will prompt you with a Modal 
 to create your first Leek application:
 
 ![First time](/img/docs/first-time.png)
@@ -26,7 +26,7 @@ http://leek.domain/applications and click on the green button in the top Left.
 ![Applications](/img/docs/applications.png)
 
 The user who created the application will automatically be its owner, which means only him can execute administrative 
-actions against the created application like delete, clean and purge
+write actions against the created application like delete, clean and purge.
 
 ### Delete application
 
@@ -40,7 +40,7 @@ confirm the action. beware, this action is destructive and it will delete:
 
 ### Purge application index
 
-In case you want to just purge the application but don't delete it, you can click on the red purge button.this action 
+In case you want to just purge the application but don't delete it, you can click on the red purge button. this action 
 is destructive but it will not delete application and it will just:
 
 - Delete indices related to the selected application
@@ -58,7 +58,7 @@ destructive but will only delete events older than the time window you've chosen
 
 ![Applications](/img/docs/clean-application-confirm.png)
 
-Deleting stale events from index can have two advantages:
+Deleting stale events from indices will come with two advantages:
 
 - Save storage space.
 - Make search, queries and aggregations faster.

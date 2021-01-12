@@ -5,28 +5,28 @@ sidebar_label: Indexing
 ---
 
 Leek index events into elasticsearch cluster, but how it manages different elasticsearch index for each organisation and
-for each organization application and each application environment.
+for each organization application and each application environment?
 
 ### Organisation/Application indices
 
-When a user creates new leek application, leek starts by creating a new index template for that application. an 
-elasticsearch index template allow leek to define templates that will automatically be applied when new application 
+When a user creates a new leek application, leek starts by creating a new index template for that application. an 
+elasticsearch index template allows leek to define templates that will automatically be applied when new application 
 indices are created. The templates include both settings and mappings and a simple pattern template that controls 
 whether the template should be applied to the new index.
 
 An Index template is considered as a Leek Application, the application name and organisation name will be combined 
 together as `orgname-appname` to form the final index template name. 
 
-for example when a user with the email `lewis@ramp.com` belonging to organization with domain `ramp.com` creates an new
+for example when a user with the email `lewis@ramp.com` belonging to organization with domain `ramp.com` creates a new
 application with the name `leek`. an Index template will be created with the name `ramp.com-leek`.
 
-And if a user belonging to the same organization tries to list the available organization applications, Leek will only 
+And when users belonging to the same organization try to list the available organization applications, Leek will only 
 return application that starts with `ramp.com-*`
 
 When creating the index template, Leek will add a metadata to the index template with:
 
 - **Application owner** - the application owner is the email of the user who created the application, this metadata field is 
-useful to control who can perform write permission against the application, like deleting application, purging application
+useful to control who can perform write actions against the application, like deleting application, purging application
 and managing triggers.
 
 - **Creation time** - when the application was first created.
@@ -45,7 +45,7 @@ and the index template will automatically be applied to it because it matches th
 
 ### Environment separation
 
-When the mapping is applied to the index, there is a property named `env_name` used to isolate different event from 
+When the mapping is applied to the index, a property named `env_name` will be used to isolate different event from 
 different application environments in the same index. 
 
 The agent will always send the `env_name` header enclosed with the request, and Leek will use it during the indexation 

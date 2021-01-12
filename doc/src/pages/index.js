@@ -82,7 +82,7 @@ export default () => {
                     <div style={itemStyle}>
                         <i style={{color: "var(--ifm-link-color)",}}>Multi-ENVs support</i> -
                         When connecting Leek agent to brokers, you can add environments tags, this will help you split celery
-                        events into qa, stg, prod subsets so later you can filter task by environment name.
+                        events into qa, stg, prod subsets so later you can filter tasks by environment name.
                     </div>
                     <div style={itemStyle}>
                         <i style={{color: "var(--ifm-link-color)",}}>Notification</i> -

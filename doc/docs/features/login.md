@@ -31,12 +31,12 @@ You can control who can sign in to Leek by configuring two environment variables
 domain name for GSuite organizations, and google username for personal account.
 
 > Setting **LEEK_API_WHITELISTED_ORGS** to `ramp.com,` will make Leek accessible only to GSuite users belonging to GSuite
-> organization with the domain name `ramp.com`, in other word only users with emails ending by `@ramp.com` can login
+> organization with the domain name `ramp.com`, in other words only users with emails ending by `@ramp.com` can login
 > to leek.
 >
 > In the other hand setting it to `lewis,jun` will make sure that leek is only accessible by users with GMail accounts 
 > **lewis@gmail.com** and **jun@gmail.com**.
 
-`LEEK_API_OWNER_ORG`: Specify the owner organization name that can manage leek, it should be domain name for GSuite 
-organizations, and google username for personal account. (unlike **LEEK_API_WHITELISTED_ORGS** this parameter is not a 
-list, and you should specify only one organization name).
+`LEEK_API_OWNER_ORG`: Specify the owner organization name that can manage leek, it should be the domain name for GSuite 
+organizations, and google username for standard GMails account. (unlike **LEEK_API_WHITELISTED_ORGS** this parameter is 
+not a list, and you should specify only one organization name).

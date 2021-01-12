@@ -4,7 +4,7 @@ title: Workers
 sidebar_label: Workers
 ---
 
-Leeks provides an awesome UI for workers listing. it's divided into a paginated list and worker states filter
+Leeks provides an awesome UI for workers listing. it's divided into a paginated list and a worker states filter
 
 ![Tasks](/img/docs/workers.png)
 
@@ -21,8 +21,8 @@ heartbeat frequency. you can:
 
 ![Worker Details](/img/docs/worker-details.png)
 
-If you want to see more details about a worker, you can click on target task and a worker details drawer will be opened 
-with details that include:
+If you want to see more details about a worker, you can click on a target task and a worker details drawer will be 
+opened with details that includes:
 
 - Basic details
 
