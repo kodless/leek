@@ -10,6 +10,7 @@ import WorkerDetailsDrawer from "../containers/workers/WorkerDetailsDrawer";
 import {useApplication} from "../context/ApplicationProvider";
 import {WorkerSearch} from "../api/worker";
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
+import {fixPagination} from "../utils/pagination";
 
 
 const WorkersPage = () => {
@@ -41,13 +42,10 @@ const WorkersPage = () => {
         workerSearch.filter(currentApp, null, pager.pageSize, from_, stateFilter)
             .then(handleAPIResponse)
             .then((result: any) => {
-                // Pagination
-                const p = {
-                    pageSize: pager.pageSize,
-                    current: pager.current,
-                    total: result.hits.total.value
-                };
-                setPagination(p);
+                // Prepare pagination
+                let p = fixPagination(result.hits.total.value, pager, filterWorkers);
+                if (p) setPagination(p);
+                else return;
                 // Result
                 let workersList: { any }[] = [];
                 result.hits.hits.forEach(function (hit) {
