@@ -33,7 +33,7 @@ export function handleAPIError(error) {
         }
         // API Error
         else
-            message.error(error.message);
+            message.error(<><Text>{`${error.message}`}</Text> <Text type="secondary">- {error.reason}</Text></>);
     } else {
         message.error("Something went wrong")
     }

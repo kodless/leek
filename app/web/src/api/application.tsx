@@ -63,7 +63,8 @@ export class ApplicationSearch implements Application {
                         method: "DELETE",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                     })
             );
@@ -84,7 +85,8 @@ export class ApplicationSearch implements Application {
                         method: "DELETE",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                     })
             );
@@ -100,7 +102,8 @@ export class ApplicationSearch implements Application {
                         method: "DELETE",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                     })
             );
@@ -116,7 +119,8 @@ export class ApplicationSearch implements Application {
                         method: "POST",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                         body: JSON.stringify(trigger)
                     })
@@ -133,7 +137,8 @@ export class ApplicationSearch implements Application {
                         method: "PUT",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                         body: JSON.stringify(trigger)
                     })
@@ -150,7 +155,8 @@ export class ApplicationSearch implements Application {
                         method: "DELETE",
                         headers: {
                             "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "x-leek-app-name": app_name
                         },
                     })
             );

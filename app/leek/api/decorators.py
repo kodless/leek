@@ -40,7 +40,7 @@ def build_context():
     g.email = g.claims["email"]
 
 
-def auth(_route=None, allowed_org_names: List = None):
+def auth(_route=None, allowed_org_names: List = None, only_owner=False):
     def decorator(route):
         @wraps(route)
         def wrapper(*args, **kwargs):
@@ -50,6 +50,20 @@ def auth(_route=None, allowed_org_names: List = None):
             if allowed_org_names:
                 if g.org_name not in allowed_org_names:
                     raise JWTError(f'Only {allowed_org_names} org can access this endpoint')
+            if only_owner:
+                try:
+                    app_name = request.headers["x-leek-app-name"]
+                except KeyError as e:
+                    return responses.missing_headers
+                try:
+                    app = get_app(f"{g.org_name}-{app_name}")
+                    if g.email != app.get("owner"):
+                        return responses.insufficient_permission
+                except es_exceptions.NotFoundError:
+                    return responses.application_not_found
+                except es_exceptions.ConnectionError:
+                    return responses.cache_backend_unavailable
+
             return route(*args, **kwargs)
 
         return wrapper
