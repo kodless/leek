@@ -49,9 +49,10 @@ class TaskStateFields:
     QUEUED = ("queued_at", "exchange", "routing_key", "queue", "client",)
     RECEIVED = ("received_at",)
     STARTED = ("started_at",)
+    RETRY = ("retried_at",)
+    # TERMINAL STATES
     SUCCEEDED = ("succeeded_at", "result", "runtime",)
     FAILED = ("failed_at",)
-    RETRY = ("retried_at",)
     REJECTED = ("rejected_at", "requeue",)
     REVOKED = ("revoked_at", "terminated", "expired", "signum")
 
@@ -175,6 +176,7 @@ class Task(EV):
     # ORIGIN
     client: Optional[str] = None
     worker: Optional[str] = None
+    events: Optional[List[str]] = field(default_factory=lambda: [])
     events_count: Optional[int] = 1
 
     def resolve_conflict(self, coming: "Task"):
@@ -194,15 +196,12 @@ class Task(EV):
             if value is not None and key in attrs_to_upsert:
                 setattr(self, key, value)
 
-    def merge(self, coming: Union["Task", "Worker"]):
-        events_count = self.events_count
-        in_order = self.exact_timestamp < coming.exact_timestamp
+    def handle_non_terminal_event(self, coming: Union["Task", "Worker"]):
         # self is the currently stored/indexed doc
+        in_order = self.exact_timestamp < coming.exact_timestamp
         if in_order:
             if self.state in STATES_TERMINAL:
-                # The task is already in terminal state, Resolve conflict and merge
-                # This can be caused if the timestamp of the new event is inaccurate
-                # Or if the workers/clients are not synchronized
+
                 if self.state != REVOKED:
                     print(
                         f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid} {self.exact_timestamp} {coming.exact_timestamp}")
@@ -221,6 +220,25 @@ class Task(EV):
             # The two documents are out of order and has different states => Resolve conflict and merge
             self.resolve_conflict(coming)
             merged = True
+        return merged
+
+    def merge(self, coming: Union["Task", "Worker"]):
+        events_count = self.events_count
+        events = self.events
+
+        if coming.state in STATES_TERMINAL:
+            # Coming terminal event is safe to merge, no need to compare clocks/timestamps
+            self.update(coming)
+            merged = True
+        elif self.state in STATES_TERMINAL:
+            # The task is already in terminal state, Resolve conflict and merge
+            # This can be caused if the timestamp of the new event is inaccurate
+            # Or if the workers/clients are not synchronized
+            self.resolve_conflict(coming)
+            merged = True
+        else:
+            # Handle non terminal events (Resolve conflict and merge | Just merge)
+            merged = self.handle_non_terminal_event(coming)
 
         # Introduce custom states
         if self.retries:
@@ -237,6 +255,8 @@ class Task(EV):
 
         # Increment events count
         self.events_count = events_count + 1
+        events.append(coming.state)
+        self.events = events
 
         return merged
 

@@ -12,4 +12,4 @@ while True:
     revoked_terminated_task.delay()
     recovered_task.delay()
     parent_task.delay()
-    time.sleep(30)
+    time.sleep(1)

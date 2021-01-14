@@ -33,7 +33,7 @@ const WorkersPage = () => {
     const [workerDetailsVisible, setDetailsVisible] = useState(false);
 
     /** =======================
-     *  gRPC Service Calls
+     *  Calls
      ---------------------- **/
     function filterWorkers(pager = {current: 1, pageSize: 10}) {
         if (!currentApp) return;

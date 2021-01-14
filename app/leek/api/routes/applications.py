@@ -5,9 +5,10 @@ from string import ascii_uppercase
 
 from flask import Blueprint, request, g
 from flask_restx import Resource
+from schema import SchemaError
 
 from leek.api.decorators import auth
-from leek.api.utils import generate_app_key
+from leek.api.utils import generate_app_key, init_trigger
 from leek.api.schemas.application import ApplicationSchema, TriggerSchema
 from leek.api.db import template as apps
 from leek.api.routes.api_v1 import api_v1
@@ -60,9 +61,12 @@ class AddFanoutTriggers(Resource):
         """
         data = request.get_json()
         trigger = TriggerSchema.validate(data)
+        trigger["id"] = ''.join(choice(ascii_uppercase) for i in range(10))
+
+        if not init_trigger(trigger, app_name):
+            raise SchemaError(f"Invalid webhook URL")
 
         org_name = g.org_name
-        trigger["id"] = ''.join(choice(ascii_uppercase) for i in range(10))
 
         return apps.add_or_update_app_fo_trigger(
             index_alias=f"{org_name}-{app_name}",
@@ -128,13 +132,16 @@ class UpdateFanoutTriggers(Resource):
     @auth(only_owner=True)
     def put(self, app_name, trigger_id):
         """
-        Create fanout trigger
+        Edit fanout trigger
         """
         data = request.get_json()
         trigger = TriggerSchema.validate(data)
+        trigger["id"] = trigger_id
+
+        if not init_trigger(trigger, app_name):
+            raise SchemaError(f"Invalid webhook URL")
 
         org_name = g.org_name
-        trigger["id"] = trigger_id
 
         return apps.add_or_update_app_fo_trigger(
             index_alias=f"{org_name}-{app_name}",
