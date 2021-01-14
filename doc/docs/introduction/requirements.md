@@ -30,7 +30,7 @@ So, in order for Leek to catch `task-started` events, you will need to enable th
 
 [More info](https://docs.celeryproject.org/en/stable/userguide/configuration.html#task-track-started)
 
-### Enable celery `task_track_started`
+### Enable celery `task_send_sent_event`
 
 By default celery clients does not send `task-sent` events, Leek relies on those events to know some specific attributes 
 that are not sent with other events and only sent by clients during `task-sent` events, these `task-sent` specific 

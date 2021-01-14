@@ -17,11 +17,11 @@ whether the template should be applied to the new index.
 An Index template is considered as a Leek Application, the application name and organisation name will be combined 
 together as `orgname-appname` to form the final index template name. 
 
-for example when a user with the email `lewis@ramp.com` belonging to organization with domain `ramp.com` creates a new
-application with the name `leek`. an Index template will be created with the name `ramp.com-leek`.
+for example when a user with the email `john@example.com` belonging to organization with domain `example.com` creates 
+a new application with the name `leek`. an Index template will be created with the name `example.com-leek`.
 
 And when users belonging to the same organization try to list the available organization applications, Leek will only 
-return application that starts with `ramp.com-*`
+return application that starts with `example.com-*`
 
 When creating the index template, Leek will add a metadata to the index template with:
 

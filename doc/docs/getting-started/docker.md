@@ -39,8 +39,8 @@ services:
       - LEEK_FIREBASE_AUTH_DOMAIN=kodhive-leek.firebaseapp.com
       # Authorization
       - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
-      - LEEK_API_OWNER_ORG=ramp.com
-      - LEEK_API_WHITELISTED_ORGS=ramp.com,
+      - LEEK_API_OWNER_ORG=example.com
+      - LEEK_API_WHITELISTED_ORGS=example.com,
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
@@ -52,7 +52,7 @@ services:
             "exchange": "celeryev",
             "queue": "celeryev.fanout",
             "routing_key": "#",
-            "org_name": "ramp.com",
+            "org_name": "example.com",
             "app_name": "leek",
             "app_env": "prod"
           }
