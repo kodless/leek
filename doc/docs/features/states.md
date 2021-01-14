@@ -17,14 +17,14 @@ A task can be in the following celery states:
 - <img src="/img/docs/task-rejected.png" height="28" align="center" /> - Task rejected
 - <img src="/img/docs/task-revoked.png" height="28" align="center" /> - Task revoked
 
-In addition to standard celery states, Leek adds additional custom states to the mix to give you a more context about 
+In addition to standard celery states, Leek adds additional custom states to the mix to give you more context about 
 task states, these custom states includes:
 
 - <img src="/img/docs/task-recovered.png" height="28" align="center" /> - Task succeeded after one or many retries.
 - <img src="/img/docs/task-critical.png" height="28" align="center" /> - Task failed after max retries.
 
-Leek also adds multiple tags to tasks state to give you insights about what happened to the task before reaching that 
-state. these are some examples of states with tags:
+Leek also adds multiple tags to tasks state to give you insights about what happened to the task before reaching the 
+current state. these are some examples of states with tags:
 
 - <img src="/img/docs/task-recovered-tag.png" height="28" align="center" /> - Task recovered after 2 retries.
 - <img src="/img/docs/task-critical-tag.png" height="28" align="center" /> - Task failed after 3 max retries.

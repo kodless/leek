@@ -9,11 +9,11 @@ Communication between Leek components is secured with different Authentication a
 ## Agent to API
 
 Authentication between the agent and the API is ensured using API key header and additional headers providing request 
-context to Leek API as it will be receiving requests from different agent subscriptions and it should know which leek 
+context to Leek API as it will be receiving requests from different agents subscriptions and it should know which leek 
 application to index the events to. Requests sent from agent to the API must include these headers:
                         
 - `x-leek-org-name` - the organization name is the domain name if leek user signed up with a GSuite google. for instance 
-**example.com**, and google account username if leek user signed up with personal google account.
+**example.com**, and google account username if leek user signed up with standard google account.
 
 - `x-leek-app-name`: the application name chosen when the application was first created.
 
@@ -23,5 +23,5 @@ application to index the events to. Requests sent from agent to the API must inc
 
 Authentication between the web application and backend is ensured using Firebase JWT Token provided after the user logs 
 in. the API will validate the token before processing any request, making sure that the JWT token is valid and also 
-checking if the user is allowed to call the target endpoint as some endpoints like purging application and deleting 
-application are only permitted for application owners. and other endpoints are only authorized for leek admins.
+checking if the user is allowed to call the target endpoint as some endpoints like `purging application` and `deleting 
+application` endpoints are only permitted for application owners. and other endpoints are only authorized for leek admins.

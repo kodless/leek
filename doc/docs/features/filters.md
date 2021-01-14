@@ -31,9 +31,9 @@ You can use the time filter to filter tasks by these timestamp fields:
 
 There are three time filter types:
 
-- **at** - To filter the chosen timestamp field using date range.
-- **past** - To filter the chosen timestamp field using past time range (15 mins ago, 2 hours ago ...). 
-- **next** - To filter the chosen timestamp field using future time range (for scheduled tasks with countdown or tasks 
+- **at** - to filter the chosen timestamp field using a date range.
+- **past** - to filter the chosen timestamp field using past time range (15 mins ago, 2 hours ago ...). 
+- **next** - to filter the chosen timestamp field using future time range (for scheduled tasks with countdown or tasks 
 set to expire in future time)
 
 ![Time filter types](/img/docs/time-filter-types.png)
@@ -48,17 +48,17 @@ You can use the attributes filter to filter tasks by the following attributes:
 - **routing_key** - Broker routing key
 - **queue** - Broker queue name
 - **worker** - Worker hostname
-- **runtime** - Succeeded task runtime lte or gte
-- **retries** - retries lte or gte
+- **runtime** - SUCCEEDED|RECOVERED task runtime lte or gte
+- **retries** - retries lte|gte
 - **exception** - Failure exception name
 - **traceback** - Failure exception traceback
-- **args** - Task positional arguments
-- **kwargs** - Tasks keyword arguments
-- **result** - Succeeded task result
-- **revocation reason** - Revocation reason (Expired|Terminated)
-- **rejection outcome** - Rejection outcome (Requeued|Ignored)
-- **root_id** - Root task ID
-- **parent_id** - Parent task ID
+- **args** - task positional arguments
+- **kwargs** - task keyword arguments
+- **result** - SUCCEEDED|RECOVERED task result
+- **revocation reason** - REVOKED task reason (Expired|Terminated)
+- **rejection outcome** - REJECTED task outcome (Requeued|Ignored)
+- **root_id** - root task UUID
+- **parent_id** - parent task UUID
 
 ![Attributes filter](/img/docs/attributes-filter.png)
 

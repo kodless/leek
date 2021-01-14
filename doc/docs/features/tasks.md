@@ -4,8 +4,8 @@ title: Tasks
 sidebar_label: Tasks
 ---
 
-Leeks provides an awesome UI for tasks listing. it's divided into a paginated list, a time filter, attributes filter and
-a task details drawer.
+Leeks provides an awesome UI for tasks listing. it's divided into a paginated list, time filter, attributes filter and
+task details drawer.
 
 ![Tasks](/img/docs/tasks.png)
 
@@ -28,7 +28,7 @@ with more information that includes:
 
 - Basic details
 
-With this tab, you can check basic task details like UUID, name, runtime, arguments and result
+With this tab, you can check basic task details like UUID, name, runtime, arguments and result.
 
 ![Basic Details](/img/docs/task-details-basic.png)
 
@@ -47,7 +47,7 @@ processed the task
 
 - Relation
 
-With this tab you can see task dependencies including the root task and the parent task that called the task.
+With this tab you can monitor task dependencies including the root task and the parent task that called the child task.
 
 ![Relation Details](/img/docs/task-details-relation.png)
 

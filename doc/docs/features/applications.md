@@ -10,8 +10,8 @@ indices where the events will be indexed.
 With leek you can create multiple applications and each application can accept events from different brokers after 
 configuring the agent to fanout events to Leek API. 
 
-> eg: You can create an application to monitor tasks from **qa** and **production** rabbitmq brokers of the **project X** 
-and you can have another application to monitor tasks from **qa** and **production** rabbitmq brokers of the **project Z**.
+> eg: You can create an application to monitor tasks from **qa** and **prod** rabbitmq brokers of the **project X** 
+and you can have another application to monitor tasks from **qa** and **prod** rabbitmq brokers of the **project Z**.
 
 ### Create application
 
@@ -21,7 +21,7 @@ to create your first Leek application:
 ![First time](/img/docs/first-time.png)
 
 However, if you already created an application and you want to add another application, you can go to 
-http://leek.domain/applications and click on the green button in the top Left. 
+http://0.0.0.0:8000/applications and click on the green button in the top-left. 
 
 ![Applications](/img/docs/applications.png)
 
@@ -41,7 +41,7 @@ confirm the action. beware, this action is destructive and it will delete:
 ### Purge application index
 
 In case you want to just purge the application but don't delete it, you can click on the red purge button. this action 
-is destructive but it will not delete application and it will just:
+is destructive but it will not delete the application and it will just:
 
 - Delete indices related to the selected application
 - Create a fresh index
@@ -58,7 +58,7 @@ destructive but will only delete events older than the time window you've chosen
 
 ![Applications](/img/docs/clean-application-confirm.png)
 
-Deleting stale events from indices will come with two advantages:
+Deleting stale events from indices comes with two advantages:
 
 - Save storage space.
 - Make search, queries and aggregations faster.

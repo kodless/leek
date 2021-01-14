@@ -6,9 +6,9 @@ sidebar_label: Leek?
 
 ### What is Leek?
 
-Leek is a celery tasks monitoring tool, the main difference between Leek and other celery tasks monitoring tools is that 
-Leek can connect and monitor many brokers with a single container whereas with other tool you can monitor only a single 
-broker at a time.
+Leek is a celery tasks monitoring tool, the main difference between Leek and other monitoring tools is that Leek can 
+connect to and monitor many brokers with a single container whereas other tools can monitor only a single broker at a 
+time.
 
 Also leek supports environments branching, multiple applications, Google SSO, charts, issues monitoring, advanced 
 filtering and search, indexation and persistence, slack notifications and provides an awesome UI for a better user 
@@ -19,7 +19,7 @@ features to ease the process of monitoring your celery cluster, finding and resp
 
 ### What Leek is not?
 
-Leek is not a celery tasks/workers control tool and you cannot use leek to revoke/terminate tasks or restart your 
-workers fleet, however control features could be supported with the future releases.
+Leek is not a celery tasks/workers control tool and you cannot use leek to revoke/terminate/start tasks, restart your 
+workers fleet, or manage your brokers. however control features could be supported with future releases.
 
-Leek is not package but a full stack application docker image.
+Leek is not a package that can be installed/imported but a full stack application published as a docker image.

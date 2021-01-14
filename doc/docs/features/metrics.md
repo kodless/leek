@@ -18,12 +18,12 @@ includes:
 
 - **Tasks Processed** - Seen distinct tasks UUIDs.
 
-- **Tasks Queued** - Tasks in the queues waiting to be processed. set `task_send_sent_event` to `True` on worker level to 
-report started tasks
+- **Tasks Queued** - Tasks in the queues waiting to be processed. set `task_send_sent_event` to `True` on clients level 
+to report started tasks
 
 - **Received** - Tasks were received by a worker. but not yet started.
 
-- **Started** - Tasks were started by a worker and still active, set `task_track_started` to `True` on worker level to 
+- **Started** - Tasks were started by a worker and still active, set `task_track_started` to `True` on workers level to 
 report started tasks.
 
 - **Succeeded** - Tasks that were succeeded without any retries/failure.

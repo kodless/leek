@@ -4,7 +4,7 @@ title: Firebase
 sidebar_label: Firebase
 ---
 
-Leek uses Firebase Auth and Google SSO for authentication. you can use the default Firebase production but it will only
+Leek uses Firebase Auth and Google SSO for authentication. you can use the default Firebase settings but it will only
 work for development.
 
 ![Application](/img/docs/auth.png)

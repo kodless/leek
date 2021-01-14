@@ -4,7 +4,7 @@ title: Charts
 sidebar_label: Charts
 ---
 
-Leek provides multiple charts to give you insights about the application state.
+Leek provides multiple charts giving you insights about the application state.
 
 ![Monitor](/img/docs/monitor.png)
 
@@ -36,8 +36,9 @@ A bar chart representing the 5 most slow tasks by grouping tasks by name and cal
 
 ### Tasks over time:
 
-A line chart representing the events over time, you can customize the chart to use different types of timestamps, for 
-example if you choose `queued` as timestamp type, the chart will display the queued tasks over time and if you choose 
-`failed` as timestamp type, the chart will display task failures over time.
+A line chart representing the events over time, you can customize this chart to use different types of timestamps, for 
+example: 
+- if you choose `queued` as timestamp type, the chart will display the queued tasks over time.
+- if you choose `failed` as timestamp type, the chart will display task failures over time.
 
 ![Tasks over time](/img/docs/tasks-over-time.png)

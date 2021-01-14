@@ -5,7 +5,7 @@ sidebar_label: API
 ---
 
 Leek API is a Flask Restful Application built using python and served by Gunicorn web server. it acts as a proxy between 
-Leek Agent and Elasticsearch and between Leek WEB and Elasticsearch. Leek API receives events from the Leek Agent and 
+Leek Agent and Elasticsearch and between Leek WEB and Elasticsearch. Leek API receives events from Leek Agent and 
 index them into Elasticsearch.
 
 ### Process events:
@@ -13,16 +13,16 @@ index them into Elasticsearch.
 Leek API expose the `/v1/events/process` webhooks endpoint to Leek Agents, this endpoint is secured using API key 
 header, for every wehbhook event this endpoint:
 
-- Authenticate/Authorize the request by searching for an application with the same value in `x-leek-app-key`, 
+1. Authenticate/Authorize the request by searching for an application with the same value in `x-leek-app-key`, 
 `x-leek-app-name` and `x-leek-org-name` headers, if not found will return `UNAUTHORIZED`, otherwise it will get the 
 application and add it to the request context.
 
-- Validate the webhook events with `TaskSchema` and `WorkerSchema`.
+2. Validate the webhook events with `TaskSchema` and `WorkerSchema`.
 
-- Adapt the json validated events into `Task` and `Worker` objects.
+3. Adapt the json validated events into `Task` and `Worker` objects.
 
-- Search in elasticsearch for tasks with similar IDs:
-    - Index the new event if no document matching the is found.
+3. Search in elasticsearch for tasks with similar IDs:
+    - Index the new event if no document matching the new event is found.
     - Upsert the existing document with new event if a document is found and there are no conflicts.
     - If a conflict is detected, Leek resolves the conflict, merge and reindex the document.
 

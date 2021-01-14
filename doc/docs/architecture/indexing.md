@@ -4,8 +4,8 @@ title: Indexing
 sidebar_label: Indexing
 ---
 
-Leek index events into elasticsearch cluster, but how it manages different elasticsearch index for each organisation and
-for each organization application and each application environment?
+Leek index events into elasticsearch cluster, but how it manages different elasticsearch index for each organisation,
+for each organization application and for each application environment?
 
 ### Organisation/Application indices
 
@@ -21,19 +21,19 @@ for example when a user with the email `john@example.com` belonging to organizat
 a new application with the name `leek`. an Index template will be created with the name `example.com-leek`.
 
 And when users belonging to the same organization try to list the available organization applications, Leek will only 
-return application that starts with `example.com-*`
+return applications starting with `example.com-*`
 
 When creating the index template, Leek will add a metadata to the index template with:
 
-- **Application owner** - the application owner is the email of the user who created the application, this metadata field is 
-useful to control who can perform write actions against the application, like deleting application, purging application
-and managing triggers.
+- **Application owner** - the application owner is the email of the user who created the application, this metadata 
+field is useful to control who can perform write actions against the application, like deleting application, purging 
+application and managing triggers.
 
 - **Creation time** - when the application was first created.
 
-- **Broker type** - the only supported broker for now is rabbitmq, SQS and redis will be supported in the future.
+- **Broker type** - the only supported broker for now is rabbitmq. SQS and redis will be supported in the future.
 
-- **API Key** - the API key that will be used for Leek agent to fanout celery event to Leek API, this is only used with 
+- **API Key** - the API key that will be used for Leek agent to fanout celery events to Leek API, this is only used with 
 standalone agents, local agents is using a shared secret between Agent and API and provided as an environment variable.
 
 ![Application](/img/docs/agent.png)
@@ -45,21 +45,21 @@ and the index template will automatically be applied to it because it matches th
 
 ### Environment separation
 
-When the mapping is applied to the index, a property named `env_name` will be used to isolate different event from 
+When the mapping is applied to the index, a property named `env_name` will be used to isolate different events from 
 different application environments in the same index. 
 
-The agent will always send the `env_name` header enclosed with the request, and Leek will use it during the indexation 
-of the events.
+The agent will always send the `env_name` header enclosed with the request, and Leek will add it to ES document during 
+the indexation of the events.
 
 ### Events types separation
 
 The mapping properties include a property named `kind` and used by leek to separate different kind of events. when the 
-agent sends tasks events, they will be indexed with `kind=task` in the other hand when the agent sends workers events, 
+agent sends tasks events, they will be indexed with `kind=task`. in the other hand, when the agent sends workers events, 
 they will be indexed with `kind=worker`.
 
 ### Index mapping properties
 
-These are the available tasks | worker properties that leek supports for now:
+These are the available tasks and workers properties that leek supports for now:
 
 ```python
 properties = {
@@ -255,7 +255,7 @@ properties = {
 
 ### Index template
 
-And this is an example of an index template
+This is an example of an index template for the application `appname` belonging to the organization `orgname`:
 
 ```python
 template = {

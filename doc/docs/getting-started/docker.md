@@ -7,6 +7,19 @@ sidebar_label: Docker
 Leek is a full stack application built using different technologies and published as a docker image to a 
 [public repository](https://hub.docker.com/repository/docker/kodhive/leek) on DockerHub
 
+Leek is a multi-services application. during docker container startup, supervisord will start as the process with pid=1
+and will start the enabled service and skip the disabled ones relying on `LEEK_ENABLE_AGENT`, `LEEK_ENABLE_AGENT`, 
+`LEEK_ENABLE_WEB`, `LEEK_ENABLE_ES` environment variables.
+
+### Before start using Leek in production
+
+1. Setup a new firebase project to be used for authentication between WEB and API, [more info](http://localhost:3000/docs/getting-started/firebase).
+2. Decide what agent mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/agent)
+3. Decide what elasticsearch db mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/es).
+
+
+### Quick local experiment
+
 To experiment with leek, you can run [this test docker-compose file](https://github.com/kodless/leek/blob/master/docker-compose-qa.yml) with:
 
 ```bash
@@ -102,9 +115,3 @@ services:
       timeout: 4s
       retries: 20
 ```
-
-### Before start using Leek in production
-
-1. Setup a new firebase project to be used for authentication between WEB and API, [more info](http://localhost:3000/docs/getting-started/firebase).
-2. Decide what agent mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/agent)
-3. Decide what elasticsearch db mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/es).
