@@ -113,7 +113,7 @@ const Applications = () => {
                     applicationSearch.cleanApplication(selectedApp.app_name, clean.kind, clean.count, clean.unit)
                         .then(handleAPIResponse)
                         .then((_: any) => {
-                            message.info("Application old events cleaned!")
+                            message.info("Deletion request processing...")
                         }, handleAPIError)
                         .catch(handleAPIError)
                         .finally(() => {

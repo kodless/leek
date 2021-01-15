@@ -186,7 +186,7 @@ def clean_documents_older_than(index_alias, kind="task", count=30, unit="seconds
             }
         }
         d = connection.delete_by_query(index=index_alias, body=query,
-                                       params=dict(wait_for_completion="true", refresh="true"))
+                                       params=dict(wait_for_completion="false", refresh="true", conflicts="proceed"))
         return d, 200
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
