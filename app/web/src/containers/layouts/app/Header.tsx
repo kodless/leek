@@ -4,7 +4,7 @@ import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined,
-    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined
+    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined, DeploymentUnitOutlined
 } from '@ant-design/icons';
 
 import Image from "../../../components/Image";
@@ -67,6 +67,13 @@ const Header = () => {
             <Link to="/monitor">
                 <RadarChartOutlined/>
                 Monitor
+            </Link>
+        </Menu.Item>,
+
+        <Menu.Item key="/agent">
+            <Link to="/agent">
+                <DeploymentUnitOutlined/>
+                Agent
             </Link>
         </Menu.Item>,
 
@@ -156,7 +163,7 @@ const Header = () => {
                                     <a href="https://leek.kodhive.com" target="_blank" rel="noopener norefferer">
                                         <Button size="small" type="primary"
                                                 style={{textAlign: "center"}}>
-                                            <FileWordOutlined />
+                                            <FileWordOutlined/>
                                         </Button>
                                     </a>
                                 </Col>

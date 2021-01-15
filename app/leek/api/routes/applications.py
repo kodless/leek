@@ -54,7 +54,7 @@ class Applications(Resource):
 @applications_ns.route('/<string:app_name>/fo-triggers')
 class AddFanoutTriggers(Resource):
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def post(self, app_name):
         """
         Create fanout trigger
@@ -77,7 +77,7 @@ class AddFanoutTriggers(Resource):
 @applications_ns.route('/<string:app_name>')
 class DeleteApplication(Resource):
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def delete(self, app_name):
         """
         Delete application
@@ -88,7 +88,7 @@ class DeleteApplication(Resource):
 @applications_ns.route('/<string:app_name>/purge')
 class PurgeApplication(Resource):
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def delete(self, app_name):
         """
         Purge application
@@ -100,7 +100,7 @@ class PurgeApplication(Resource):
 @applications_ns.route('/<string:app_name>/clean')
 class CleanApplication(Resource):
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def delete(self, app_name):
         """
         Clean application
@@ -129,7 +129,7 @@ class ApplicationIndices(Resource):
 @applications_ns.route('/<string:app_name>/fo-triggers/<string:trigger_id>')
 class UpdateFanoutTriggers(Resource):
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def put(self, app_name, trigger_id):
         """
         Edit fanout trigger
@@ -148,7 +148,7 @@ class UpdateFanoutTriggers(Resource):
             trigger=trigger
         )
 
-    @auth(only_owner=True)
+    @auth(only_app_owner=True)
     def delete(self, app_name, trigger_id):
         org_name = g.org_name
 

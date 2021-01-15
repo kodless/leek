@@ -4,6 +4,7 @@ from leek.api.routes.users import users_bp
 from leek.api.routes.applications import applications_bp
 from leek.api.routes.events import events_bp
 from leek.api.routes.search import search_bp
+from leek.api.routes.agent import agent_bp
 
 
 def register_blueprints(app):
@@ -14,3 +15,4 @@ def register_blueprints(app):
     app.register_blueprint(applications_bp)
     app.register_blueprint(events_bp)
     app.register_blueprint(search_bp)
+    app.register_blueprint(agent_bp)

@@ -60,7 +60,7 @@ USAGE = f"""
 [b>]|#|@     [n>]Release date:@ {LEEK_RELEASE_DATE}                             [b>]|#|@
 [b>]|#|@     [n>]Codename:@ Fennec                                [b>]|#|@
 [b>]|#|@     [n>]Repository:@ https://github.com/kodless/leek     [b>]|#|@
-[b>]|#|@     [n>]Homepage:@ https://leek.kodhive.com              [b>]|#|@
+[b>]|#|@     [n>]Homepage:@ https://tryleek.com                   [b>]|#|@
 [b>]|#|@     [n>]Documentation:@ https://leek.kodhive.com/docs    [b>]|#|@
 
 [r>]Author:@ Hamza Adami <me@adamihamza.com>

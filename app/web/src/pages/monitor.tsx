@@ -32,6 +32,7 @@ const StatesKeys = [
 const MonitorPage = () => {
 
     const monitorSearch = new MonitorSearch();
+    const [loading, setLoading] = useState<boolean>();
     const [totalHits, setTotalHits] = useState<number>(0);
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
     const [queuesDistribution, setQueuesDistribution] = useState<any>([]);
@@ -60,6 +61,7 @@ const MonitorPage = () => {
             ...filters,
             ...timeFilters,
         };
+        setLoading(true);
         monitorSearch.charts(currentApp, currentEnv, "desc", allFilters, timeDistributionTSType)
             .then(handleAPIResponse)
             .then((result: any) => {
@@ -115,7 +117,8 @@ const MonitorPage = () => {
                 ]);
                 setTotalHits(totalInQueues);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setLoading(false));
     }, [currentApp, currentEnv, filters, timeFilters, timeDistributionTSType]);
 
     return (
