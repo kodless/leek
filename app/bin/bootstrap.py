@@ -131,7 +131,8 @@ if ENABLE_AGENT:
                 except KeyError:
                     abort("Agent and API are both enabled in same container, LEEK_AGENT_API_SECRET env variable should "
                           "be specified for inter-communication between agent and API")
-                subscription["api_url"] = LEEK_API_URL
+                # Use local API URL not from LEEK_API_URL env var, LEEK_API_URL is used by Web app (browser)
+                subscription["api_url"] = "http://0.0.0.0:5000"
 
         # Validate each subscription
         for subscription_name, subscription in subscriptions.items():

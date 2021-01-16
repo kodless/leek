@@ -52,3 +52,11 @@ no_subscriptions_found = {
                                  "reason": "No subscriptions found, agent not started!"
                              }
                          }, 400
+
+broker_not_reachable = {
+                           "error": {
+                               "code": "503002",
+                               "message": "Agent error",
+                               "reason": "Broker not reachable, check your network firewall!"
+                           }
+                       }, 503

@@ -7,6 +7,7 @@ from flask import Blueprint, request, g
 from flask_restx import Resource
 from kombu.connection import Connection
 
+from leek.api.schemas.subscription import SubscriptionSchema
 from leek.api.conf import settings
 from leek.api.decorators import auth
 from leek.api.routes.api_v1 import api_v1
@@ -89,11 +90,30 @@ class AgentSubscriptionsList(Resource):
         return app_subscriptions, 200
 
     @auth(only_app_owner=True)
-    def post(self, app_name):
+    def post(self):
         """
         Add subscription
         """
-        pass
+        data = request.get_json()
+        app_name = request.headers["x-leek-app-name"]
+        subscription = SubscriptionSchema.validate(data)
+
+        subscription.update({
+            "org_name": g.org_name,
+            "app_name": app_name,
+            "app_key": settings.LEEK_AGENT_API_SECRET,
+            "api_url": settings.LEEK_API_URL
+        })
+        # Ensure connection
+        try:
+            connection = Connection(subscription["broker"], virtual_host=subscription["virtual_host"])
+            connection.ensure_connection(max_retries=2)
+            connection.release()
+        except:
+            return responses.broker_not_reachable
+        # Add subscription
+        # ...
+        return subscription, 200
 
 
 @agent_ns.route('/subscriptions/<string:subscription_name>')

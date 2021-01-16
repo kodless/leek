@@ -1,19 +1,16 @@
 import React, {useEffect, useState} from 'react'
-import {
-    Row, List, Button, Col, Card, Typography, Tag, Table, Modal, Form,
-    Input, Divider, Empty, Space, message
-} from 'antd'
-import {AppstoreAddOutlined, DeploymentUnitOutlined, BellOutlined} from "@ant-design/icons";
+import {Row, List, Button, Col, Card, Typography, Tag, Table, Form, Empty, Space, message} from 'antd'
+import {AppstoreAddOutlined, BellOutlined} from "@ant-design/icons";
 
 import SubscriptionDataColumns from "../../components/data/SubscriptionData";
 
 import {AgentService} from "../../api/agent";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import {useApplication} from "../../context/ApplicationProvider";
+import AddSubscription from "./AddSubscription";
 
 
 const Text = Typography.Text;
-const FormItem = Form.Item;
 
 const Subscriptions = (props) => {
 
@@ -21,7 +18,7 @@ const Subscriptions = (props) => {
     const service = new AgentService();
     const {currentApp} = useApplication();
 
-    const [subscriptions, setSubscriptions] = useState<any>();
+    const [subscriptions, setSubscriptions] = useState<any>([]);
 
     const [addSubscriptionModalVisible, setAddSubscriptionModalVisible] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -46,6 +43,7 @@ const Subscriptions = (props) => {
         service.addSubscription(currentApp, subscription)
             .then(handleAPIResponse)
             .then((subscription: any) => {
+                setSubscriptions([...subscriptions, subscription]);
                 reset();
             }, handleAPIError)
             .catch(handleAPIError)
@@ -75,64 +73,15 @@ const Subscriptions = (props) => {
         form.resetFields();
     }
 
-    const formItems = (<>
-        <FormItem
-            name="broker"
-            rules={[
-                {required: true, message: 'Please input broker url!'},
-                {
-                    type: "url",
-                    message: "This field must be a valid url."
-                }]}
-        >
-            <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>} placeholder="Broker"/>
-        </FormItem>
-
-        <FormItem
-            name="backend"
-            rules={[
-                {required: true, message: 'Please input backend url!'},
-                {
-                    type: "url",
-                    message: "This field must be a valid url."
-                }]}
-        >
-            <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>} placeholder="Backend"/>
-        </FormItem>
-
-        <Divider/>
-    </>);
-
-
     return (
         <Row style={{width: "100%", marginBottom: "16px"}}>
 
-            {/*Add Subscription*/}
-            <Modal
-                title={<Space><BellOutlined/>Add Subscription</Space>}
+            <AddSubscription
                 visible={addSubscriptionModalVisible}
-                onCancel={reset}
-                footer={[
-                    <Button key="cancel" size="small" onClick={reset}>
-                        Cancel
-                    </Button>,
-                    <Button form="addSubscription"
-                            key="submit"
-                            htmlType="submit"
-                            size="small"
-                            type="primary"
-                            loading={loading}>
-                        Create
-                    </Button>
-                ]}
-            >
-                <Form onFinish={doAddSubscription}
-                      form={form} id="addSubscription"
-                      initialValues={{type: "slack", patterns: "all", enabled: false}}>
-                    {formItems}
-                </Form>
-            </Modal>
-
+                loading={loading}
+                form={form}
+                onAdd={doAddSubscription}
+            />
             <Card size="small" style={{width: "100%"}}
                   bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
                   loading={loading}

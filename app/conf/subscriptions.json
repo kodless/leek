@@ -1,1 +1,15 @@
-{}
+{
+    "default": {
+        "broker": "amqp://admin:admin@mq//",
+        "backend": null,
+        "virtual_host": "/",
+        "exchange": "celeryev",
+        "queue": "celeryev.fanout",
+        "routing_key": "#",
+        "org_name": "ramp.com",
+        "app_name": "leek",
+        "app_env": "prod",
+        "app_key": "not-secret",
+        "api_url": "http://0.0.0.0:5000"
+    }
+}
