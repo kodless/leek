@@ -5,7 +5,7 @@ import {
 } from 'antd'
 import {AppstoreAddOutlined, DeploymentUnitOutlined, SlackOutlined, BellOutlined} from "@ant-design/icons";
 
-import TriggerDataColumns from "../../components/app/TriggerData";
+import TriggerDataColumns from "../../components/data/TriggerData";
 import {TaskStateClosable} from '../../components/tags/TaskState';
 
 import {ApplicationSearch} from "../../api/application";

@@ -4,7 +4,7 @@ import {BellOutlined, NodeIndexOutlined} from "@ant-design/icons";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
-import IndicesData from "../../components/app/IndicesData";
+import IndicesData from "../../components/data/IndicesData";
 
 import {ApplicationSearch} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";

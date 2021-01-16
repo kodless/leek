@@ -1,9 +1,11 @@
+import json
 import logging
 
 from xmlrpc.client import ServerProxy
 import supervisor.xmlrpc
-from flask import Blueprint
+from flask import Blueprint, request, g
 from flask_restx import Resource
+from kombu.connection import Connection
 
 from leek.api.conf import settings
 from leek.api.decorators import auth
@@ -13,6 +15,7 @@ agent_bp = Blueprint('agent', __name__, url_prefix='/v1/agent')
 agent_ns = api_v1.namespace('agent', 'Agent manager')
 
 logger = logging.getLogger(__name__)
+SUBSCRIPTIONS_FILE = "/opt/app/conf/subscriptions.json"
 
 """
 This is only supported for Local Agent. 
@@ -60,15 +63,26 @@ class AgentControl(Resource):
 @agent_ns.route('/subscriptions')
 class AgentSubscriptionsList(Resource):
 
-    @auth(only_app_owner=True)
+    @auth
     def get(self):
         """
         Get subscriptions
         """
-        pass
+        app_name = request.headers["x-leek-app-name"]
+        with open(SUBSCRIPTIONS_FILE) as s:
+            subscriptions = json.load(s)
+        app_subscriptions = [
+            {
+                "name": subscription_name, **subscription,
+                "broker": Connection(subscription.get("broker")).as_uri(),
+                "backend": Connection(subscription.get("backend")).as_uri() if subscription.get("backend") else None
+            } for subscription_name, subscription in
+            subscriptions.items() if
+            subscription.get("app_name") == app_name and subscription.get("org_name") == g.org_name]
+        return app_subscriptions, 200
 
     @auth(only_app_owner=True)
-    def post(self):
+    def post(self, app_name):
         """
         Add subscription
         """
@@ -90,4 +104,12 @@ class AgentSubscription(Resource):
         """
         Delete subscription
         """
-        pass
+        with open(SUBSCRIPTIONS_FILE) as s:
+            subscriptions = json.load(s)
+
+        subscriptions.pop(subscription_name)
+
+        with open(SUBSCRIPTIONS_FILE, 'w') as f:
+            json.dump(subscriptions, f, indent=4, sort_keys=False)
+
+        return "Deleted", 200

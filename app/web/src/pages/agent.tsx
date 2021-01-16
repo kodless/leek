@@ -6,6 +6,7 @@ import {AgentState} from '../components/tags/AgentState'
 
 import {AgentService} from "../api/agent";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
+import Subscriptions from "../containers/agent/Subscriptions";
 
 
 const Text = Typography.Text;
@@ -13,6 +14,7 @@ const Text = Typography.Text;
 const AgentPage = () => {
 
     const service = new AgentService();
+
     const [loading, setLoading] = useState<boolean>();
     const [agent, setAgent] = useState<any>();
 
@@ -52,8 +54,9 @@ const AgentPage = () => {
             .finally(() => setLoading(false));
     };
 
+
     useEffect(() => {
-        retrieveAgent()
+        retrieveAgent();
     }, []);
 
     return (
@@ -73,8 +76,10 @@ const AgentPage = () => {
                     title="Agent Process"
                     loading={loading}
                     extra={[
-                        <Button size="small" disabled={loading} type="primary" onClick={startOrRestartAgent} style={{marginRight: 10, color: "#222"}}>Start/Restart</Button>,
-                        <Button size="small" disabled={loading} danger onClick={stopAgent}>Stop</Button>,
+                        <Button size="small" disabled={loading} type="primary" onClick={startOrRestartAgent}
+                                style={{marginRight: 10, color: "#222"}}>Start/Restart</Button>,
+                        <Button size="small" disabled={loading || (agent && agent.statename === "STOPPED")} danger
+                                onClick={stopAgent}>Stop</Button>,
                     ]}>
 
                     {agent &&
@@ -101,7 +106,7 @@ const AgentPage = () => {
                         </Row>
 
                         <Row>
-                            <Space direction="horizontal" style={{marginBottom: "16px"}}>
+                            <Space direction="horizontal">
                                 <Text strong>Description</Text>
                                 <Text code>{agent.description}</Text>
                             </Space>
@@ -112,6 +117,9 @@ const AgentPage = () => {
 
                 </Card>
             </Row>
+
+            <Subscriptions/>
+
         </>
     )
 };
