@@ -1,6 +1,6 @@
 require('antd/dist/antd.css');
 const React = require("react");
-const {AppLayout} = require("./src/containers/layouts/app");
+const {AppLayout} = require("./src/containers/layout");
 const {AuthProvider} = require("./src/context/AuthProvider");
 const {ApplicationProvider} = require("./src/context/ApplicationProvider");
 

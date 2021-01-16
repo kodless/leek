@@ -7,9 +7,9 @@ import {
     ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined, DeploymentUnitOutlined
 } from '@ant-design/icons';
 
-import Image from "../../../components/Image";
-import {useAuth} from "../../../context/AuthProvider";
-import {useApplication} from "../../../context/ApplicationProvider";
+import Image from "../../components/Image";
+import {useAuth} from "../../context/AuthProvider";
+import {useApplication} from "../../context/ApplicationProvider";
 
 const {SubMenu} = Menu;
 
