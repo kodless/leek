@@ -3,6 +3,7 @@ import logging
 
 from xmlrpc.client import ServerProxy
 import supervisor.xmlrpc
+from amqp import AccessRefused
 from flask import Blueprint, request, g
 from flask_restx import Resource
 from kombu.connection import Connection
@@ -89,6 +90,7 @@ class AgentSubscriptionsList(Resource):
             subscription.get("app_name") == app_name and subscription.get("org_name") == g.org_name]
         return app_subscriptions, 200
 
+    # noinspection PyBroadException
     @auth(only_app_owner=True)
     def post(self):
         """
@@ -97,22 +99,29 @@ class AgentSubscriptionsList(Resource):
         data = request.get_json()
         app_name = request.headers["x-leek-app-name"]
         subscription = SubscriptionSchema.validate(data)
-
         subscription.update({
             "org_name": g.org_name,
             "app_name": app_name,
             "app_key": settings.LEEK_AGENT_API_SECRET,
             "api_url": settings.LEEK_API_URL
         })
+        # Check if there is already a subscription with the same name
+        with open(SUBSCRIPTIONS_FILE) as s:
+            subscriptions = json.load(s)
+        s = subscriptions.get(subscription["name"])
+        if s:
+            return responses.subscription_already_exist
         # Ensure connection
         try:
             connection = Connection(subscription["broker"], virtual_host=subscription["virtual_host"])
             connection.ensure_connection(max_retries=2)
             connection.release()
-        except:
+        except AccessRefused:
+            return responses.wrong_access_refused
+        except Exception:
             return responses.broker_not_reachable
         # Add subscription
-        # ...
+        subscriptions[subscription["name"]] = subscription
         return subscription, 200
 
 

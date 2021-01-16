@@ -81,6 +81,7 @@ const Subscriptions = (props) => {
                 loading={loading}
                 form={form}
                 onAdd={doAddSubscription}
+                reset={reset}
             />
             <Card size="small" style={{width: "100%"}}
                   bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}

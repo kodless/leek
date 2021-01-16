@@ -60,3 +60,19 @@ broker_not_reachable = {
                                "reason": "Broker not reachable, check your network firewall!"
                            }
                        }, 503
+
+wrong_access_refused = {
+                           "error": {
+                               "code": "401004",
+                               "message": "Agent error",
+                               "reason": "Access refused to broker, wrong username/password!"
+                           }
+                       }, 401
+
+subscription_already_exist = {
+                                 "error": {
+                                     "code": "412002",
+                                     "message": "Subscription already exist",
+                                     "reason": "A subscription with the same name already exist"
+                                 }
+                             }, 412
