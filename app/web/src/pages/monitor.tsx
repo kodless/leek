@@ -10,7 +10,7 @@ import {LeekLine} from "../components/charts/Line"
 import AttributesFilter from "../components/filters/TaskAttributesFilter"
 import TimeFilter from "../components/filters/TaskTimeFilter"
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
-import {MonitorSearch} from "../api/monitor"
+import {StatsService} from "../api/monitor"
 import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
 import {TaskState} from "../components/tags/TaskState";
@@ -31,7 +31,7 @@ const StatesKeys = [
 
 const MonitorPage = () => {
 
-    const monitorSearch = new MonitorSearch();
+    const service = new StatsService();
     const [loading, setLoading] = useState<boolean>();
     const [totalHits, setTotalHits] = useState<number>(0);
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
@@ -62,7 +62,7 @@ const MonitorPage = () => {
             ...timeFilters,
         };
         setLoading(true);
-        monitorSearch.charts(currentApp, currentEnv, "desc", allFilters, timeDistributionTSType)
+        service.charts(currentApp, currentEnv, "desc", allFilters, timeDistributionTSType)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setStatesDistribution(result.aggregations.statesDistribution.buckets);
@@ -188,7 +188,8 @@ const MonitorPage = () => {
                             size="small" style={{width: "100%"}}
                             title="Tasks over time distribution"
                             extra={[
-                                <Select defaultValue="timestamp"
+                                <Select key="timestamp"
+                                        defaultValue="timestamp"
                                         dropdownMatchSelectWidth
                                         style={{width: 115}}
                                         size="small"

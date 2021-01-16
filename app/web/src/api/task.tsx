@@ -100,7 +100,7 @@ export interface Task {
     ): any;
 }
 
-export class TaskSearch implements Task {
+export class TaskService implements Task {
     filter(
         app_name: string,
         app_env: string | undefined,

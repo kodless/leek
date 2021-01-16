@@ -8,14 +8,14 @@ import WorkerDataColumns from "../components/data/WorkerData";
 import WorkerDetailsDrawer from "../containers/workers/WorkerDetailsDrawer";
 
 import {useApplication} from "../context/ApplicationProvider";
-import {WorkerSearch} from "../api/worker";
+import {WorkerService} from "../api/worker";
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 import {fixPagination} from "../utils/pagination";
 
 
 const WorkersPage = () => {
     // STATE
-    const workerSearch = new WorkerSearch();
+    const service = new WorkerService();
     const {currentApp} = useApplication();
     const [qpHostname, setQPHostname] = useQueryParam("hostname", StringParam);
 
@@ -39,7 +39,7 @@ const WorkersPage = () => {
         if (!currentApp) return;
         setLoading(true);
         let from_ = (pager.current - 1) * pager.pageSize;
-        workerSearch.filter(currentApp, null, pager.pageSize, from_, stateFilter)
+        service.filter(currentApp, null, pager.pageSize, from_, stateFilter)
             .then(handleAPIResponse)
             .then((result: any) => {
                 // Prepare pagination
@@ -59,7 +59,7 @@ const WorkersPage = () => {
 
     function getWorkerByHostname(hostname: string) {
         if (!currentApp) return;
-        workerSearch.getById(currentApp, hostname)
+        service.getById(currentApp, hostname)
             .then(handleAPIResponse)
             .then((result: any) => {
                 if (result.hits.total == 0) {

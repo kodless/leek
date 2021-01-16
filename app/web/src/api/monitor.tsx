@@ -1,7 +1,7 @@
 import {TaskFilters, getFilterQuery} from "./task";
 import {search} from "./search";
 
-export interface Monitor {
+export interface Stats {
     charts(
         app_name: string,
         app_env: string | undefined,
@@ -11,7 +11,7 @@ export interface Monitor {
     ): any;
 }
 
-export class MonitorSearch implements Monitor {
+export class StatsService implements Stats {
     charts(
         app_name: string,
         app_env: string | undefined,

@@ -4,7 +4,7 @@ import {DeploymentUnitOutlined, ContainerOutlined} from "@ant-design/icons";
 
 
 import {useApplication} from "../../context/ApplicationProvider";
-import {ApplicationSearch} from "../../api/application";
+import {ApplicationService} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors"
 
 
@@ -14,13 +14,13 @@ const Option = Select.Option;
 const CreateApp = (props) => {
 
     const [form] = Form.useForm();
-    const applicationSearch = new ApplicationSearch();
+    const service = new ApplicationService();
     const {listApplications, applications} = useApplication();
     const [applicationCreating, setApplicationCreating] = useState<boolean>();
 
     function createApplication(application) {
         setApplicationCreating(true);
-        applicationSearch.createApplication(application)
+        service.createApplication(application)
             .then(handleAPIResponse)
             .then((application: any) => {
                 props.setCreateAppModalVisible(false);

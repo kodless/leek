@@ -10,14 +10,14 @@ import TimeFilter from '../components/filters/TaskTimeFilter'
 import TaskDetailsDrawer from '../containers/tasks/TaskDetailsDrawer'
 
 import {useApplication} from "../context/ApplicationProvider"
-import {TaskSearch} from "../api/task"
+import {TaskService} from "../api/task"
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 import {fixPagination} from "../utils/pagination";
 
 
 const TasksPage: React.FC = () => {
     // STATE
-    const taskSearch = new TaskSearch();
+    const service = new TaskService();
     const {currentApp, currentEnv} = useApplication();
     const [qpTaskUUID, setQPTaskUUID] = useQueryParam("uuid", StringParam);
 
@@ -49,7 +49,7 @@ const TasksPage: React.FC = () => {
             ...timeFilters,
         };
         let from_ = (pager.current - 1) * pager.pageSize;
-        taskSearch.filter(currentApp, currentEnv, pager.pageSize, from_, order, allFilters)
+        service.filter(currentApp, currentEnv, pager.pageSize, from_, order, allFilters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 // Prepare pagination
@@ -69,7 +69,7 @@ const TasksPage: React.FC = () => {
 
     function getTaskByUUID(uuid: string) {
         if (!currentApp) return;
-        taskSearch.getById(currentApp, uuid)
+        service.getById(currentApp, uuid)
             .then(handleAPIResponse)
             .then((result: any) => {
                 if (result.hits.total == 0) {

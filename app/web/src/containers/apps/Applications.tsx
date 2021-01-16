@@ -23,7 +23,7 @@ import AppsList from "./AppsList"
 
 import {useApplication} from "../../context/ApplicationProvider";
 import {adaptTime} from "../../utils/date";
-import {ApplicationSearch} from "../../api/application";
+import {ApplicationService} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import Indices from "./Indices";
 import getFirebase from "../../utils/firebase";
@@ -68,7 +68,7 @@ const agentSubscriptionsSnippet = (app) => {
 
 const Applications = () => {
 
-    const applicationSearch = new ApplicationSearch();
+    const service = new ApplicationService();
     const [applicationPurging, setApplicationPurging] = useState<boolean>();
     const [applicationDeleting, setApplicationDeleting] = useState<boolean>();
     const {applications, currentApp, listApplications, deleteApplication} = useApplication();
@@ -110,7 +110,7 @@ const Applications = () => {
                 content: `Do you really want to clean want to clean application ${clean.kind} older than ${clean.count} ${clean.unit}`,
                 onOk() {
                     setApplicationPurging(true);
-                    applicationSearch.cleanApplication(selectedApp.app_name, clean.kind, clean.count, clean.unit)
+                    service.cleanApplication(selectedApp.app_name, clean.kind, clean.count, clean.unit)
                         .then(handleAPIResponse)
                         .then((_: any) => {
                             message.info("Deletion request processing...")
@@ -132,7 +132,7 @@ const Applications = () => {
                 content: 'Do you want to purge all events from selected application?',
                 onOk() {
                     setApplicationPurging(true);
-                    applicationSearch.purgeApplication(selectedApp.app_name)
+                    service.purgeApplication(selectedApp.app_name)
                         .then(handleAPIResponse)
                         .then((_: any) => {
                             message.info("Application purged!")
@@ -154,7 +154,7 @@ const Applications = () => {
                 content: 'Do you want to delete selected application?',
                 onOk() {
                     setApplicationDeleting(true);
-                    applicationSearch.deleteApplication(selectedApp.app_name)
+                    service.deleteApplication(selectedApp.app_name)
                         .then(handleAPIResponse)
                         .then((_: any) => {
                             deleteApplication(selectedApp.app_name);

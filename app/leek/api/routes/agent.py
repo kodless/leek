@@ -10,6 +10,7 @@ from kombu.connection import Connection
 from leek.api.conf import settings
 from leek.api.decorators import auth
 from leek.api.routes.api_v1 import api_v1
+from leek.api.errors import responses
 
 agent_bp = Blueprint('agent', __name__, url_prefix='/v1/agent')
 agent_ns = api_v1.namespace('agent', 'Agent manager')
@@ -45,6 +46,12 @@ class AgentControl(Resource):
         """
         Start/Restart agent
         """
+        # Check if there are subscriptions
+        with open(SUBSCRIPTIONS_FILE) as s:
+            subscriptions = json.load(s)
+        if not len(subscriptions):
+            return responses.no_subscriptions_found
+        # -- Start or Restart
         agent = self.server.supervisor.getProcessInfo("agent")
         if agent["statename"] == "RUNNING":
             self.server.supervisor.stopProcess("agent")

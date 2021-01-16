@@ -22,7 +22,7 @@ export interface Application {
     deleteFanoutTrigger(app_name: string, trigger_id: string): any
 }
 
-export class ApplicationSearch implements Application {
+export class ApplicationService implements Application {
     listApplications() {
         let fb = getFirebase();
         if (fb) {

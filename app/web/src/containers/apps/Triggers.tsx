@@ -8,7 +8,7 @@ import {AppstoreAddOutlined, DeploymentUnitOutlined, SlackOutlined, BellOutlined
 import TriggerDataColumns from "../../components/data/TriggerData";
 import {TaskStateClosable} from '../../components/tags/TaskState';
 
-import {ApplicationSearch} from "../../api/application";
+import {ApplicationService} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import {useApplication} from "../../context/ApplicationProvider";
 
@@ -33,7 +33,7 @@ const statesOptions = [
 const Triggers = (props) => {
 
     const [form] = Form.useForm();
-    const application = new ApplicationSearch();
+    const service = new ApplicationService();
     const {updateApplication} = useApplication();
 
     const [createTriggerModalVisible, setCreateTriggerModalVisible] = useState<boolean>(false);
@@ -50,7 +50,7 @@ const Triggers = (props) => {
     function doAddTrigger(trigger) {
         delete trigger.patterns;
         setLoading(true);
-        application.addFanoutTrigger(props.selectedApp.app_name, trigger)
+        service.addFanoutTrigger(props.selectedApp.app_name, trigger)
             .then(handleAPIResponse)
             .then((application: any) => {
                 updateApplication(application);
@@ -66,7 +66,7 @@ const Triggers = (props) => {
     function doEditTrigger(trigger) {
         delete trigger.patterns;
         setLoading(true);
-        application.editFanoutTrigger(props.selectedApp.app_name, triggerId, trigger)
+        service.editFanoutTrigger(props.selectedApp.app_name, triggerId, trigger)
             .then(handleAPIResponse)
             .then((application: any) => {
                 updateApplication(application);
@@ -81,7 +81,7 @@ const Triggers = (props) => {
 
     function doDeleteTrigger(trigger_id) {
         setLoading(true);
-        application.deleteFanoutTrigger(props.selectedApp.app_name, trigger_id)
+        service.deleteFanoutTrigger(props.selectedApp.app_name, trigger_id)
             .then(handleAPIResponse)
             .then((application: any) => {
                 updateApplication(application);

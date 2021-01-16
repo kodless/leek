@@ -15,7 +15,7 @@ export interface Worker {
     ): any;
 }
 
-export class WorkerSearch implements Worker {
+export class WorkerService implements Worker {
     filter(
         app_name: string,
         hostname: string | null,

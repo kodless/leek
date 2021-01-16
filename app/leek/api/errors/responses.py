@@ -44,3 +44,11 @@ missing_headers = {
                           "reason": "One or more headers are messing"
                       }
                   }, 400
+
+no_subscriptions_found = {
+                             "error": {
+                                 "code": "400003",
+                                 "message": "Agent error",
+                                 "reason": "No subscriptions found, agent not started!"
+                             }
+                         }, 400

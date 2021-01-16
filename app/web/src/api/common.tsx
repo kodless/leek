@@ -1,13 +1,13 @@
 import {search} from "./search";
 
 
-export interface Common {
-    getSeenTasksAndWorkers(app_name: string, app_env: string): any;
+export interface Metrics {
+    getBasicMetrics(app_name: string, app_env: string): any;
 }
 
-export class CommonSearch implements Common {
+export class MetricsService implements Metrics {
 
-    getSeenTasksAndWorkers(app_name, app_env) {
+    getBasicMetrics(app_name, app_env) {
         let query;
         if (app_env)
             query = {"match": {"app_env": app_env}};

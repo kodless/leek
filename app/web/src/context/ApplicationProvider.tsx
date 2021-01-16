@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import {Button, message, Spin} from 'antd';
+import {Spin} from 'antd';
 import {StringParam, useQueryParam} from "use-query-params";
 
-import {ApplicationSearch} from "../api/application";
-import {CommonSearch} from "../api/common";
+import {ApplicationService} from "../api/application";
+import {MetricsService} from "../api/common";
 import CreateApp from "../containers/apps/CreateApp";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
@@ -86,7 +86,7 @@ const ApplicationContext = React.createContext<ApplicationContextData>(initial a
 
 function ApplicationProvider({children}) {
     // Application
-    const applicationSearch = new ApplicationSearch();
+    const applicationService = new ApplicationService();
     const [qpApp, setQPApp] = useQueryParam("app", StringParam);
     const [loading, setLoading] = useState<boolean>(true);
     const [applications, setApplications] = useState<any[]>([]);
@@ -94,7 +94,7 @@ function ApplicationProvider({children}) {
     const [currentEnv, setCurrentEnv] = useState<string | undefined>(undefined);
 
     // Metadata
-    const commonSearch = new CommonSearch();
+    const metricsService = new MetricsService();
     const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
     const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
     const [processedEvents, setProcessedEvents] = useState<ApplicationContextData["processedEvents"]>(0);
@@ -107,7 +107,7 @@ function ApplicationProvider({children}) {
 
     function listApplications() {
         setLoading(true);
-        applicationSearch.listApplications()
+        applicationService.listApplications()
             .then(handleAPIResponse)
             .then((apps: any) => {
                 setApplications(apps);
@@ -127,7 +127,7 @@ function ApplicationProvider({children}) {
 
     function getMetadata() {
         if (!currentApp) return;
-        commonSearch.getSeenTasksAndWorkers(currentApp, currentEnv)
+        metricsService.getBasicMetrics(currentApp, currentEnv)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setProcessedEvents(result.aggregations.processed_events.value);

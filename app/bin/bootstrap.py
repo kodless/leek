@@ -55,13 +55,13 @@ LOGO = """
 8 888888888888 8 888888888888 8 888888888888 8 8888     `Y8.                        
 """
 USAGE = f"""
-[b>]|#|@     [y>]Leek Celery Monitoring Tool@                     [b>]|#|@
-[b>]|#|@     [n>]Versions:@ {LEEK_VERSION}                                 [b>]|#|@
-[b>]|#|@     [n>]Release date:@ {LEEK_RELEASE_DATE}                             [b>]|#|@
-[b>]|#|@     [n>]Codename:@ Fennec                                [b>]|#|@
-[b>]|#|@     [n>]Repository:@ https://github.com/kodless/leek     [b>]|#|@
-[b>]|#|@     [n>]Homepage:@ https://tryleek.com                   [b>]|#|@
-[b>]|#|@     [n>]Documentation:@ https://leek.kodhive.com/docs    [b>]|#|@
+[b>]|#|@     [y>]Leek Celery Monitoring Tool@                               [b>]|#|@
+[b>]|#|@     [n>]Versions:@ {LEEK_VERSION}                                  [b>]|#|@
+[b>]|#|@     [n>]Release date:@ {LEEK_RELEASE_DATE}                         [b>]|#|@
+[b>]|#|@     [n>]Codename:@ Fennec                                          [b>]|#|@
+[b>]|#|@     [n>]Repository:@ https://github.com/kodless/leek               [b>]|#|@
+[b>]|#|@     [n>]Homepage:@ https://tryleek.com                             [b>]|#|@
+[b>]|#|@     [n>]Documentation:@ https://tryleek.com/docs/introduction/leek [b>]|#|@
 
 [r>]Author:@ Hamza Adami <me@adamihamza.com>
 [r>]Follow me on Github:@ https://github.com/kodless 

@@ -10,7 +10,7 @@ export interface Issue {
     ): any;
 }
 
-export class IssueSearch implements Issue {
+export class IssueService implements Issue {
     filter(
         app_name: string,
         app_env: string | undefined,

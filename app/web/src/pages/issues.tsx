@@ -6,13 +6,13 @@ import {SyncOutlined} from '@ant-design/icons'
 import IssueDataColumns from "../components/data/IssueData"
 import TimeFilter from "../components/filters/TaskTimeFilter"
 import {useApplication} from "../context/ApplicationProvider"
-import {IssueSearch} from "../api/issue";
+import {IssueService} from "../api/issue";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
 const IssuesPage = () => {
 
     const columns = IssueDataColumns();
-    const issueSearch = new IssueSearch();
+    const service = new IssueService();
     const [loading, setLoading] = useState<boolean>();
     const [issues, setIssues] = useState<any>([]);
 
@@ -28,7 +28,7 @@ const IssuesPage = () => {
     function filterIssues(pager = {current: 1, pageSize: 10}) {
         if (!currentApp) return;
         setLoading(true);
-        issueSearch.filter(currentApp, currentEnv, "desc", timeFilters)
+        service.filter(currentApp, currentEnv, "desc", timeFilters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setIssues(

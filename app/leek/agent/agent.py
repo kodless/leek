@@ -19,6 +19,10 @@ class LeekAgent:
         self.consumers = []
         self.subscriptions = self.load_subscriptions()
 
+        if not len(self.subscriptions):
+            logger.warning("No subscriptions found, Consider adding subscriptions through environment variable or UI.")
+            return
+
         logger.info("Building consumers...")
         for subscription_name, subscription_config in self.subscriptions.items():
             consumer = LeekConsumer(subscription_name, **subscription_config)
@@ -26,6 +30,9 @@ class LeekAgent:
         logger.info("Consumers built...")
 
     def start(self, wait=True):
+        if not len(self.consumers):
+            return
+
         logger.info("Starting Leek Agent...")
         gs = []
 

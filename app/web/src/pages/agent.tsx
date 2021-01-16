@@ -76,9 +76,9 @@ const AgentPage = () => {
                     title="Agent Process"
                     loading={loading}
                     extra={[
-                        <Button size="small" disabled={loading} type="primary" onClick={startOrRestartAgent}
+                        <Button key="restart" size="small" disabled={loading} type="primary" onClick={startOrRestartAgent}
                                 style={{marginRight: 10, color: "#222"}}>Start/Restart</Button>,
-                        <Button size="small" disabled={loading || (agent && agent.statename === "STOPPED")} danger
+                        <Button key="stop" size="small" disabled={loading || (agent && agent.statename === "STOPPED")} danger
                                 onClick={stopAgent}>Stop</Button>,
                     ]}>
 
@@ -113,8 +113,6 @@ const AgentPage = () => {
                         </Row>
                     </>
                     }
-
-
                 </Card>
             </Row>
 

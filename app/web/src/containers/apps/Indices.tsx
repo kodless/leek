@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import {Row, Col, Card, Typography, Table, Empty, Space, Radio} from 'antd'
-import {BellOutlined, NodeIndexOutlined} from "@ant-design/icons";
+import {NodeIndexOutlined} from "@ant-design/icons";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import IndicesData from "../../components/data/IndicesData";
 
-import {ApplicationSearch} from "../../api/application";
+import {ApplicationService} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 
 
@@ -14,7 +14,7 @@ const Text = Typography.Text;
 
 const Indices = (props) => {
 
-    const application = new ApplicationSearch();
+    const service = new ApplicationService();
     const [indicesLoading, setIndicesLoading] = useState<boolean>();
     const [indicesDetails, setIndicesDetails] = useState<any>('');
     const [indicesSummary, setIndicesSummary] = useState<any>('');
@@ -44,7 +44,7 @@ const Indices = (props) => {
     function listIndices() {
         if (props.selectedApp) {
             setIndicesLoading(true);
-            application.listApplicationIndices(props.selectedApp.app_name)
+            service.listApplicationIndices(props.selectedApp.app_name)
                 .then(handleAPIResponse)
                 .then((result: any) => {
                     setIndicesDetails(result)
