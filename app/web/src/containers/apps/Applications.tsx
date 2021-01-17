@@ -54,7 +54,7 @@ const agentSubscriptionsSnippet = (app) => {
             "backend": null,
             "virtual_host": "/",
             "exchange": "celeryev",
-            "queue": "celeryev.fanout",
+            "queue": "leek.fanout",
             "routing_key": "#",
             "org_name": "${inferOrgName()}",
             "app_name": "${app.app_name}",

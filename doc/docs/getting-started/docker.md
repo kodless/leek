@@ -63,7 +63,7 @@ services:
             "backend": null,
             "virtual_host": "/",
             "exchange": "celeryev",
-            "queue": "celeryev.fanout",
+            "queue": "leek.fanout",
             "routing_key": "#",
             "org_name": "example.com",
             "app_name": "leek",

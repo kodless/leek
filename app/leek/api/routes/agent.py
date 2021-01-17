@@ -105,10 +105,11 @@ class AgentSubscriptionsList(Resource):
             "app_key": settings.LEEK_AGENT_API_SECRET,
             "api_url": settings.LEEK_API_URL
         })
+        name = subscription.pop("name")
         # Check if there is already a subscription with the same name
         with open(SUBSCRIPTIONS_FILE) as s:
             subscriptions = json.load(s)
-        s = subscriptions.get(subscription["name"])
+        s = subscriptions.get(name)
         if s:
             return responses.subscription_already_exist
         # Ensure connection
@@ -121,8 +122,10 @@ class AgentSubscriptionsList(Resource):
         except Exception:
             return responses.broker_not_reachable
         # Add subscription
-        subscriptions[subscription["name"]] = subscription
-        return subscription, 200
+        subscriptions[name] = subscription
+        with open(SUBSCRIPTIONS_FILE, 'w') as f:
+            json.dump(subscriptions, f, indent=4, sort_keys=False)
+        return {"name": name, **subscription}, 200
 
 
 @agent_ns.route('/subscriptions/<string:subscription_name>')

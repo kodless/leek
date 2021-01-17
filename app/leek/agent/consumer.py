@@ -32,7 +32,7 @@ class LeekConsumer(ConsumerMixin):
             backend: str = None,
             virtual_host: str = "/",
             exchange: str = "celeryev",
-            queue: str = "celeryev.fanout",
+            queue: str = "leek.fanout",
             routing_key: str = "#",
     ):
         """
