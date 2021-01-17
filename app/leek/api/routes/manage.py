@@ -3,6 +3,7 @@ import logging
 from flask import Blueprint, current_app, url_for
 from flask_restx import Resource
 
+from leek.api.utils import has_no_empty_params
 from leek.api.conf import settings
 from leek.api.db.policy import create_or_update_default_lifecycle_policy
 from leek.api.routes.api_v1 import api_v1
@@ -28,12 +29,6 @@ class HealthCheck(Resource):
         return {"status": "I'm sexy and i know it"}, 200
 
 
-def has_no_empty_params(rule):
-    defaults = rule.defaults if rule.defaults is not None else ()
-    arguments = rule.arguments if rule.arguments is not None else ()
-    return len(defaults) >= len(arguments)
-
-
 @manage_ns.route('/site-map')
 class ListSiteMap(Resource):
 
@@ -55,7 +50,7 @@ class ListSiteMap(Resource):
 @manage_ns.route('/lifecycle')
 class IndexLifecycle(Resource):
 
-    # @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
+    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def put(self):
         """
         Update default index lifecycle
