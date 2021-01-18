@@ -40,7 +40,7 @@ ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
-LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:80")
+LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 
 LOGO = """
 8 8888         8 8888888888   8 8888888888   8 8888     ,88'
@@ -117,6 +117,7 @@ if ENABLE_WEB and LEEK_ENV == "PROD":
 
 # AGENT VARIABLES
 if ENABLE_AGENT:
+    subscriptions_file = "/opt/app/conf/subscriptions.json"
     subscriptions = os.environ.get("LEEK_AGENT_SUBSCRIPTIONS")
     if subscriptions:
         subscriptions = json.loads(subscriptions)
@@ -142,11 +143,15 @@ if ENABLE_AGENT:
             if not all(required_key in keys for required_key in required_keys):
                 abort(f"Agent subscription configuration is invalid")
 
-        subscriptions_file = "/opt/app/conf/subscriptions.json"
         with open(subscriptions_file, 'w') as f:
             json.dump(subscriptions, f, indent=4, sort_keys=False)
     else:
-        logger.warning(f"LEEK_AGENT_SUBSCRIPTIONS environment variable is not set, Using default subscription.")
+        with open(subscriptions_file) as s:
+            subscriptions = json.load(s)
+        if not len(subscriptions):
+            logger.warning(f"LEEK_AGENT_SUBSCRIPTIONS environment variable is not set, and subscriptions file does not "
+                           f"declare any subscriptions, Try adding subscriptions statically via env variable or "
+                           f"dynamically via agent page {LEEK_WEB_URL}.")
 
 """
 START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM
