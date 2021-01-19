@@ -27,8 +27,8 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
         "template": {
             "settings": {
                 "index": {
-                    "number_of_shards": "2",
-                    "number_of_replicas": "1",
+                    "number_of_shards": "1",
+                    "number_of_replicas": "0",
                 },
                 "index.lifecycle.name": lifecycle_policy_name,
                 "index.lifecycle.rollover_alias": f"{index_alias}-rolled"

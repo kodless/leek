@@ -24,7 +24,7 @@ node.name: master
 #
 # Add custom attributes to the node:
 #
-#node.attr.rack: r1
+node.store.allow_mmap: "false"
 #
 # ----------------------------------- Paths ------------------------------------
 #
@@ -69,10 +69,11 @@ network.host: 0.0.0.0
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: ["master",]
+# cluster.initial_master_nodes: ["master",]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
+discovery.type: "single-node"
 # ---------------------------------- Gateway -----------------------------------
 #
 # Block initial recovery after a full cluster restart until N nodes are started:
