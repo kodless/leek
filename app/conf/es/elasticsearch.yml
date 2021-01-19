@@ -24,7 +24,7 @@ node.name: master
 #
 # Add custom attributes to the node:
 #
-node.store.allow_mmap: "false"
+node.store.allow_mmap: false
 #
 # ----------------------------------- Paths ------------------------------------
 #
