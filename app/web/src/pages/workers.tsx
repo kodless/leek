@@ -27,7 +27,7 @@ const WorkersPage = () => {
     const [pagination, setPagination] = useState<any>({pageSize: 10, current: 1});
 
     // Controls
-    const [stateFilter, setStateFilter] = useState<string | null>(null);
+    const [stateFilter, setStateFilter] = useState<string | null>("HEARTBEAT");
 
     // UI
     const [workerDetailsVisible, setDetailsVisible] = useState(false);
