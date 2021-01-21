@@ -9,7 +9,7 @@ const Text = Typography.Text;
 
 export function adaptTime(time) {
     return time ? <>
-        {moment(time).format("MMM D HH:mm:ss")} <Text style={{color: "#00BFA6"}}> - <TimeAgo
+        {moment(time).format("MMM D HH:mm:ss Z")} <Text style={{color: "#00BFA6"}}> - <TimeAgo
         date={time}/></Text>
     </> : "-"
 }

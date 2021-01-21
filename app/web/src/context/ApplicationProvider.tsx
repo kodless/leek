@@ -3,7 +3,7 @@ import {Spin} from 'antd';
 import {StringParam, useQueryParam} from "use-query-params";
 
 import {ApplicationService} from "../api/application";
-import {MetricsService} from "../api/common";
+import {MetricsService} from "../api/metrics";
 import CreateApp from "../containers/apps/CreateApp";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 

@@ -160,7 +160,7 @@ const Header = () => {
                                 </Col>
 
                                 <Col key="/docs">
-                                    <a href="https://leek.kodhive.com" target="_blank" rel="noopener norefferer">
+                                    <a href="https://tryleek.com" target="_blank" rel="noopener norefferer">
                                         <Button size="small" type="primary"
                                                 style={{textAlign: "center"}}>
                                             <FileWordOutlined/>

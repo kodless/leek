@@ -18,10 +18,10 @@ export class MetricsService implements Metrics {
                 "query": query,
                 "aggs": {
                     "seen_tasks": {
-                        "terms": {"field": "name"}
+                        "terms": {"field": "name", "size": 1000,}
                     },
                     "seen_workers": {
-                        "terms": {"field": "hostname"}
+                        "terms": {"field": "hostname", "size": 1000,}
                     },
                     "seen_states": {
                         "terms": {"field": "state"}
@@ -33,7 +33,7 @@ export class MetricsService implements Metrics {
                         "terms": {"field": "routing_key"}
                     },
                     "seen_queues": {
-                        "terms": {"field": "queue"}
+                        "terms": {"field": "queue", "size": 100,}
                     },
                     "processed_events": {
                         "sum": {"field": "events_count"}

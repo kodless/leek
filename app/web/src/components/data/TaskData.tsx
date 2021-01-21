@@ -28,7 +28,7 @@ function TaskData() {
             key: 'timestamp',
             render: timestamp => {
                 return <Text style={{color: "rgba(45,137,183,0.8)"}} strong>
-                    {timestamp ? moment(timestamp).format("MMM D HH:mm:ss") : '-'} - <Text>
+                    {timestamp ? moment(timestamp).format("MMM D HH:mm:ss Z") : '-'} - <Text>
                     {timestamp ? <TimeAgo date={timestamp}/> : '-'}
                 </Text>
                 </Text>
