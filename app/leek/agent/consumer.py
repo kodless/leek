@@ -11,6 +11,7 @@ logger = get_logger(__name__)
 
 
 class LeekConsumer(ConsumerMixin):
+    PREFETCH_COUNT = 20
     MAX_RETRIES = 1000
     SUCCESS_STATUS_CODES = [200, 201]
     BACKOFF_STATUS_CODES = [400, 404, 503]
@@ -62,20 +63,30 @@ class LeekConsumer(ConsumerMixin):
         }
 
         # BROKER
+        self.connection = None
         self.broker = broker
         self.virtual_host = virtual_host
         self.exchange = Exchange(exchange, 'topic', durable=True, auto_delete=False)
         self.queue = Queue(queue, exchange=self.exchange, routing_key=routing_key, durable=False, auto_delete=True)
 
         # CONNECTION TO BROKER
+        self.ensure_connection_to_broker()
+
+        # CONNECTION TO API
+        self.ensure_connection_to_api()
+
+    def ensure_connection_to_broker(self):
         self.connection = Connection(self.broker, virtual_host=self.virtual_host)
         logger.info(f"Ensure connection to the broker {self.connection.as_uri()}...")
         self.connection.ensure_connection(max_retries=10)
         logger.info("Broker is up!")
 
-        # CONNECTION TO API
+    def ensure_connection_to_api(self):
         logger.info(f"Ensure connection to the API {self.api_url}...")
-        self.ensure_connection_to_api()
+        requests.options(
+            url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
+            headers=self.headers
+        ).raise_for_status()
         logger.info("API is up!")
 
     def get_consumers(self, Consumer, channel):
@@ -83,7 +94,7 @@ class LeekConsumer(ConsumerMixin):
         Build events consumer
         """
         logger.info("Configuring channel...")
-        channel.basic_qos(prefetch_size=0, prefetch_count=1, a_global=False)
+        channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT, a_global=False)
         logger.info("Channel Configured...")
 
         logger.info("Declaring Exchange/Queue and binding them...")
@@ -129,9 +140,3 @@ class LeekConsumer(ConsumerMixin):
                 if response.status_code in self.SUCCESS_STATUS_CODES:
                     message.ack()
                     return
-
-    def ensure_connection_to_api(self):
-        requests.options(
-            url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
-            headers=self.headers
-        ).raise_for_status()
