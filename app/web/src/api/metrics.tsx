@@ -3,6 +3,7 @@ import {search} from "./search";
 
 export interface Metrics {
     getBasicMetrics(app_name: string, app_env: string): any;
+    getMetadata(app_name: string): any;
 }
 
 export class MetricsService implements Metrics {
@@ -26,9 +27,6 @@ export class MetricsService implements Metrics {
                     "seen_states": {
                         "terms": {"field": "state"}
                     },
-                    "seen_envs": {
-                        "terms": {"field": "app_env"}
-                    },
                     "seen_routing_keys": {
                         "terms": {"field": "routing_key"}
                     },
@@ -38,6 +36,24 @@ export class MetricsService implements Metrics {
                     "processed_events": {
                         "sum": {"field": "events_count"}
                     }
+                }
+            },
+            {
+                size: 0,
+                from_: 0
+            }
+        )
+    }
+
+    getMetadata(app_name) {
+        return search(
+            app_name,
+            {
+                "size": 0,
+                "aggs": {
+                    "seen_envs": {
+                        "terms": {"field": "app_env"}
+                    },
                 }
             },
             {

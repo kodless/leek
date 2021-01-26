@@ -7,7 +7,8 @@ import {MetricsService} from "../api/metrics";
 import CreateApp from "../containers/apps/CreateApp";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
-let interval;
+let metricsInterval;
+let metadataInterval;
 const workerStates = ["HEARTBEAT", "ONLINE", "OFFLINE"];
 
 interface ApplicationContextData {
@@ -125,7 +126,7 @@ function ApplicationProvider({children}) {
             // });
     }
 
-    function getMetadata() {
+    function getMetrics() {
         if (!currentApp) return;
         metricsService.getBasicMetrics(currentApp, currentEnv)
             .then(handleAPIResponse)
@@ -148,6 +149,15 @@ function ApplicationProvider({children}) {
                 );
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
                 setSeenQueues(result.aggregations.seen_queues.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
+    function getMetadata() {
+        if (!currentApp) return;
+        metricsService.getMetadata(currentApp)
+            .then(handleAPIResponse)
+            .then((result: any) => {
                 setSeenEnvs(result.aggregations.seen_envs.buckets)
             }, handleAPIError)
             .catch(handleAPIError);
@@ -164,24 +174,34 @@ function ApplicationProvider({children}) {
     useEffect(() => {
         listApplications();
         return () => {
-            clearInterval(interval);
+            clearInterval(metricsInterval);
+            clearInterval(metadataInterval);
         }
     }, []);
 
 
     useEffect(() => {
         // Stop refreshing metadata
-        if (interval) clearInterval(interval);
+        if (metricsInterval) clearInterval(metricsInterval);
+        if (metadataInterval) clearInterval(metadataInterval);
         // If no application specified, return
         if (!currentApp)
             return;
         setQPApp(currentApp);
+
         // Else, get metadata every 10 seconds
         getMetadata();
-        interval = setInterval(() => {
+        metadataInterval = setInterval(() => {
             getMetadata();
+        }, 60000);
+
+        getMetrics();
+        metricsInterval = setInterval(() => {
+            getMetrics();
         }, 10000);
     }, [currentApp, currentEnv]);
+
+
 
     useEffect(() => {
         if (qpApp && qpApp !== currentApp)
@@ -189,6 +209,12 @@ function ApplicationProvider({children}) {
         else if (currentApp && !qpApp)
             setQPApp(currentApp);
     }, [qpApp]);
+
+    useEffect(() => {
+        if (seenEnvs.length !== 0 && !currentEnv) {
+            setCurrentEnv(seenEnvs[0].key);
+        }
+    }, [seenEnvs]);
 
     function deleteApplication(app_name) {
         let newApps = applications.filter(app => {
