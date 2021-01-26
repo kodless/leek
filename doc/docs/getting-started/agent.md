@@ -56,7 +56,6 @@ parameters to connect to the brokers and APIs.
 - Required parameters:
     - **broker** - the amqp url of the broker (only rabbitmq is supported for now).
     - **backend** - the result backend url
-    - **virtual_host** - the rabbitmq virtual host for RabbitMQ brokers.
     - **exchange** - should be the same as the exchange used by clients and workers defined by `event_exchange`  [Learn More](https://docs.celeryproject.org/en/stable/userguide/configuration.html#event-exchange)
     - **queue** - the queue used to store the events
     - **routing_key** - should be `#` for now.
@@ -77,7 +76,6 @@ illustrate how you can subscribe to multiple brokers:
   "leek-qa": {
     "broker": "amqp://admin:admin@mq-QA//",
     "backend": null,
-    "virtual_host": "/",
     "exchange": "celeryev",
     "queue": "leek.fanout",
     "routing_key": "#",
@@ -90,7 +88,6 @@ illustrate how you can subscribe to multiple brokers:
  "leek-prod": {
     "broker": "amqp://admin:admin@mq-prod//",
     "backend": null,
-    "virtual_host": "/",
     "exchange": "celeryev",
     "queue": "leek.fanout",
     "routing_key": "#",

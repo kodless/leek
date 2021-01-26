@@ -52,7 +52,6 @@ const agentSubscriptionsSnippet = (app) => {
         "${app.app_name}_prod": {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
-            "virtual_host": "/",
             "exchange": "celeryev",
             "queue": "leek.fanout",
             "routing_key": "#",

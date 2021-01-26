@@ -126,31 +126,23 @@ const Subscriptions = (props) => {
                        }}
                        expandable={{
                            expandedRowRender: record => <>
-                               <Row justify="space-between" style={{marginBottom: 16}}>
-                                   <Col span={12}>
-                                       <List.Item.Meta
-                                           title={"Virtual Host"}
-                                           description={<Tag>{record.virtual_host}</Tag>}
-                                       />
-                                   </Col>
-                                   <Col span={12}>
+                               <Row justify="space-between" style={{marginBottom: 6}}>
+                                   <Col span={8}>
                                        <List.Item.Meta
                                            title={"Exchange"}
                                            description={<Tag>{record.exchange}</Tag>}
                                        />
                                    </Col>
-                               </Row>
-                               <Row justify="space-between">
-                                   <Col span={12}>
-                                       <List.Item.Meta
-                                           title={"Routing key"}
-                                           description={<Tag>{record.routing_key}</Tag>}
-                                       />
-                                   </Col>
-                                   <Col span={12}>
+                                   <Col span={8}>
                                        <List.Item.Meta
                                            title={"Queue"}
                                            description={<Tag>{record.queue}</Tag>}
+                                       />
+                                   </Col>
+                                   <Col span={8}>
+                                       <List.Item.Meta
+                                           title={"Routing key"}
+                                           description={<Tag>{record.routing_key}</Tag>}
                                        />
                                    </Col>
                                </Row>

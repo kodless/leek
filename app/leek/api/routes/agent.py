@@ -114,7 +114,7 @@ class AgentSubscriptionsList(Resource):
             return responses.subscription_already_exist
         # Ensure connection
         try:
-            connection = Connection(subscription["broker"], virtual_host=subscription["virtual_host"])
+            connection = Connection(subscription["broker"])
             connection.ensure_connection(max_retries=2)
             connection.release()
         except AccessRefused:

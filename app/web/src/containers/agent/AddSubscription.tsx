@@ -64,14 +64,6 @@ const AddSubscription = (props) => {
                 <Divider/>
 
                 <FormItem
-                    name="virtual_host"
-                    rules={[]}
-                >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>}
-                           placeholder="Virtual Host - default: /"/>
-                </FormItem>
-
-                <FormItem
                     name="exchange"
                     rules={[]}
                 >

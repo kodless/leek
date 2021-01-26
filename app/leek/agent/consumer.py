@@ -31,7 +31,6 @@ class LeekConsumer(ConsumerMixin):
             # BROKER
             broker: str = "amqp://guest:guest@localhost//",
             backend: str = None,
-            virtual_host: str = "/",
             exchange: str = "celeryev",
             queue: str = "leek.fanout",
             routing_key: str = "#",
@@ -65,7 +64,6 @@ class LeekConsumer(ConsumerMixin):
         # BROKER
         self.connection = None
         self.broker = broker
-        self.virtual_host = virtual_host
         self.exchange = Exchange(exchange, 'topic', durable=True, auto_delete=False)
         self.queue = Queue(queue, exchange=self.exchange, routing_key=routing_key, durable=False, auto_delete=True)
 
@@ -76,7 +74,7 @@ class LeekConsumer(ConsumerMixin):
         self.ensure_connection_to_api()
 
     def ensure_connection_to_broker(self):
-        self.connection = Connection(self.broker, virtual_host=self.virtual_host)
+        self.connection = Connection(self.broker)
         logger.info(f"Ensure connection to the broker {self.connection.as_uri()}...")
         self.connection.ensure_connection(max_retries=10)
         logger.info("Broker is up!")

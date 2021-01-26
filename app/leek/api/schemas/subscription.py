@@ -6,7 +6,6 @@ SubscriptionSchema = Schema({
     Optional("backend"): And(str, len),
     "app_env": And(str, len),
     # --
-    Optional("virtual_host", default="/"): And(str, len),
     Optional("exchange", default="celeryev"): And(str, len),
     Optional("queue", default="leek.fanout"): And(str, len),
     Optional("routing_key", default="#"): And(str, len),
