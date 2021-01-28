@@ -9,12 +9,13 @@
       "features/login",
       "features/applications",
       "features/triggers",
-      "features/filters",
-      "features/issues",
       "features/metrics",
       "features/tasks",
+      "features/filters",
       "features/states",
       "features/workers",
+      "features/queues",
+      "features/issues",
       "features/charts"
     ],
     "Architecture": [
@@ -29,7 +30,8 @@
       "getting-started/agent",
       "getting-started/api",
       "getting-started/web",
-      "getting-started/es"
+      "getting-started/es",
+      "getting-started/infra"
     ]
   }
 }

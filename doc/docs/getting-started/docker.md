@@ -18,18 +18,18 @@ and will start the enabled service and skip the disabled ones relying on `LEEK_E
 3. Decide what elasticsearch db mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/es).
 
 
-### Quick local experiment
+### Quick local demo
 
-To experiment with leek, you can run [this test docker-compose file](https://github.com/kodless/leek/blob/master/docker-compose-qa.yml) with:
+To experiment with leek, you can run [this demo docker-compose file](https://github.com/kodless/leek/blob/master/docker-compose-demo.yml) with:
 
 ```bash
-docker-compose -f docker-compose-qa.yml build
-docker-compose -f docker-compose-qa.yml up
+docker-compose -f docker-compose-demo.yml up
 ```
 
 ```yaml
 version: "2.4"
 services:
+  # Main app
   app:
     image: kodhive/leek
     environment:
@@ -78,20 +78,18 @@ services:
       mq:
         condition: service_healthy
 
-  # Just for local test!! (Test worker)
+  # Just for local demo!! (Test worker)
   worker:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     depends_on:
       mq:
         condition: service_healthy
 
-  # Just for local test!! (Test client)
+  # Just for local demo!! (Test client)
   publisher:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     command: >
@@ -100,7 +98,7 @@ services:
       mq:
         condition: service_healthy
 
-  # Just for local test!! (Test broker)
+  # Just for local demo!! (Test broker)
   mq:
     image: rabbitmq:3.8.9-management-alpine
     volumes:

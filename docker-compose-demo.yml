@@ -48,7 +48,7 @@ services:
       mq:
         condition: service_healthy
 
-  # Just for local development!! (Test worker)
+  # Just for local demo!! (Test worker)
   worker:
     image: kodhive/leek-demo
     environment:
@@ -57,7 +57,7 @@ services:
       mq:
         condition: service_healthy
 
-  # Just for local development!! (Test client)
+  # Just for local demo!! (Test client)
   publisher:
     image: kodhive/leek-demo
     environment:
@@ -68,7 +68,7 @@ services:
       mq:
         condition: service_healthy
 
-  # Just for local development!! (Test broker)
+  # Just for local demo!! (Test broker)
   mq:
     image: rabbitmq:3.8.9-management-alpine
     volumes:

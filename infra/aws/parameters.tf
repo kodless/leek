@@ -37,11 +37,11 @@ locals {
   secrets_envs = [
     {
       name: "LEEK_AGENT_API_SECRET",
-      value: "not-secret"
+      value: var.leek_agent_api_secret
     },
     {
       name: "LEEK_AGENT_SUBSCRIPTIONS",
-      value: var.leek_default_agent_subscriptions
+      value: jsonencode(var.leek_default_agent_subscriptions)
     }
   ]
 
