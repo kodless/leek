@@ -50,8 +50,7 @@ services:
 
   # Just for local development!! (Test worker)
   worker:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     depends_on:
@@ -60,8 +59,7 @@ services:
 
   # Just for local development!! (Test client)
   publisher:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     command: >
