@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Row, List, Button, Col, Card, Typography, Tag, Table, Form, Empty, Space, message} from 'antd'
-import {AppstoreAddOutlined, BellOutlined} from "@ant-design/icons";
+import {AppstoreAddOutlined, NodeIndexOutlined} from "@ant-design/icons";
 
 import SubscriptionDataColumns from "../../components/data/SubscriptionData";
 
@@ -40,6 +40,8 @@ const Subscriptions = (props) => {
 
     function doAddSubscription(subscription) {
         setLoading(true);
+        // TODO:  Uncomment after supporting multiple brokers types
+        delete subscription.type;
         service.addSubscription(currentApp, subscription)
             .then(handleAPIResponse)
             .then((subscription: any) => {
@@ -89,8 +91,8 @@ const Subscriptions = (props) => {
                   title={<Row justify="space-between">
                       <Col>
                           <Space>
-                              <BellOutlined/>
-                              <Text strong>Agent Subscriptions</Text>
+                              <NodeIndexOutlined/>
+                              <Text strong>Brokers Subscriptions</Text>
                           </Space>
                       </Col>
                       <Col>

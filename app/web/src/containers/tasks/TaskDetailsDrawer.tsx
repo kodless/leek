@@ -18,7 +18,8 @@ export default props => {
 
             <Row justify="space-between">
                 <Col>{buildTag(props.task.state, props.task)} {adaptTime(props.task.timestamp)}</Col>
-                <Col><Tag>{`${props.task.events_count} EVENTS`}</Tag> <Text copyable={{text: window.location.href}} strong/> LINK </Col>
+                <Col><Tag>{`${props.task.events_count} EVENTS`}</Tag> <Text copyable={{text: window.location.href}}
+                                                                            strong/> LINK </Col>
             </Row>
 
             <Tabs defaultActiveKey="basic">
@@ -34,7 +35,11 @@ export default props => {
                         <List.Item key="name">
                             <List.Item.Meta
                                 title="Name"
-                                description={props.task.name}
+                                description={
+                                    props.task.name ?
+                                        props.task.name :
+                                        <Text strong style={{color: "#d89614"}}>Task name not yet received</Text>
+                                }
                             />
                         </List.Item>
                         <List.Item key="runtime">
@@ -243,13 +248,13 @@ export default props => {
                         <List.Item key="expired">
                             <List.Item.Meta
                                 title="Expired"
-                                description={props.task.expired? "Yes": "No"}
+                                description={props.task.expired ? "Yes" : "No"}
                             />
                         </List.Item>
                         <List.Item key="terminated">
                             <List.Item.Meta
                                 title="Terminated"
-                                description={props.task.terminated? "Yes": "No"}
+                                description={props.task.terminated ? "Yes" : "No"}
                             />
                         </List.Item>
                         <List.Item key="signum">
@@ -272,7 +277,7 @@ export default props => {
                         <List.Item key="terminated">
                             <List.Item.Meta
                                 title="Requeue"
-                                description={props.task.requeue? "Yes": "No"}
+                                description={props.task.requeue ? "Yes" : "No"}
                             />
                         </List.Item>
                     </List>

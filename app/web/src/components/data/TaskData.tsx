@@ -39,7 +39,7 @@ function TaskData() {
             dataIndex: 'name',
             key: 'name',
             render: name => {
-                return <Text strong style={{color: "rgb(52, 156, 80)"}}>{name}</Text>
+                return name? <Text strong style={{color: "rgb(52, 156, 80)"}}>{name}</Text>: <Text strong style={{color: "#d89614"}}>Task name not yet received</Text>
             },
         },
         {

@@ -1,14 +1,15 @@
 import React from 'react'
-import {Button, Modal, Form, Input, Divider, Space} from 'antd'
-import {DeploymentUnitOutlined, BellOutlined} from "@ant-design/icons";
+import {Button, Modal, Form, Input, Divider, Space, Select} from 'antd'
+import {DeploymentUnitOutlined, NodeIndexOutlined} from "@ant-design/icons";
 
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 const AddSubscription = (props) => {
     return (
         <Modal
-            title={<Space><BellOutlined/>Add Subscription</Space>}
+            title={<Space><NodeIndexOutlined />Add Subscription</Space>}
             visible={props.visible}
             onCancel={props.reset}
             footer={[
@@ -27,13 +28,22 @@ const AddSubscription = (props) => {
         >
             <Form onFinish={props.onAdd}
                   form={props.form} id="addSubscription"
-                  initialValues={{}}>
+                  initialValues={{type: "RabbitMQ"}}>
+
+                <FormItem name="type">
+                    <Select>
+                        <Option value="RabbitMQ">RabbitMQ</Option>
+                        <Option value="Redis" disabled>Redis (Not Yet Supported)</Option>
+                        <Option value="SQS" disabled>SQS (Not Yet Supported)</Option>
+                    </Select>
+                </FormItem>
+
                 <FormItem
                     name="name"
                     rules={[
                         {required: true, message: 'Please input subscription name!'},]}
                 >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>} placeholder="name"/>
+                    <Input placeholder="name"/>
                 </FormItem>
 
                 <FormItem
@@ -57,8 +67,7 @@ const AddSubscription = (props) => {
                         {required: true, message: 'Please input environment tag!'},
                     ]}
                 >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>}
-                           placeholder="Environment Tag - eg: prod"/>
+                    <Input placeholder="Environment Tag - eg: prod"/>
                 </FormItem>
 
                 <Divider/>
@@ -67,24 +76,21 @@ const AddSubscription = (props) => {
                     name="exchange"
                     rules={[]}
                 >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>}
-                           placeholder="Exchange - default: celeryev"/>
+                    <Input placeholder="Exchange - default: celeryev"/>
                 </FormItem>
 
                 <FormItem
                     name="queue"
                     rules={[]}
                 >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>}
-                           placeholder="Queue - default: leek.fanout"/>
+                    <Input placeholder="Queue - default: leek.fanout"/>
                 </FormItem>
 
                 <FormItem
                     name="routing_key"
                     rules={[]}
                 >
-                    <Input prefix={<DeploymentUnitOutlined style={{fontSize: 13}}/>}
-                           placeholder="Routing Key - default: #"/>
+                    <Input placeholder="Routing Key - default: #"/>
                 </FormItem>
             </Form>
         </Modal>

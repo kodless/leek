@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Card, Row, Button, Space, Typography} from "antd";
+import {Card, Row, Button, Space, Typography, Col} from "antd";
+import {DeploymentUnitOutlined} from "@ant-design/icons";
+
 import {adaptTime} from "../utils/date";
 import {AgentState} from '../components/tags/AgentState'
-
 import {AgentService} from "../api/agent";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 import Subscriptions from "../containers/agent/Subscriptions";
@@ -73,7 +74,12 @@ const AgentPage = () => {
             <Row justify="center" style={{width: "100%", marginBottom: 13}}>
                 <Card
                     size="small" style={{width: "100%"}}
-                    title="Agent Process"
+                    title={
+                        <Space>
+                            <DeploymentUnitOutlined/>
+                            <Text strong>Agent Process</Text>
+                        </Space>
+                    }
                     loading={loading}
                     extra={[
                         <Button key="restart" size="small" disabled={loading} type="primary" onClick={startOrRestartAgent}
