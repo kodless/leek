@@ -35,7 +35,7 @@ export const LeekVerticalBar: React.FC<any> = (props) => {
                 legendOffset: 32
             }}
             axisTop={null}
-            axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: '', legendOffset: 36 }}
+            axisBottom={null}
             // Labels
             enableLabel={false}
             // Legends

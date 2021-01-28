@@ -1,7 +1,7 @@
 import {TaskFilters, getTimeFilterQuery} from "./task";
 import {search} from "./search";
 
-export interface Issue {
+export interface Queue {
     filter(
         app_name: string,
         app_env: string | undefined,
@@ -9,7 +9,7 @@ export interface Issue {
     ): any;
 }
 
-export class IssueService implements Issue {
+export class QueueService implements Queue {
     filter(
         app_name: string,
         app_env: string | undefined,
@@ -24,8 +24,8 @@ export class IssueService implements Issue {
                     }
                 },
                 aggs: {
-                    exceptions: {
-                        terms: {field: "exception.keyword"},
+                    queues: {
+                        terms: {field: "queue"},
                         aggs: {
                             state: {
                                 terms: {field: "state"}

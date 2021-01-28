@@ -1,7 +1,7 @@
 import {search} from "./search";
 import moment from "moment";
 
-export function getFilterQuery(app_env: string | undefined, filters: TaskFilters, ) {
+export function getTimeFilterQuery(filters: TaskFilters) {
     let time_filter;
     if (filters.interval_type === "at" && filters.timestamp_type && (filters.after_time || filters.before_time)) {
         time_filter = {range: {[filters.timestamp_type]: {}}};
@@ -16,6 +16,10 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         time_filter.range[filters.timestamp_type]["lte"] = moment().valueOf() + filters.offset;
         time_filter.range[filters.timestamp_type]["gte"] = moment().valueOf();
     }
+    return time_filter;
+}
+
+export function getFilterQuery(app_env: string | undefined, filters: TaskFilters, ) {
     let revocation_filter;
     if (filters.revocation_reason){
         if (filters.revocation_reason === "terminated")
@@ -49,7 +53,7 @@ export function getFilterQuery(app_env: string | undefined, filters: TaskFilters
         filters.result && {"match": {"result": {"query": filters.result}}},
         filters.root_id && {"match": {"root_id": filters.root_id}},
         filters.parent_id && {"match": {"parent_id": filters.parent_id}},
-        time_filter,
+        getTimeFilterQuery(filters),
         revocation_filter,
         rejection_filter
     ];

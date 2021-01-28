@@ -3,7 +3,7 @@ import {Link} from 'gatsby'
 import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
-    RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined,
+    RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
     ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined, DeploymentUnitOutlined
 } from '@ant-design/icons';
 
@@ -53,6 +53,13 @@ const Header = () => {
             <Link to="/tasks">
                 <UnorderedListOutlined/>
                 Tasks
+            </Link>
+        </Menu.Item>,
+
+        <Menu.Item key="/queues">
+            <Link to="/queues">
+                <BoxPlotOutlined />
+                Queues
             </Link>
         </Menu.Item>,
 
@@ -144,7 +151,7 @@ const Header = () => {
                                         overlay={envs}
                                         placement="bottomLeft"
                                     >
-                                        {currentEnv ? currentEnv : "Choose env"}
+                                        <span style={{color: "#00BFA6"}}>env:&nbsp;</span>{currentEnv ? currentEnv : "-"}
                                     </Dropdown.Button>
                                 </Col>}
 
@@ -155,7 +162,7 @@ const Header = () => {
                                         overlay={apps}
                                         placement="bottomLeft"
                                     >
-                                        {currentApp ? currentApp : "Choose app"}
+                                        <span style={{color: "#00BFA6"}}>app:&nbsp;</span>{currentApp ? currentApp : "-"}
                                     </Dropdown.Button>
                                 </Col>
 

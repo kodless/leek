@@ -1,20 +1,20 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Card, Col, Row, Empty, Table, Button} from 'antd'
+import {Card, Col, Row, Empty, Table, Button, Alert} from 'antd'
 import {SyncOutlined} from '@ant-design/icons'
 
-import IssueDataColumns from "../components/data/IssueData"
+import QueueDataColumns from "../components/data/QueueData"
 import TimeFilter from "../components/filters/TaskTimeFilter"
 import {useApplication} from "../context/ApplicationProvider"
-import {IssueService} from "../api/issue";
+import {QueueService} from "../api/queue";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
-const IssuesPage = () => {
+const QueuesPage = () => {
 
-    const columns = IssueDataColumns();
-    const service = new IssueService();
+    const columns = QueueDataColumns();
+    const service = new QueueService();
     const [loading, setLoading] = useState<boolean>();
-    const [issues, setIssues] = useState<any>([]);
+    const [queues, setQueues] = useState<any>([]);
 
     const {currentApp, currentEnv} = useApplication();
     const [pagination, setPagination] = useState<any>({pageSize: 10, current: 1});
@@ -25,14 +25,14 @@ const IssuesPage = () => {
     });
 
 
-    function filterIssues(pager = {current: 1, pageSize: 10}) {
+    function filterQueues(pager = {current: 1, pageSize: 10}) {
         if (!currentApp) return;
         setLoading(true);
         service.filter(currentApp, currentEnv, timeFilters)
             .then(handleAPIResponse)
             .then((result: any) => {
-                setIssues(
-                    result.aggregations.exceptions.buckets.map(
+                setQueues(
+                    result.aggregations.queues.buckets.map(
                         ({key, doc_count, state}) => {
                             let tasksStatesSeries = {
                                 QUEUED: 0,
@@ -51,7 +51,7 @@ const IssuesPage = () => {
                                 return result;
                             }, tasksStatesSeries);
                             return {
-                                exception: key,
+                                queue: key,
                                 doc_count: doc_count,
                                 ...states
                             }
@@ -69,11 +69,11 @@ const IssuesPage = () => {
 
     // UI Callbacks
     function refresh(pager = {current: 1, pageSize: 10}) {
-        filterIssues(pager)
+        filterQueues(pager)
     }
 
     function handleShowTotal(total) {
-        return `Total of ${total} issues`;
+        return `Total of ${total} queues`;
     }
 
     function handleRefresh() {
@@ -83,15 +83,30 @@ const IssuesPage = () => {
     return (
         <>
             <Helmet
-                title="Issues"
+                title="Queues"
                 meta={[
-                    {name: 'description', content: 'Tasks issues'},
+                    {name: 'description', content: 'Tasks queues'},
                     {name: 'keywords', content: 'celery, tasks'},
                 ]}
             >
                 <html lang="en"/>
             </Helmet>
-
+            <Row justify="center" style={{width: "100%", marginTop: 13}}>
+                <Alert
+                    type="warning" showIcon closable
+                    message="For monitoring queues, you should enable task_send_sent_event celery parameter on clients level!"
+                    action={
+                        <a
+                            target="_blank" rel="noopener norefferer"
+                            href="https://tryleek.com/docs/introduction/requirements#enable-celery-task_send_sent_event"
+                        >
+                            <Button size="small" type="text">
+                                Details
+                            </Button>
+                        </a>
+                    }
+                />
+            </Row>
             <Row justify="center" style={{width: "100%", marginTop: 13}}>
                 <Card
                     bodyStyle={{paddingBottom: 0, paddingRight: 0, paddingLeft: 0}}
@@ -110,12 +125,12 @@ const IssuesPage = () => {
                             </Col>
                         </Row>
                     }>
-                    <Table dataSource={issues}
+                    <Table dataSource={queues}
                            columns={columns}
                            loading={loading}
                            pagination={{...pagination, showTotal: handleShowTotal}}
                            size="small"
-                           rowKey="exception"
+                           rowKey="queue"
                            style={{width: "100%"}}
                            scroll={{x: "100%"}}
                            locale={{
@@ -123,7 +138,7 @@ const IssuesPage = () => {
                                    <Empty
                                        image={Empty.PRESENTED_IMAGE_SIMPLE}
                                        description={
-                                           <span>No <a href="#API">issues</a> found</span>
+                                           <span>No <a href="#API">queues</a> found</span>
                                        }
                                    />
                                </div>
@@ -135,4 +150,4 @@ const IssuesPage = () => {
     )
 };
 
-export default IssuesPage
+export default QueuesPage
