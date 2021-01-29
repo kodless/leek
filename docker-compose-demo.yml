@@ -23,7 +23,7 @@ services:
       # Authorization
       - LEEK_API_AUTHORIZED_AUDIENCES=kodhive-leek
       - LEEK_API_OWNER_ORG=obytes.com
-      - LEEK_API_WHITELISTED_ORGS=
+      - LEEK_API_WHITELISTED_ORGS=obytes.com
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
