@@ -45,7 +45,7 @@ def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
         @wraps(route)
         def wrapper(*args, **kwargs):
             get_claims()
-            if g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:
+            if len(settings.LEEK_API_WHITELISTED_ORGS) and g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:
                 raise JWTError(f'Only {settings.LEEK_API_WHITELISTED_ORGS} are whitelisted to use this app')
             if allowed_org_names:
                 if g.org_name not in allowed_org_names:
