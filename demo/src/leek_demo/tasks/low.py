@@ -1,7 +1,7 @@
 from celery.exceptions import Reject
 
-from leek_test.app import app
-from leek_test.tasks.medium import child_task
+from leek_demo.app import app
+from leek_demo.tasks.medium import child_task
 
 
 @app.task

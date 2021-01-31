@@ -29,7 +29,7 @@ services:
         LEEK_AGENT_SUBSCRIPTIONS=
         {
           "default": {
-            "broker": "amqp://admin:admin@mq//",
+            "broker": "redis://:admin@mq:6379/0",
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",
@@ -52,7 +52,7 @@ services:
   worker:
     image: kodhive/leek-demo
     environment:
-      - BROKER_URL=pyamqp://admin:admin@mq:5672
+      - BROKER_URL=redis://:admin@mq:6379/0
     depends_on:
       mq:
         condition: service_healthy
@@ -61,7 +61,7 @@ services:
   publisher:
     image: kodhive/leek-demo
     environment:
-      - BROKER_URL=pyamqp://admin:admin@mq:5672
+      - BROKER_URL=redis://:admin@mq:6379/0
     command: >
       bash -c "python3 publisher.py"
     depends_on:
@@ -70,14 +70,12 @@ services:
 
   # Just for local demo!! (Test broker)
   mq:
-    image: rabbitmq:3.8.9-management-alpine
-    volumes:
-      - ./test/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    image: redis:alpine
+    command: redis-server --requirepass admin
     ports:
-      - 15672:15672
-      - 5672:5672
+      - 6379:6379
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      test: [ "CMD", "nc", "-z", "localhost", "6379" ]
       interval: 2s
       timeout: 4s
       retries: 20

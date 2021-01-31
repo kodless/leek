@@ -92,7 +92,10 @@ class LeekConsumer(ConsumerMixin):
         Build events consumer
         """
         logger.info("Configuring channel...")
-        channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT)
+        if self.connection.transport.driver_type == "redis":
+            channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT)
+        else:
+            channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT, a_global=False)
         logger.info("Channel Configured...")
 
         logger.info("Declaring Exchange/Queue and binding them...")

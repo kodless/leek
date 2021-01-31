@@ -10,9 +10,9 @@ app.conf.update(
         "CELERY_SEND_TASK_SENT_EVENT": True,
         # Just for demo
         "CELERY_IMPORTS": (
-            "leek_test.tasks.low",
-            "leek_test.tasks.medium",
-            "leek_test.tasks.high",
+            "leek_demo.tasks.low",
+            "leek_demo.tasks.medium",
+            "leek_demo.tasks.high",
         ),
         "CELERY_QUEUES": (
             Queue("low", routing_key="low"),
@@ -24,9 +24,9 @@ app.conf.update(
         "CELERY_DEFAULT_EXCHANGE_TYPE": "direct",
         "CELERY_DEFAULT_ROUTING_KEY": "low",
         "CELERY_ROUTES": (
-            {"leek_test.tasks.low.*": {"queue": "low"}},
-            {"leek_test.tasks.medium.*": {"queue": "medium"}},
-            {"leek_test.tasks.high.*": {"queue": "high"}},
+            {"leek_demo.tasks.low.*": {"queue": "low"}},
+            {"leek_demo.tasks.medium.*": {"queue": "medium"}},
+            {"leek_demo.tasks.high.*": {"queue": "high"}},
         ),
     }
 )

@@ -1,4 +1,4 @@
-from leek_test.app import app
+from leek_demo.app import app
 
 
 @app.task

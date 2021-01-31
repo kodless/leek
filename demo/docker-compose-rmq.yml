@@ -1,9 +1,7 @@
 version: "2.4"
 services:
   app:
-    build:
-      context: app
-      dockerfile: dockers/Dockerfile
+    image: kodhive/leek
     environment:
       # General
       - LEEK_API_LOG_LEVEL=INFO
@@ -31,7 +29,7 @@ services:
         LEEK_AGENT_SUBSCRIPTIONS=
         {
           "default": {
-            "broker": "redis://:admin@mq:6379/0",
+            "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",
@@ -52,20 +50,18 @@ services:
 
   # Just for local demo!! (Test worker)
   worker:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
-      - BROKER_URL=redis://:admin@mq:6379/0
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
     depends_on:
       mq:
         condition: service_healthy
 
   # Just for local demo!! (Test client)
   publisher:
-    build:
-      context: test
+    image: kodhive/leek-demo
     environment:
-      - BROKER_URL=redis://:admin@mq:6379/0
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
     command: >
       bash -c "python3 publisher.py"
     depends_on:
@@ -74,12 +70,16 @@ services:
 
   # Just for local demo!! (Test broker)
   mq:
-    image: redis:alpine
-    command: redis-server --requirepass admin
+    image: rabbitmq:3.8.9-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{level,error}]}]"
     ports:
-      - 6379:6379
+      - 15672:15672
+      - 5672:5672
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "6379" ]
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
       interval: 2s
       timeout: 4s
       retries: 20

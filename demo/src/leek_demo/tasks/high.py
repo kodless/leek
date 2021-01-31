@@ -2,7 +2,7 @@ import signal
 
 import time
 
-from leek_test.app import app
+from leek_demo.app import app
 
 
 @app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})

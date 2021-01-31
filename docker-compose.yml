@@ -55,7 +55,7 @@ services:
   # Just for local development!! (Test worker)
   worker:
     build:
-      context: test
+      context: demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     depends_on:
@@ -65,7 +65,7 @@ services:
   # Just for local development!! (Test client)
   publisher:
     build:
-      context: test
+      context: demo
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     command: >
@@ -77,8 +77,10 @@ services:
   # Just for local development!! (Test broker)
   mq:
     image: rabbitmq:3.8.9-management-alpine
-    volumes:
-      - ./test/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{level,error}]}]"
     ports:
       - 15672:15672
       - 5672:5672
