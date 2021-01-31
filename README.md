@@ -11,6 +11,19 @@
     <span>Documentation website: https://tryleek.com</span>
 </h3>
 
+[![Docs Build Status][docs-build-badge]][docs-build]
+[![App Build Status][app-build-badge]][app-build]
+[![Python 3.8][version-badge]][package]
+[![pulls][pulls-badge]][dockerhub]
+
+[![License][license-badge]][license]
+[![PRs Welcome][prs-badge]][prs]
+[![Code of Conduct][coc-badge]][coc]
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+
+[![Watch on GitHub][github-watch-badge]][github-watch]
+[![Star on GitHub][github-star-badge]][github-star]
+[![Tweet][twitter-badge]][twitter]
 
 ### What is Leek?
 
@@ -198,3 +211,26 @@ services:
       timeout: 4s
       retries: 20
 ```
+
+[docs-build-badge]: https://api.netlify.com/api/v1/badges/33977c7c-42dc-44cb-8a4f-ac68c9877b6c/deploy-status
+[docs-build]: https://app.netlify.com/sites/leek/deploys
+[app-build-badge]: https://github.com/kodless/leek/workflows/Publish%20Leek%20Docker%20image/badge.svg
+[app-build]: https://app.netlify.com/sites/leek/deploys
+[version-badge]: https://img.shields.io/badge/python-3.8-blue.svg?style=flat-square
+[package]: https://pypi.org/project/xxxxxxx/
+[pulls-badge]: https://img.shields.io/docker/pulls/kodhive/leek.svg?style=flat-square
+[dockerhub]: https://hub.docker.com/r/kodhive/leek
+
+[license-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[license]: https://github.com/kodless/leek/blob/master/LICENSE
+[prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
+[prs]: https://github.com/kodless/leek/pulls/
+[coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
+[coc]: https://github.com/kodless/leek/blob/master/CODE_OF_CONDUCT.md
+
+[github-watch-badge]: https://img.shields.io/github/watchers/kodless/leek.svg?style=social
+[github-watch]: https://github.com/kodless/leek/watchers
+[github-star-badge]: https://img.shields.io/github/stars/kodless/leek.svg?style=social
+[github-star]: https://github.com/kodless/leek/stargazers
+[twitter]: https://twitter.com/intent/tweet?text=Check%20out%20leek%20by%20%40HamzaAdami%20https%3A%2F%2Fgithub.com%2Fkodless%2Freactjs-popup%20%F0%9F%91%8D
+[twitter-badge]: https://img.shields.io/twitter/url/https/github.com/kodless/leek.svg?style=social
