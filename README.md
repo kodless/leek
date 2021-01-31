@@ -1,4 +1,4 @@
-[<img align="right" width="200px" height="45px" src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=fennec&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff">](href="https://www.buymeacoffee.com/fennec")
+[<img align="right" width="200px" height="45px" src="https://cdn.buymeacoffee.com/buttons/default-yellow.png">](href="https://www.buymeacoffee.com/fennec")
 
 # Leek
 
@@ -96,17 +96,19 @@ This is an example of a demo, that includes 4 services:
 
 Things to consider when running the demo:
 
-- change app service LEEK_API_OWNER_ORG to your GSuite domain if leek owner is a GSuite Organisation (Organisation 
+- change app service `LEEK_API_OWNER_ORG` to your GSuite domain if leek owner is a GSuite Organisation (Organisation 
 demo) or use your GMail username (the one before @gmail.com) if leek owner is an individual (Individual demo).
 
-- change app service LEEK_API_WHITELISTED_ORGS to a list of GSuite organisations domains allowed to use/authenticate 
+- change app service `LEEK_API_WHITELISTED_ORGS` to a list of GSuite organisations domains allowed to use/authenticate 
 to leek using GSuite account (Organisation demo) or to a list of GMail usernames (the one before @gmail.com) to allow 
 multiple GMail accounts (Individuals demo)
 
 - After running the services with `docker-compose up`, wait for the services to start and navigate to 
 http://0.0.0.0:8000.
 
-- Create an application with the same name as in `LEEK_AGENT_SUBSCRIPTIONS`, which is `leek`
+- Create an application with the same name as in `LEEK_AGENT_SUBSCRIPTIONS`, which is `leek`.
+
+- Enjoy the demo
 
 ```yaml
 version: "2.4"
