@@ -16,8 +16,6 @@ ApplicationSchema = Schema(
     {
         "app_name": And(str, len),
         "app_description": And(str, len),
-        "broker": And(str, len),
-        "broker_version": And(str, len),
         Optional("fo_triggers", default=[]): []
     }
 )

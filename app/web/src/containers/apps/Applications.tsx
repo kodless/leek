@@ -77,8 +77,6 @@ const Applications = () => {
         app_key: string,
         created_at: number
         owner: string,
-        broker: string,
-        broker_version: string,
         fo_triggers: [any]
     } | undefined>();
 
@@ -254,13 +252,6 @@ const Applications = () => {
                                 <Space direction="horizontal" style={{marginBottom: "16px"}}>
                                     <Text strong>Owner</Text>
                                     <Text code>{selectedApp.owner}</Text>
-                                </Space>
-                            </Row>
-
-                            <Row>
-                                <Space direction="horizontal">
-                                    <Text strong>Broker</Text>
-                                    <Text code>{selectedApp.broker} ({selectedApp.broker_version})</Text>
                                 </Space>
                             </Row>
 

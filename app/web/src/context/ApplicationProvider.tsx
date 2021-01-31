@@ -18,8 +18,6 @@ interface ApplicationContextData {
         app_key: string,
         created_at: number
         owner: string,
-        broker: string,
-        broker_version: string,
         fo_triggers: [any]
     }[];
     currentApp: string | undefined;

@@ -33,7 +33,7 @@ const AddSubscription = (props) => {
                 <FormItem name="type">
                     <Select>
                         <Option value="RabbitMQ">RabbitMQ</Option>
-                        <Option value="Redis" disabled>Redis (Not Yet Supported)</Option>
+                        <Option value="Redis">Redis</Option>
                         <Option value="SQS" disabled>SQS (Not Yet Supported)</Option>
                     </Select>
                 </FormItem>

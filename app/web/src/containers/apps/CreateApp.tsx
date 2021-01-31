@@ -56,8 +56,7 @@ const CreateApp = (props) => {
             ]}
         >
             <Form onFinish={createApplication}
-                  form={form} id="createApp"
-                  initialValues={{broker: "RabbitMQ", broker_version: "3.8.6"}}>
+                  form={form} id="createApp">
                 <FormItem
                     name="app_name"
                     rules={[
@@ -90,19 +89,6 @@ const CreateApp = (props) => {
                     ]}
                 >
                     <Input prefix={<ContainerOutlined style={{fontSize: 13}}/>} placeholder="Short description"/>
-                </FormItem>
-
-                <FormItem name="broker">
-                    <Select>
-                        <Option value="RabbitMQ">RabbitMQ</Option>
-                        <Option value="Redis" disabled>Redis (Not Yet Supported)</Option>
-                    </Select>
-                </FormItem>
-
-                <FormItem name="broker_version">
-                    <Select>
-                        <Option value="3.8.6">3.8.6</Option>
-                    </Select>
                 </FormItem>
 
             </Form>

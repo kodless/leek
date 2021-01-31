@@ -281,6 +281,4 @@ class Application:
     app_description: str
     created_at: str
     owner: str
-    broker: str
-    broker_version: str
     fo_triggers: List[FanoutTrigger] = field(default_factory=lambda: [])
