@@ -232,5 +232,5 @@ services:
 [github-watch]: https://github.com/kodless/leek/watchers
 [github-star-badge]: https://img.shields.io/github/stars/kodless/leek.svg?style=social
 [github-star]: https://github.com/kodless/leek/stargazers
-[twitter]: https://twitter.com/intent/tweet?text=Check%20out%20leek%20by%20%40HamzaAdami%20https%3A%2F%2Fgithub.com%2Fkodless%2Freactjs-popup%20%F0%9F%91%8D
+[twitter]: https://twitter.com/intent/tweet?text=Check%20out%20leek%20by%20%40HamzaAdami%20https%3A%2F%2Fgithub.com%2Fkodless%2Fleek%20%F0%9F%91%8D
 [twitter-badge]: https://img.shields.io/twitter/url/https/github.com/kodless/leek.svg?style=social
