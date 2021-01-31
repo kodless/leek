@@ -8,8 +8,9 @@
     <br>
     <span>Celery Tasks Monitoring Tool</span>
     <br>
-    <span>Documentation website: https://tryleek.com</span>
-    
+    <span>Documentation: https://tryleek.com</span>
+    <br>
+  
 [![Docs Build Status][docs-build-badge]][docs-build]
 [![App Build Status][app-build-badge]][app-build]
 [![Python 3.8][version-badge]][package]
