@@ -19,7 +19,7 @@ jobs:
       - name: Build and Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: test
+          context: demo
           push: true
           tags: |
             kodhive/leek-demo:latest
