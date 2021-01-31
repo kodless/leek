@@ -6,7 +6,7 @@ services:
       dockerfile: dockers/dev.Dockerfile
     volumes:
       # For host/container sync and hot reload
-      - ./app:/opt/app
+      - ./app/leek/api:/opt/app/leek/api
     environment:
       # General
       - LEEK_API_LOG_LEVEL=INFO

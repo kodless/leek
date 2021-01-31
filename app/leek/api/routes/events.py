@@ -11,7 +11,7 @@ from leek.api.schemas.serializer import validate_payload
 from leek.api.routes.api_v1 import api_v1
 
 events_bp = Blueprint('events', __name__, url_prefix='/v1/events')
-events_ns = api_v1.namespace('events', 'RabbitMQ Webhooks events handler')
+events_ns = api_v1.namespace('events', 'Agents events handler')
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class ProcessEvents(Resource):
     @get_app_context
     def post(self):
         """
-        Process rabbitmq webhooks events
+        Process agent events
         """
         # TODO: API Key validation should be moved to API Gateway
         start_time = time.time()
