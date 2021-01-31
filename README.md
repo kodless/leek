@@ -9,8 +9,7 @@
     <span>Celery Tasks Monitoring Tool</span>
     <br>
     <span>Documentation website: https://tryleek.com</span>
-</h3>
-
+    
 [![Docs Build Status][docs-build-badge]][docs-build]
 [![App Build Status][app-build-badge]][app-build]
 [![Python 3.8][version-badge]][package]
@@ -24,6 +23,7 @@
 [![Watch on GitHub][github-watch-badge]][github-watch]
 [![Star on GitHub][github-star-badge]][github-star]
 [![Tweet][twitter-badge]][twitter]
+</h3>
 
 ### What is Leek?
 
