@@ -1,4 +1,4 @@
-[<img align="right" width="200px" height="45px" src="https://cdn.buymeacoffee.com/buttons/default-yellow.png">](href="https://www.buymeacoffee.com/fennec")
+[<img align="right" width="200px" height="45px" src="https://cdn.buymeacoffee.com/buttons/default-yellow.png">](https://www.buymeacoffee.com/fennec)
 
 # Leek
 

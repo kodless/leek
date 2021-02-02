@@ -15,12 +15,15 @@ export class IssueService implements Issue {
         app_env: string | undefined,
         filters: TaskFilters,
     ) {
+        let query = [getTimeFilterQuery(filters),];
+        if (app_env)
+            query.push({"match": {"app_env": app_env}});
         return search(
             app_name,
             {
                 query: {
                     "bool": {
-                        "must": [getTimeFilterQuery(filters)].filter(Boolean)
+                        "must": query.filter(Boolean)
                     }
                 },
                 aggs: {

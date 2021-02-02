@@ -18,13 +18,45 @@ and will start the enabled service and skip the disabled ones relying on `LEEK_E
 3. Decide what elasticsearch db mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/es).
 
 
-### Quick local demo
+### Running a local demo
 
-To experiment with leek, you can run [this demo docker-compose file](https://github.com/kodless/leek/blob/master/docker-compose-demo.yml) with:
+To experiment with leek, you can run one of these demo docker-compose files:
+- [RabbitMQ Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-rmq.yml)
 
 ```bash
-docker-compose -f docker-compose-demo.yml up
+curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-rmq.yml > docker-compose.yml
+docker-compose up
 ```
+
+- [Redis Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-redis.yml)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-redis.yml > docker-compose.yml
+docker-compose up
+```
+
+This is an example of a demo, that includes 4 services:
+
+- Leek main application
+- A RabbitMQ broker
+- Demo celery client (publisher)
+- Demo celery workers (consumer)
+
+Things to consider when running the demo:
+
+- change app service `LEEK_API_OWNER_ORG` to your GSuite domain if leek owner is a GSuite Organisation (Organisation 
+demo) or use your GMail username (the one before @gmail.com) if leek owner is an individual (Individual demo).
+
+- change app service `LEEK_API_WHITELISTED_ORGS` to a list of GSuite organisations domains allowed to use/authenticate 
+to leek using GSuite account (Organisation demo) or to a list of GMail usernames (the one before @gmail.com) to allow 
+multiple GMail accounts (Individuals demo)
+
+- After running the services with `docker-compose up`, wait for the services to start and navigate to 
+http://0.0.0.0:8000.
+
+- Create an application with the same name as in `LEEK_AGENT_SUBSCRIPTIONS`, which is `leek`.
+
+- Enjoy the demo
 
 ```yaml
 version: "2.4"
@@ -101,8 +133,10 @@ services:
   # Just for local demo!! (Test broker)
   mq:
     image: rabbitmq:3.8.9-management-alpine
-    volumes:
-      - ./test/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{level,error}]}]"
     ports:
       - 15672:15672
       - 5672:5672

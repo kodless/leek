@@ -54,7 +54,7 @@ parameters to connect to the brokers and APIs.
 ![Agent](/img/docs/agent.png)
 
 - Required parameters:
-    - **broker** - the amqp url of the broker (only rabbitmq is supported for now).
+    - **broker** - the broker url (Redis and RabbitMQ are supported)
     - **backend** - the result backend url
     - **exchange** - should be the same as the exchange used by clients and workers defined by `event_exchange`  [Learn More](https://docs.celeryproject.org/en/stable/userguide/configuration.html#event-exchange)
     - **queue** - the queue used to store the events

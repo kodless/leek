@@ -31,8 +31,6 @@ application and managing triggers.
 
 - **Creation time** - when the application was first created.
 
-- **Broker type** - the only supported broker for now is rabbitmq. SQS and redis will be supported in the future.
-
 - **API Key** - the API key that will be used for Leek agent to fanout celery events to Leek API, this is only used with 
 standalone agents, local agents is using a shared secret between Agent and API and provided as an environment variable.
 
