@@ -15,5 +15,5 @@ To configure firebase you need to:
 
 - Register your application and don't forget to allow your domain, follow instructions [here](https://firebase.google.com/docs/web/setup#register-app)
 
-- Configure Leek to use your custom firebase project with [these variables](http://localhost:3000/docs/architecture/configuration#web).
+- Configure Leek to use your custom firebase project with [these variables](/docs/architecture/configuration#web).
 

@@ -13,7 +13,7 @@ locals {
     LEEK_ENABLE_ES    = var.leek_enable_es ? "true":"false"
     # URLs
     LEEK_API_URL = "https://${var.leek_domain}:5000"
-    LEEK_WEB_URL = "http://${var.leek_domain}"
+    LEEK_WEB_URL = "https://${var.leek_domain}"
     LEEK_ES_URL  = var.leek_es_url
     # Authentication
     LEEK_FIREBASE_PROJECT_ID  = var.leek_firebase_project_id

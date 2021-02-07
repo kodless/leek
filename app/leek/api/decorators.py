@@ -32,8 +32,8 @@ def get_claims():
 def build_context():
     g.username = g.claims["sub"]
     if g.claims["email"].endswith("@gmail.com"):
-        # Normal user, org_name will be username.gmail.com
-        g.org_name = g.claims["email"].replace("@", ".")
+        # Normal user, org_name will be username
+        g.org_name = g.claims["email"].split("@")[0]
     else:
         # GSuite user, org_name will be domain.ltd
         g.org_name = g.claims["email"].split("@")[1]

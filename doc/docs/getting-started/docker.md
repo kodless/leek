@@ -13,9 +13,9 @@ and will start the enabled service and skip the disabled ones relying on `LEEK_E
 
 ### Before start using Leek in production
 
-1. Setup a new firebase project to be used for authentication between WEB and API, [more info](http://localhost:3000/docs/getting-started/firebase).
-2. Decide what agent mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/agent)
-3. Decide what elasticsearch db mode you want to use, [standalone or local](http://localhost:3000/docs/getting-started/es).
+1. Setup a new firebase project to be used for authentication between WEB and API, [more info](/docs/getting-started/firebase).
+2. Decide what agent mode you want to use, [standalone or local](/docs/getting-started/agent)
+3. Decide what elasticsearch db mode you want to use, [standalone or local](/docs/getting-started/es).
 
 
 ### Running a local demo

@@ -4,7 +4,7 @@ title: Elasticsearch
 sidebar_label: Elasticsearch
 ---
 
-Leek uses elasticsearch to index the events, you can learn more on how Leek index events [here](http://localhost:3000/docs/architecture/indexing). 
+Leek uses elasticsearch to index the events, you can learn more on how Leek index events [here](/docs/architecture/indexing). 
 you can use elasticsearch as a standalone instance or use the pre-installed local elasticsearch service:
 
 - **Standalone ES** - a standalone ES is an ES instance running separately from Leek container. using a standalone ES is 

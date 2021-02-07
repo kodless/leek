@@ -11,4 +11,4 @@ The communication between Leek API and Leek WEB is secured with Firebase Auth JW
 API, you must be authenticated using Google SSO.
 
 Leek WEB is integrated with Firebase so you have to configure it with Firebase using the mentioned environment 
-variables [here](http://localhost:3000/docs/architecture/configuration#web)
+variables [here](/docs/architecture/configuration#web)
