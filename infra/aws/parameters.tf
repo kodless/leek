@@ -21,7 +21,6 @@ locals {
     LEEK_FIREBASE_API_KEY     = var.leek_firebase_api_key
     LEEK_FIREBASE_AUTH_DOMAIN = var.leek_firebase_auth_domain
     # Authorization
-    LEEK_API_AUTHORIZED_AUDIENCES = var.leek_firebase_project_id
     LEEK_API_OWNER_ORG            = var.leek_api_owner_org
     LEEK_API_WHITELISTED_ORGS     = join(",", var.leek_api_whitelisted_orgs)
   }

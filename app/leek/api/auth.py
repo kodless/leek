@@ -82,8 +82,8 @@ def verify(token):
         authorized_audiences = settings.LEEK_API_AUTHORIZED_AUDIENCES
         return decode(
             token,
-            verify_expiration=settings.LEEK_API_AUTHORIZED_AUDIENCES,
-            authorized_audiences=authorized_audiences.split(',') if len(authorized_audiences) else None
+            verify_expiration=True,
+            authorized_audiences=authorized_audiences if len(authorized_audiences) else None
         )
 
 
