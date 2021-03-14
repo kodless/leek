@@ -52,7 +52,7 @@ to leek using GSuite account (Organisation demo) or to a list of GMail usernames
 multiple GMail accounts (Individuals demo)
 
 - After running the services with `docker-compose up`, wait for the services to start and navigate to 
-http://0.0.0.0:8000.
+http://localhost:8000.
 
 - Create an application with the same name as in `LEEK_AGENT_SUBSCRIPTIONS`, which is `leek`.
 
