@@ -8,7 +8,7 @@ Leek is a full stack application built using different technologies and publishe
 [public repository](https://hub.docker.com/repository/docker/kodhive/leek) on DockerHub
 
 Leek is a multi-services application. during docker container startup, supervisord will start as the process with pid=1
-and will start the enabled service and skip the disabled ones relying on `LEEK_ENABLE_AGENT`, `LEEK_ENABLE_AGENT`, 
+and will start the enabled service and skip the disabled ones relying on `LEEK_ENABLE_AGENT`, `LEEK_ENABLE_API`,
 `LEEK_ENABLE_WEB`, `LEEK_ENABLE_ES` environment variables.
 
 ### Before start using Leek in production
@@ -52,7 +52,7 @@ to leek using GSuite account (Organisation demo) or to a list of GMail usernames
 multiple GMail accounts (Individuals demo)
 
 - After running the services with `docker-compose up`, wait for the services to start and navigate to 
-http://0.0.0.0:8000.
+http://localhost:8000.
 
 - Create an application with the same name as in `LEEK_AGENT_SUBSCRIPTIONS`, which is `leek`.
 
