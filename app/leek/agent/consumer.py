@@ -103,7 +103,8 @@ class LeekConsumer(ConsumerMixin):
         logger.info("Exchange/Queue declared and bound!")
 
         logger.info("Creating consumer...")
-        consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json'])
+        consumer = Consumer(self.queue, callbacks=[self.on_message],
+                            accept=['json', 'application/x-python-serialize'])
         logger.info("Consumer created!")
         return [consumer]
 
