@@ -105,7 +105,7 @@ class Worker(EV):
 
     def resolve_conflict(self, coming: "Worker"):
         # Get safe attrs from coming task
-        attrs_to_upsert = list(getattr(TaskStateFields, coming.state))
+        attrs_to_upsert = list(getattr(WorkerStateFields, coming.state))
         # Merge
         for key, value in coming.__dict__.items():
             if value is not None and key in attrs_to_upsert:

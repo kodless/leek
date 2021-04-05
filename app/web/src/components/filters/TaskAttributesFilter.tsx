@@ -127,7 +127,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         </FormItem>
                         <FormItem name="runtime" style={{width: "70%"}}>
                             <InputNumber style={{width: '100%'}}
-                                         min={0} max={10} step={0.0001}
+                                         min={0} max={10000} step={0.0001}
                                          placeholder="Runtime"
                             />
                         </FormItem>
@@ -144,7 +144,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         </FormItem>
                         <FormItem name="retries" style={{width: "70%"}}>
                             <InputNumber style={{width: '100%'}}
-                                         min={0} max={1000} step={1}
+                                         min={0} max={10000} step={1}
                                          placeholder="Retries"
                             />
                         </FormItem>
