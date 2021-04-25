@@ -2,6 +2,7 @@ import React from "react";
 import {Card, Input, Row, Select, Button, Form, Badge, InputNumber, Col} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
+import {TaskStateClosable} from "../tags/TaskState";
 
 const {Option} = Select;
 const FormItem = Form.Item;
@@ -63,6 +64,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="name" style={{width: "100%"}}>
                         <Select placeholder="Name"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear
                                 showSearch
@@ -76,6 +78,8 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="state" style={{width: "100%"}}>
                         <Select placeholder="State"
+                                mode="multiple"
+                                tagRender={TaskStateClosable}
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -87,6 +91,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="routing_key" style={{width: "100%"}}>
                         <Select placeholder="Routing key"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -98,6 +103,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="queue" style={{width: "100%"}}>
                         <Select placeholder="Queue"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -109,6 +115,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="worker" style={{width: "100%"}}>
                         <Select placeholder="Worker"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
