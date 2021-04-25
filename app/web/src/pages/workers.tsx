@@ -16,7 +16,7 @@ import {fixPagination} from "../utils/pagination";
 const WorkersPage = () => {
     // STATE
     const service = new WorkerService();
-    const {currentApp} = useApplication();
+    const {currentApp, currentEnv} = useApplication();
     const [qpHostname, setQPHostname] = useQueryParam("hostname", StringParam);
 
     // Data
@@ -39,7 +39,7 @@ const WorkersPage = () => {
         if (!currentApp) return;
         setLoading(true);
         let from_ = (pager.current - 1) * pager.pageSize;
-        service.filter(currentApp, null, pager.pageSize, from_, stateFilter)
+        service.filter(currentApp, currentEnv,null, pager.pageSize, from_, stateFilter)
             .then(handleAPIResponse)
             .then((result: any) => {
                 // Prepare pagination
