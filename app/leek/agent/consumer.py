@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 
 
 class LeekConsumer(ConsumerMixin):
-    PREFETCH_COUNT = 20
+    PREFETCH_COUNT = 200
     MAX_RETRIES = 1000
     SUCCESS_STATUS_CODES = [200, 201]
     BACKOFF_STATUS_CODES = [400, 404, 503]
@@ -66,7 +66,7 @@ class LeekConsumer(ConsumerMixin):
         self.connection = Connection(self.broker)
         self.event_type = "fanout" if self.connection.transport.driver_type == "redis" else "topic"
         self.exchange = Exchange(exchange, self.event_type, durable=True, auto_delete=False)
-        self.queue = Queue(queue, exchange=self.exchange, routing_key=routing_key, durable=False, auto_delete=True)
+        self.queue = Queue(queue, exchange=self.exchange, routing_key=routing_key, durable=True, auto_delete=False)
 
         # CONNECTION TO BROKER
         self.ensure_connection_to_broker()
