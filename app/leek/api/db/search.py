@@ -16,3 +16,8 @@ def search_index(index_alias, query, params):
         return responses.cache_backend_unavailable
     except es_exceptions.NotFoundError:
         return responses.application_not_found
+
+
+def get_task_by_uuid(index_alias, task_uuid):
+    connection = es.connection
+    return connection.get(index=index_alias, id=task_uuid)

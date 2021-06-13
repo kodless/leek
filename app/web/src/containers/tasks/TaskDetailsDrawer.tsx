@@ -1,28 +1,98 @@
-import React from 'react';
-import {Typography, Tabs, List, Row, Col, Tag} from 'antd';
+import React, {useState} from 'react';
+import {Typography, Tabs, List, Row, Col, Tag, message, Space, Button, Modal, Spin} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import {adaptTime} from '../../utils/date'
 import TaskDetailsDrawer from './TaskDetailsDrawer.style'
 import {buildTag} from "../../components/data/TaskData";
+import {ControlService} from "../../api/control";
+import {handleAPIError, handleAPIResponse} from "../../utils/errors";
+import {useApplication} from "../../context/ApplicationProvider";
+import {ExclamationCircleOutlined, LoadingOutlined, SyncOutlined} from "@ant-design/icons";
 
 const Text = Typography.Text;
 const {TabPane} = Tabs;
 
+const {confirm} = Modal;
 
 export default props => {
+
+    const {currentApp} = useApplication();
+    const service = new ControlService();
+    const [retrying, setRetrying] = useState<boolean>();
+
+
+    function retry() {
+        if (!currentApp) return;
+        setRetrying(true);
+        return service.retryTask(currentApp, props.task.uuid)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                retriedSuccessfully(result.task_id)
+            }, handleAPIError)
+            .catch(handleAPIError)
+            .finally(() => setRetrying(false));
+    }
+
+    function handleRetryTask() {
+        confirm({
+            title: "Do you really want to retry this task?",
+            icon: <ExclamationCircleOutlined/>,
+            content: <>
+                <Typography.Paragraph>Task retry is an experimental feature for now!</Typography.Paragraph>
+                <Typography.Paragraph>Tasks part of chains, groups or chords will not be retried as part of them!</Typography.Paragraph>
+            </>,
+            onOk: () => {
+                return retry()
+            },
+            okText: "Retry",
+            cancelText: "Cancel",
+        });
+    }
+
+    function retriedSuccessfully(task_id) {
+        confirm({
+            title: "Task retried!",
+            icon: <ExclamationCircleOutlined/>,
+            content: <>
+                <Typography.Paragraph>Task retried successfully with uuid <Typography.Text code>{task_id}</Typography.Text></Typography.Paragraph>
+            </>,
+            onOk: () => {
+                window.open(`/task?app=${currentApp}&uuid=${task_id}`,"_self")
+            },
+            onCancel: () => {
+                window.open(`/task?app=${currentApp}&uuid=${task_id}`, "_blank")
+            },
+            okText: "View",
+            cancelText: "View in new tab",
+        });
+    }
+
     return (
         <TaskDetailsDrawer>
             {/* Header */}
 
             <Row justify="space-between">
                 <Col>{buildTag(props.task.state, props.task)} {adaptTime(props.task.timestamp)}</Col>
-                <Col><Tag>{`${props.task.events_count} EVENTS`}</Tag> <Text copyable={{text: window.location.href}}
-                                                                            strong/> LINK </Col>
+                <Col>
+                    <Space>
+                        { ["FAILED", "CRITICAL"].includes(props.task.state) &&
+                            <Button onClick={handleRetryTask} loading={retrying} ghost type="primary">Retry</Button>
+                        }
+                        <Tag>{`${props.task.events_count} EVENTS`}</Tag>
+                        <Text copyable={{text: window.location.href}} strong>LINK</Text>
+                    </Space>
+                </Col>
             </Row>
 
-            <Tabs defaultActiveKey="basic">
+            <Tabs defaultActiveKey="basic"
+                  tabBarExtraContent={
+                      props.loading !== undefined && <Space>
+                          <Typography.Text code> { props.loading ? <SyncOutlined spin />: <LoadingOutlined />} Refreshes every 5 seconds</Typography.Text>
+                      </Space>
+                  }
+            >
                 {/* Basic */}
                 <TabPane tab="Basic" key="basic">
                     <List size="small">
@@ -194,7 +264,7 @@ export default props => {
                                 description={
                                     props.task.root_id ?
                                         <a target="_blank"
-                                           href={`/tasks/?uuid=${props.task.root_id}`}>
+                                           href={`/task/?app=${currentApp}&uuid=${props.task.root_id}`}>
                                             {`<${props.task.root_id}>`}
                                         </a> : "SELF"
                                 }
@@ -206,7 +276,7 @@ export default props => {
                                 description={
                                     props.task.parent_id ?
                                         <a target="_blank"
-                                           href={`/tasks/?uuid=${props.task.parent_id}`}>
+                                           href={`/task/?app=${currentApp}&uuid=${props.task.parent_id}`}>
                                             {`<${props.task.parent_id}>`}
                                         </a> : "-"
                                 }
