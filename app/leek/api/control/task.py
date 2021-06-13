@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def retry_task(app_name, task_doc):
-    # Check
+    # Check if task is routable
     if not task_doc.get("exchange", "tasks") and not task_doc.get("routing_key"):
         return responses.task_not_routable
 

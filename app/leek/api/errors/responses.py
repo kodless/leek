@@ -80,7 +80,7 @@ control_operations_not_supported = {
 
 task_not_routable = {
                         "error": {
-                            "code": "400005",
+                            "code": "400006",
                             "message": "Task not routable",
                             "reason": "Task does not have a routing key"
                         }
