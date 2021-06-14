@@ -129,22 +129,28 @@ const Subscriptions = (props) => {
                        expandable={{
                            expandedRowRender: record => <>
                                <Row justify="space-between" style={{marginBottom: 6}}>
-                                   <Col span={8}>
+                                   <Col span={6}>
                                        <List.Item.Meta
                                            title={"Exchange"}
                                            description={<Tag>{record.exchange}</Tag>}
                                        />
                                    </Col>
-                                   <Col span={8}>
+                                   <Col span={6}>
                                        <List.Item.Meta
                                            title={"Queue"}
                                            description={<Tag>{record.queue}</Tag>}
                                        />
                                    </Col>
-                                   <Col span={8}>
+                                   <Col span={6}>
                                        <List.Item.Meta
                                            title={"Routing key"}
                                            description={<Tag>{record.routing_key}</Tag>}
+                                       />
+                                   </Col>
+                                   <Col span={6}>
+                                       <List.Item.Meta
+                                           title={"Concurrency pool size"}
+                                           description={<Tag>{record.concurrency_pool_size}</Tag>}
                                        />
                                    </Col>
                                </Row>

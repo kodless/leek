@@ -1,6 +1,7 @@
-import time
+import os
 from urllib.parse import urljoin
 
+import gevent
 import requests
 from kombu.mixins import ConsumerMixin
 from kombu import Exchange, Queue, Connection
@@ -11,7 +12,7 @@ logger = get_logger(__name__)
 
 
 class LeekConsumer(ConsumerMixin):
-    PREFETCH_COUNT = 200
+    PREFETCH_COUNT = int(os.environ.get("LEEK_AGENT_PREFETCH_COUNT", 1000))
     MAX_RETRIES = 1000
     SUCCESS_STATUS_CODES = [200, 201]
     BACKOFF_STATUS_CODES = [400, 404, 503]
@@ -34,6 +35,7 @@ class LeekConsumer(ConsumerMixin):
             exchange: str = "celeryev",
             queue: str = "leek.fanout",
             routing_key: str = "#",
+            concurrency_pool_size: int = 1
     ):
         """
         :param api_url: The URL of the API where to fanout events
@@ -49,6 +51,7 @@ class LeekConsumer(ConsumerMixin):
 
         # API
         self.subscription_name = subscription_name
+        self.concurrency_pool_size = concurrency_pool_size
         logger.info(f"Building consumer for subscription [{subscription_name}]...")
 
         self.api_url = api_url
@@ -72,7 +75,7 @@ class LeekConsumer(ConsumerMixin):
         self.ensure_connection_to_broker()
 
         # CONNECTION TO API
-        self.ensure_connection_to_api()
+        self.session = self.ensure_connection_to_api()
 
     def ensure_connection_to_broker(self):
         logger.info(f"Ensure connection to the broker {self.connection.as_uri()}...")
@@ -81,11 +84,13 @@ class LeekConsumer(ConsumerMixin):
 
     def ensure_connection_to_api(self):
         logger.info(f"Ensure connection to the API {self.api_url}...")
-        requests.options(
+        s = requests.Session()
+        s.headers = self.headers
+        s.options(
             url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
-            headers=self.headers
         ).raise_for_status()
         logger.info("API is up!")
+        return s
 
     def get_consumers(self, Consumer, channel):
         """
@@ -113,31 +118,27 @@ class LeekConsumer(ConsumerMixin):
         :param body: Message body
         :param message: Message
         """
-        # print(message.properties)
-        for i in range(self.MAX_RETRIES):
-            try:
-                response = requests.post(
-                    url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
-                    json=body,
-                    headers=self.headers
+        try:
+            response = self.session.post(
+                url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
+                json=body,
+            )
+            response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            logger.error("Failed to connect to Leek API, Leek is Down.")
+            gevent.sleep(self.DOWN_DELAY_S)
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code
+            if status_code in self.BACKOFF_STATUS_CODES:
+                logger.warning(e.response.content)
+                logger.warning(
+                    f"Failed to send message with status code {status_code}, "
+                    f"backoff for {self.BACKOFF_DELAY_S} seconds."
                 )
-                response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
-            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-                logger.error("Failed to connect to Leek API, Leek is Down.")
-                time.sleep(self.DOWN_DELAY_S)
-            except requests.exceptions.HTTPError as e:
-                status_code = e.response.status_code
-                if status_code in self.BACKOFF_STATUS_CODES:
-                    logger.warning(e.response.content)
-                    logger.warning(
-                        f"Failed to send message with status code {status_code}, "
-                        f"backoff for {self.BACKOFF_DELAY_S} seconds."
-                    )
-                    time.sleep(self.BACKOFF_DELAY_S)
-                else:
-                    logger.error(e.response.content)
-                    time.sleep(self.DOWN_DELAY_S)
+                gevent.sleep(self.BACKOFF_DELAY_S)
             else:
-                if response.status_code in self.SUCCESS_STATUS_CODES:
-                    message.ack()
-                    return
+                logger.error(e.response.content)
+                gevent.sleep(self.DOWN_DELAY_S)
+        else:
+            if response.status_code in self.SUCCESS_STATUS_CODES:
+                message.ack()

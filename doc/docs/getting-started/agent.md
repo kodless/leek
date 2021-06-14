@@ -83,7 +83,8 @@ illustrate how you can subscribe to multiple brokers:
     "app_name": "leek",
     "app_env": "qa",
     "app_key": "not-secret",
-    "api_url": "http://0.0.0.0:5000"
+    "api_url": "http://0.0.0.0:5000",
+    "concurrency_pool_size": 2
   },
  "leek-prod": {
     "broker": "amqp://admin:admin@mq-prod//",
@@ -95,7 +96,8 @@ illustrate how you can subscribe to multiple brokers:
     "app_name": "leek",
     "app_env": "prod",
     "app_key": "not-secret",
-    "api_url": "http://0.0.0.0:5000"
+    "api_url": "http://0.0.0.0:5000",
+    "concurrency_pool_size": 2
   }
 }
 ```
