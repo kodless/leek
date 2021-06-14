@@ -47,7 +47,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     nginx \
     supervisor \
-    elasticsearch \
+    elasticsearch=7.10.0 \
     procps
 COPY --from=compile-image /opt /opt
 ADD conf/es /etc/elasticsearch

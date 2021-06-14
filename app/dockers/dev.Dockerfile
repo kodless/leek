@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends gnupg2 wget \
     && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-    elasticsearch \
+    elasticsearch=7.10.0 \
     procps \
     build-essential \
     supervisor \
