@@ -27,7 +27,7 @@ services:
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
         {
-          "default": {
+          "leek-prod": {
             "broker": "redis://:admin@mq:6379/0",
             "backend": null,
             "exchange": "celeryev",

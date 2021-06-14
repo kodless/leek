@@ -155,7 +155,7 @@ services:
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
         {
-          "default": {
+          "leek-prod": {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",
