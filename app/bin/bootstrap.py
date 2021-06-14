@@ -83,6 +83,7 @@ printy(SERVICES)
 """
 ADAPT/VALIDATE VARIABLES
 """
+
 # WEB VARIABLES
 if ENABLE_WEB and LEEK_ENV == "PROD":
     LEEK_FIREBASE_PROJECT_ID = os.environ.get("LEEK_FIREBASE_PROJECT_ID")
@@ -115,43 +116,57 @@ if ENABLE_WEB and LEEK_ENV == "PROD":
     with open(web_conf_file, 'w') as f:
         f.write(web_conf)
 
+
+def validate_subscriptions(subs):
+    if not isinstance(subs, dict):
+        abort(f"Agent subscriptions should be a dict of subscriptions")
+
+    # Validate each subscription
+    for subscription_name, subscription in subs.items():
+        required_keys = [
+            "broker", "exchange", "queue", "routing_key", "org_name",
+            "app_name", "app_env",  # "app_key", "api_url"
+        ]
+        keys = subscription.keys()
+        if not all(required_key in keys for required_key in required_keys):
+            abort(f"Agent subscription configuration is invalid")
+
+    # Add extra keys
+    if ENABLE_API and ENABLE_AGENT:
+        # Agent and API in the same runtime, prepare a shared secret for communication between them
+        for subscription_name, subscription in subs.items():
+            try:
+                subscription["app_key"] = os.environ["LEEK_AGENT_API_SECRET"]
+            except KeyError:
+                abort("Agent and API are both enabled in same container, LEEK_AGENT_API_SECRET env variable should "
+                      "be specified for inter-communication between agent and API")
+            # Use local API URL not from LEEK_API_URL env var, LEEK_API_URL is used by Web app (browser)
+            subscription["api_url"] = "http://0.0.0.0:5000"
+
+            if not subscription.get("concurrency_pool_size"):
+                subscription["concurrency_pool_size"] = 1
+    return subs
+
+
 # AGENT VARIABLES
 if ENABLE_AGENT:
     subscriptions_file = "/opt/app/conf/subscriptions.json"
     subscriptions = os.environ.get("LEEK_AGENT_SUBSCRIPTIONS")
     if subscriptions:
         subscriptions = json.loads(subscriptions)
-        if not isinstance(subscriptions, dict):
-            abort(f"Agent subscriptions should be a dict of subscriptions")
-
-        if ENABLE_API and ENABLE_AGENT:
-            # Agent and API in the same runtime, prepare a shared secret for communication between them
-            for subscription_name, subscription in subscriptions.items():
-                try:
-                    subscription["app_key"] = os.environ["LEEK_AGENT_API_SECRET"]
-                except KeyError:
-                    abort("Agent and API are both enabled in same container, LEEK_AGENT_API_SECRET env variable should "
-                          "be specified for inter-communication between agent and API")
-                # Use local API URL not from LEEK_API_URL env var, LEEK_API_URL is used by Web app (browser)
-                subscription["api_url"] = "http://0.0.0.0:5000"
-
-        # Validate each subscription
-        for subscription_name, subscription in subscriptions.items():
-            required_keys = ["broker", "exchange", "queue", "routing_key", "org_name",
-                             "app_name", "app_env", "app_key", "api_url"]
-            keys = subscription.keys()
-            if not all(required_key in keys for required_key in required_keys):
-                abort(f"Agent subscription configuration is invalid")
-
+        subscriptions = validate_subscriptions(subscriptions)
         with open(subscriptions_file, 'w') as f:
             json.dump(subscriptions, f, indent=4, sort_keys=False)
     else:
         with open(subscriptions_file) as s:
             subscriptions = json.load(s)
+            subscriptions = validate_subscriptions(subscriptions)
         if not len(subscriptions):
             logger.warning(f"LEEK_AGENT_SUBSCRIPTIONS environment variable is not set, and subscriptions file does not "
                            f"declare any subscriptions, Try adding subscriptions statically via env variable or "
                            f"dynamically via agent page {LEEK_WEB_URL}.")
+        with open(subscriptions_file, 'w') as f:
+            json.dump(subscriptions, f, indent=4, sort_keys=False)
 
 """
 START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM

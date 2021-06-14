@@ -97,7 +97,8 @@ services:
             "routing_key": "#",
             "org_name": "example.com",
             "app_name": "leek",
-            "app_env": "prod"
+            "app_env": "prod",
+            "concurrency_pool_size": 3
           }
         }
       - LEEK_AGENT_API_SECRET=not-secret

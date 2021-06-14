@@ -1,5 +1,10 @@
 import json
 
+import gevent
+from gevent import monkey
+
+monkey.patch_all()
+
 from signal import signal, SIGTERM
 from multiprocessing import Process
 
@@ -52,7 +57,7 @@ class LeekAgent:
 
         signal(SIGTERM, self.stop)
         for consumer in self.consumers:
-            p = Process(target=consumer.run)
+            p = Process(target=self.start_pool, args=(consumer,))
             p.start()
             self.proc.append(p)
 
@@ -66,6 +71,15 @@ class LeekAgent:
         print("SIGTERM detected. Exiting gracefully")
         for p in self.proc:
             p.kill()
+
+    @staticmethod
+    def start_pool(consumer: LeekConsumer):
+        greenlets = []
+        for C in range(0, consumer.concurrency_pool_size):
+            greenlet = gevent.spawn(consumer.run, )
+            greenlet.name = f"consumer.{consumer.subscription_name}.{C}"
+            greenlets.append(greenlet)
+        gevent.joinall(greenlets, raise_error=True)
 
 
 if __name__ == '__main__':
