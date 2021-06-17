@@ -7,7 +7,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 WORKDIR /opt/app
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-RUN python3 -m venv $VIRTUAL_ENV  \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m venv $VIRTUAL_ENV \
     && python3 -m pip install --upgrade pip
 
 # Install Backend Dependencies
