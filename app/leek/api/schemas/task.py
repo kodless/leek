@@ -1,4 +1,4 @@
-from datetime import datetime
+from ciso8601 import parse_datetime
 
 from schema import Schema, And, Or, Optional, Use
 
@@ -48,12 +48,11 @@ TaskEventSchema = Schema(
         # countdown: If the task is scheduled or set to be retried after failure
         Optional("eta"): Or(None,
                             And(str,
-                                Use(lambda t: int(datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)))),
+                                Use(lambda t: int(parse_datetime(t).timestamp() * 1000)))),
         # When the task will expire (REVOKED by workers after this time)
         Optional("expires"): Or(None,
                                 And(str,
-                                    Use(lambda t: int(
-                                        datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)))),
+                                    Use(lambda t: int(parse_datetime(t).timestamp() * 1000)))),
         # Available with all event types.
         # Indicates publisher-client in case of task-sent events and consumer-worker in other events
         Optional("hostname"): And(str, len),
