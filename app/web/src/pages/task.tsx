@@ -3,7 +3,7 @@ import {Helmet} from 'react-helmet'
 import {useQueryParam, StringParam} from "use-query-params";
 import {Row, message} from 'antd'
 
-import TaskDetailsDrawer from '../containers/tasks/TaskDetailsDrawer'
+import TaskDetails from '../containers/tasks/TaskDetails'
 
 import {useApplication} from "../context/ApplicationProvider"
 import {TaskService} from "../api/task"
@@ -68,7 +68,7 @@ const TaskPage: React.FC = () => {
             </Helmet>
 
             <Row style={{marginTop: "20px", width: "100%"}} gutter={[12, 12]}>
-                <TaskDetailsDrawer task={task} loading={loading}/>
+                <TaskDetails task={task} loading={loading}/>
             </Row>
         </>
     )

@@ -8,6 +8,7 @@ import sys
 import requests
 import time
 from printy import printy
+from elasticsearch import Elasticsearch
 
 """
 PRINT APPLICATION HEADER
@@ -173,6 +174,34 @@ START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM
 """
 
 
+def create_painless_scripts():
+    connection = Elasticsearch(LEEK_ES_URL)
+    with open('/opt/app/conf/painless/TaskMerge.groovy', 'r') as script:
+        task_merge_source = script.read()
+
+    with open('/opt/app/conf/painless/WorkerMerge.groovy', 'r') as script:
+        worker_merge_source = script.read()
+
+    try:
+        t = connection.put_script(id="task-merge", body={
+            "script": {
+                "lang": "painless",
+                "source": task_merge_source
+            }
+        })
+        w = connection.put_script(id="worker-merge", body={
+            "script": {
+                "lang": "painless",
+                "source": worker_merge_source
+            }
+        })
+        if t["acknowledged"] is True and w["acknowledged"] is True:
+            return
+    except Exception:
+        pass
+    abort(f"Could not create painless scripts!")
+
+
 def ensure_connection(target):
     for i in range(10):
         try:
@@ -192,6 +221,8 @@ if ENABLE_ES:
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     ensure_connection(LEEK_ES_URL)
+    # Create painless scripts used for merges
+    create_painless_scripts()
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])
     # Make sure the API is up before starting the agent

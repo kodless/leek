@@ -4,12 +4,12 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import {adaptTime} from '../../utils/date'
-import TaskDetailsDrawer from './TaskDetailsDrawer.style'
+import TaskDetails from './TaskDetails.style'
 import {buildTag} from "../../components/data/TaskData";
 import {ControlService} from "../../api/control";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import {useApplication} from "../../context/ApplicationProvider";
-import {ExclamationCircleOutlined, LoadingOutlined, SyncOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, ExclamationCircleOutlined, LoadingOutlined, SyncOutlined} from "@ant-design/icons";
 
 const Text = Typography.Text;
 const {TabPane} = Tabs;
@@ -54,7 +54,7 @@ export default props => {
     function retriedSuccessfully(task_id) {
         confirm({
             title: "Task retried!",
-            icon: <ExclamationCircleOutlined/>,
+            icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
             content: <>
                 <Typography.Paragraph>Task retried successfully with uuid <Typography.Text code>{task_id}</Typography.Text></Typography.Paragraph>
             </>,
@@ -70,7 +70,7 @@ export default props => {
     }
 
     return (
-        <TaskDetailsDrawer>
+        <TaskDetails>
             {/* Header */}
 
             <Row justify="space-between">
@@ -353,6 +353,6 @@ export default props => {
                     </List>
                 </TabPane>
             </Tabs>
-        </TaskDetailsDrawer>
+        </TaskDetails>
     );
 };
