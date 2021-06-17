@@ -2,7 +2,9 @@ import os
 from urllib.parse import urljoin
 
 import gevent
+from gevent.pool import Pool
 import requests
+from requests import adapters
 from kombu.mixins import ConsumerMixin
 from kombu import Exchange, Queue, Connection
 
@@ -52,6 +54,7 @@ class LeekConsumer(ConsumerMixin):
         # API
         self.subscription_name = subscription_name
         self.concurrency_pool_size = concurrency_pool_size
+        self._pool = Pool(concurrency_pool_size)
         logger.info(f"Building consumer for subscription [{subscription_name}]...")
 
         self.api_url = api_url
@@ -76,6 +79,12 @@ class LeekConsumer(ConsumerMixin):
 
         # CONNECTION TO API
         self.session = self.ensure_connection_to_api()
+        adapter = adapters.HTTPAdapter(
+            pool_connections=concurrency_pool_size,
+            pool_maxsize=concurrency_pool_size
+        )
+        self.session.mount('http://', adapter)
+        self.session.mount('https://', adapter)
 
     def ensure_connection_to_broker(self):
         logger.info(f"Ensure connection to the broker {self.connection.as_uri()}...")
@@ -108,11 +117,19 @@ class LeekConsumer(ConsumerMixin):
         logger.info("Exchange/Queue declared and bound!")
 
         logger.info("Creating consumer...")
-        consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json'])
+        consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json'], tag_prefix=self.subscription_name)
         logger.info("Consumer created!")
         return [consumer]
 
     def on_message(self, body, message):
+        """
+        Callbacks used to send message to Leek API Webhooks endpoint
+        :param body: Message body
+        :param message: Message
+        """
+        self._pool.spawn(self.handler, body, message)
+
+    def handler(self, body, message):
         """
         Callbacks used to send message to Leek API Webhooks endpoint
         :param body: Message body
@@ -137,6 +154,7 @@ class LeekConsumer(ConsumerMixin):
                 )
                 gevent.sleep(self.BACKOFF_DELAY_S)
             else:
+                logger.error(f"status code: {e.response.status_code}")
                 logger.error(e.response.content)
                 gevent.sleep(self.DOWN_DELAY_S)
         else:

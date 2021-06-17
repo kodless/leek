@@ -1,4 +1,3 @@
-import abc
 from typing import List, Union, Optional
 from dataclasses import dataclass, field
 
@@ -69,10 +68,6 @@ class EV:
     utcoffset: int
     pid: int
 
-    @abc.abstractmethod
-    def resolve_conflict(self, coming: Union["Task", "Worker"]):
-        pass
-
     def to_doc(self):
         doc = {k: v for k, v in self.__dict__.items() if v is not None}
         _id = doc.pop("id")
@@ -102,35 +97,6 @@ class Worker(EV):
     freq: float = None
     loadavg: List[float] = None
     events_count: Optional[int] = 1
-
-    def resolve_conflict(self, coming: "Worker"):
-        # Get safe attrs from coming task
-        attrs_to_upsert = list(getattr(WorkerStateFields, coming.state))
-        # Merge
-        for key, value in coming.__dict__.items():
-            if value is not None and key in attrs_to_upsert:
-                setattr(self, key, value)
-
-    def merge(self, coming: Union["Task", "Worker"]):
-        events_count = self.events_count
-        in_order = self.exact_timestamp < coming.exact_timestamp
-        # self is the currently stored/indexed doc
-        if in_order:
-            # The two documents are in order, Safe to merge
-            self.update(coming)
-            merged = True
-        elif not in_order and self.state == coming.state:
-            # The two documents are out of order and has the same state => Skip
-            merged = False
-        else:
-            # The two documents are out of order and has different states => Resolve conflict and merge
-            self.resolve_conflict(coming)
-            merged = True
-
-        # Increment events count
-        self.events_count = events_count + 1
-
-        return merged
 
 
 @dataclass
@@ -178,87 +144,6 @@ class Task(EV):
     worker: Optional[str] = None
     events: Optional[List[str]] = field(default_factory=lambda: [])
     events_count: Optional[int] = 1
-
-    def resolve_conflict(self, coming: "Task"):
-        # print(f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid}")
-        attrs_to_upsert = []
-        # Get safe attrs from coming task
-        attrs_to_upsert += list(getattr(TaskStateFields, coming.state))
-        # States with same attrs
-        if coming.state in [FAILED, RETRY]:
-            if self.state not in [FAILED, RETRY, CRITICAL]:
-                attrs_to_upsert += list(TaskStateFields.FAILED_RETRY)
-        elif coming.state in [QUEUED, RECEIVED]:
-            if self.state not in [QUEUED, RECEIVED]:
-                attrs_to_upsert += list(TaskStateFields.QUEUED_RECEIVED)
-        # Merge
-        for key, value in coming.__dict__.items():
-            if value is not None and key in attrs_to_upsert:
-                setattr(self, key, value)
-
-    def handle_non_terminal_event(self, coming: Union["Task", "Worker"]):
-        # self is the currently stored/indexed doc
-        in_order = self.exact_timestamp < coming.exact_timestamp
-        if in_order:
-            if self.state in STATES_TERMINAL:
-
-                if self.state != REVOKED:
-                    print(
-                        f"DETECTED CONFLICT {self.state} {coming.state} {coming.uuid} {self.exact_timestamp} {coming.exact_timestamp}")
-                    print(self)
-                    print(coming)
-                self.resolve_conflict(coming)
-                merged = True
-            else:
-                # The two documents are in physical clock order and in state order, Safe to merge
-                self.update(coming)
-                merged = True
-        elif not in_order and self.state == coming.state:
-            # The two documents are out of order and has the same state => Skip
-            merged = False
-        else:
-            # The two documents are out of order and has different states => Resolve conflict and merge
-            self.resolve_conflict(coming)
-            merged = True
-        return merged
-
-    def merge(self, coming: Union["Task", "Worker"]):
-        events_count = self.events_count
-        events = self.events
-
-        if coming.state in STATES_TERMINAL:
-            # Coming terminal event is safe to merge, no need to compare clocks/timestamps
-            self.update(coming)
-            merged = True
-        elif self.state in STATES_TERMINAL:
-            # The task is already in terminal state, Resolve conflict and merge
-            # This can be caused if the timestamp of the new event is inaccurate
-            # Or if the workers/clients are not synchronized
-            self.resolve_conflict(coming)
-            merged = True
-        else:
-            # Handle non terminal events (Resolve conflict and merge | Just merge)
-            merged = self.handle_non_terminal_event(coming)
-
-        # Introduce custom states
-        if self.retries:
-            if self.state == FAILED:
-                self.state = CRITICAL
-            if self.state == SUCCEEDED:
-                self.state = RECOVERED
-
-        # If parent/root is self fix
-        if self.root_id and self.root_id == self.id:
-            self.root_id = None
-        if self.parent_id and self.parent_id == self.id:
-            self.parent_id = None
-
-        # Increment events count
-        self.events_count = events_count + 1
-        events.append(coming.state)
-        self.events = events
-
-        return merged
 
 
 @dataclass()

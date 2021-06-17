@@ -14,5 +14,5 @@ printy==2.1.1
 supervisor==4.2.1
 
 # Additional for agent
-kombu==5.0.2
+kombu==5.1.0
 redis==3.5.3
