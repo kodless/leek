@@ -53,7 +53,8 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
         return meta, 201
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
-    except es_exceptions.RequestError:
+    except es_exceptions.RequestError as e:
+        print(e.info)
         return responses.application_already_exist
 
 
