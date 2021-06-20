@@ -32,15 +32,8 @@ resource "aws_ecs_service" "_" {
     container_port   = local.port_backend
   }
 
-  load_balancer {
-    target_group_arn = aws_alb_target_group.es.id
-    container_name   = local.container_name
-    container_port   = local.port_es
-  }
-
   depends_on = [
     aws_alb_listener.backend,
     aws_alb_listener.frontend,
-    aws_alb_listener.es
   ]
 }
