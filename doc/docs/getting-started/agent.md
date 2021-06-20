@@ -41,7 +41,7 @@ controlled using `supervisor` through RPC interface methods, you can:
 not belong to you. you can instruct infrastructure owners to use the standalone Leek agent to fanout events to your Leek 
 API. the communication will be secured between the standalone agent and the API using an API KEY defined in the 
 subscriptions environment variable. you can enable standalone agent by setting `LEEK_ENABLE_AGENT` to true and disable 
-all other services by setting `LEEK_ENABLE_API`, `LEEK_ENABLE_WEB` and `LEEK_ENABLE_ES` to false.
+all other services by setting `LEEK_ENABLE_API`, `LEEK_ENABLE_WEB` to false.
 
 > You cannot control a standalone agent using the agent page at http://0.0.0.0:8000/agent as it lives in another 
 > instance

@@ -36,9 +36,3 @@ Leek components are configured using environment variables.
 | `LEEK_FIREBASE_APP_ID` | Firebase web application id | None |
 | `LEEK_FIREBASE_API_KEY` | Firebase web application key | None |
 | `LEEK_FIREBASE_AUTH_DOMAIN` | Firebase auth domain | None |
-
-## ES
-
-| Name | Description | Default |
-|:---- | ---- | ---- |
-| `LEEK_ENABLE_ES` | Whether to enable or disable local ES. | false |

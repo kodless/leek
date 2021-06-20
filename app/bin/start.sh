@@ -1,18 +1,11 @@
 #!/bin/bash
 
 SERVICE=$1
-ENABLE_ES=$(echo "${LEEK_ENABLE_ES-false}" | tr '[:upper:]' '[:lower:]')
 ENABLE_API=$(echo "${LEEK_ENABLE_API-false}" | tr '[:upper:]' '[:lower:]')
 ENABLE_AGENT=$(echo "${LEEK_ENABLE_AGENT-false}" | tr '[:upper:]' '[:lower:]')
 ENABLE_WEB=$(echo "${LEEK_ENABLE_WEB-false}" | tr '[:upper:]' '[:lower:]')
 
 case ${SERVICE} in
-
-  "es")
-    if [ "${ENABLE_ES}" = true ]; then
-      exec service elasticsearch start
-    fi
-    ;;
 
   "api")
     if [ "${ENABLE_API}" = true ]; then

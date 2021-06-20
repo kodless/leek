@@ -71,7 +71,6 @@ USAGE = f"""
 SERVICES = f"""
 [y>]SERVICE     STATUS      URL
 =======     ------      ---@
-- ES        {get_status(ENABLE_ES)}    {LEEK_ES_URL}
 - API       {get_status(ENABLE_API)}    {LEEK_API_URL}
 - WEB       {get_status(ENABLE_WEB)}    {LEEK_WEB_URL}
 - AGENT     {get_status(ENABLE_AGENT)}    -
@@ -84,6 +83,12 @@ printy(SERVICES)
 """
 ADAPT/VALIDATE VARIABLES
 """
+
+if ENABLE_ES:
+    logger.warning("Starting from version 0.4.0 local elasticsearch is deprecated! This is to "
+                   "improve leek docker image size.\n"
+                   "If you are still interested in local elasticsearch you can use the official "
+                   "ES docker image to run a sidecar elasticsearch container.")
 
 # WEB VARIABLES
 if ENABLE_WEB and LEEK_ENV == "PROD":
@@ -212,11 +217,6 @@ def ensure_connection(target):
             continue
     abort(f"Could not connect to target {target}")
 
-
-if ENABLE_ES:
-    # Start local elasticsearch cluster if local es db is enabled.
-    # To ensure persistent storage, please use a external ES cluster and avoid local db.
-    subprocess.run(["supervisorctl", "start", "es"])
 
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
