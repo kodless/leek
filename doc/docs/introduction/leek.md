@@ -23,3 +23,8 @@ Leek is not a celery tasks/workers control tool and you cannot use leek to revok
 workers fleet, or manage your brokers. however control features could be supported with future releases.
 
 Leek is not a package that can be installed/imported but a full stack application published as a docker image.
+
+> Starting from leek version 0.4.0 there will be support for control features, and as a start we have introduced the 
+> first control feature which is task retry, task retry is an experimental feature for now, and tasks part of a chain,
+> chords or groups will not be run as part of them.
+

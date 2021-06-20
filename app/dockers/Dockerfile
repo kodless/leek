@@ -43,17 +43,13 @@ ENV LEEK_ENV=PROD
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y gnupg2 wget \
-    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
-    && apt-get update \
-    && apt-get install --no-install-recommends -y \
+    && apt-get install --no-install-recommends -y
+    gnupg2 \
+    wget \
     nginx \
     supervisor \
-    elasticsearch=7.10.0 \
     procps
 COPY --from=compile-image /opt /opt
-ADD conf/es /etc/elasticsearch
 
 ARG LEEK_VERSION="-.-.-"
 ARG LEEK_RELEASE_DATE="0000/00/00 00:00:00"
@@ -61,5 +57,5 @@ ENV LEEK_VERSION=$LEEK_VERSION
 ENV LEEK_RELEASE_DATE=$LEEK_RELEASE_DATE
 
 # Expose Backend/Frontend ports
-EXPOSE 9200 5000 8000
+EXPOSE 5000 8000
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]
