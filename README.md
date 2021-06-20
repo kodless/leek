@@ -163,6 +163,7 @@ services:
             "org_name": "example.com",
             "app_name": "leek",
             "app_env": "prod",
+            "prefetch_count": 1000,
             "concurrency_pool_size": 2
           }
         }

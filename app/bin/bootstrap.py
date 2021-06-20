@@ -151,6 +151,9 @@ def validate_subscriptions(subs):
 
             if not subscription.get("concurrency_pool_size"):
                 subscription["concurrency_pool_size"] = 1
+
+            if not subscription.get("prefetch_count"):
+                subscription["prefetch_count"] = 1000
     return subs
 
 

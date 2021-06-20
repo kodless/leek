@@ -94,6 +94,16 @@ const AddSubscription = (props) => {
                 </FormItem>
 
                 <FormItem
+                    name="prefetch_count"
+                    rules={[]}
+                >
+                    <InputNumber min={1000} max={10000} step={1}
+                                 placeholder="Prefetch count - default: 1000"
+                                 style={{width: "100%"}}
+                    />
+                </FormItem>
+
+                <FormItem
                     name="concurrency_pool_size"
                     rules={[]}
                 >

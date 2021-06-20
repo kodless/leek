@@ -1,4 +1,3 @@
-import os
 from urllib.parse import urljoin
 
 import gevent
@@ -14,7 +13,6 @@ logger = get_logger(__name__)
 
 
 class LeekConsumer(ConsumerMixin):
-    PREFETCH_COUNT = int(os.environ.get("LEEK_AGENT_PREFETCH_COUNT", 1000))
     MAX_RETRIES = 1000
     SUCCESS_STATUS_CODES = [200, 201]
     BACKOFF_STATUS_CODES = [400, 404, 503]
@@ -37,6 +35,7 @@ class LeekConsumer(ConsumerMixin):
             exchange: str = "celeryev",
             queue: str = "leek.fanout",
             routing_key: str = "#",
+            prefetch_count: int = 1000,
             concurrency_pool_size: int = 1
     ):
         """
@@ -53,9 +52,13 @@ class LeekConsumer(ConsumerMixin):
 
         # API
         self.subscription_name = subscription_name
+        self.prefetch_count = prefetch_count
         self.concurrency_pool_size = concurrency_pool_size
         self._pool = Pool(concurrency_pool_size)
-        logger.info(f"Building consumer for subscription [{subscription_name}]...")
+        logger.info(f"Building consumer "
+                    f"[Subscription={subscription_name}, "
+                    f"Prefetch={self.prefetch_count}, "
+                    f"Pool={self.concurrency_pool_size}] ...")
 
         self.api_url = api_url
         self.headers = {
@@ -107,9 +110,9 @@ class LeekConsumer(ConsumerMixin):
         """
         logger.info("Configuring channel...")
         if self.connection.transport.driver_type == "redis":
-            channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT)
+            channel.basic_qos(prefetch_size=0, prefetch_count=self.prefetch_count)
         else:
-            channel.basic_qos(prefetch_size=0, prefetch_count=self.PREFETCH_COUNT, a_global=False)
+            channel.basic_qos(prefetch_size=0, prefetch_count=self.prefetch_count, a_global=False)
         logger.info("Channel Configured...")
 
         logger.info("Declaring Exchange/Queue and binding them...")

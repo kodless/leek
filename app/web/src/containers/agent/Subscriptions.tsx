@@ -149,8 +149,8 @@ const Subscriptions = (props) => {
                                    </Col>
                                    <Col span={6}>
                                        <List.Item.Meta
-                                           title={"Concurrency pool size"}
-                                           description={<Tag>{record.concurrency_pool_size}</Tag>}
+                                           title={"Prefetch count/Pool size"}
+                                           description={<Tag>{record.prefetch_count}/{record.concurrency_pool_size}</Tag>}
                                        />
                                    </Col>
                                </Row>

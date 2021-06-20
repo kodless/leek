@@ -62,6 +62,11 @@ parameters to connect to the brokers and APIs.
     - **org_name** - leek organisation name (GSuite domain for organizations and GMail user id for individual users)
     - **app_name** - leek application name chosen when creating the application the first time
 
+- Optional parameters - will fallback to defaults if not set:
+  - **prefetch_count** - used to specify how many messages are being sent at the same time from the broker to agent.
+  - **concurrency_pool_size** - The gevent pool size, or the number green threads that the agent can spawn for the 
+    current subscription to send events concurrently to Leek API.
+
 - Optional parameters - only required for standalone agents:
     - **app_key** - the app key generated when creating the application
     - **api_url** - Leek api url
@@ -84,6 +89,7 @@ illustrate how you can subscribe to multiple brokers:
     "app_env": "qa",
     "app_key": "not-secret",
     "api_url": "http://0.0.0.0:5000",
+    "prefetch_count": 1000,
     "concurrency_pool_size": 2
   },
  "leek-prod": {
@@ -97,6 +103,7 @@ illustrate how you can subscribe to multiple brokers:
     "app_env": "prod",
     "app_key": "not-secret",
     "api_url": "http://0.0.0.0:5000",
+    "prefetch_count": 1000,
     "concurrency_pool_size": 2
   }
 }
