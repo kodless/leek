@@ -43,7 +43,7 @@ ENV LEEK_ENV=PROD
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y
+    && apt-get install --no-install-recommends -y \
     gnupg2 \
     wget \
     nginx \
