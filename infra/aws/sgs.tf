@@ -21,15 +21,6 @@ resource "aws_security_group" "service" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  # ES
-  ingress {
-    description     = "Allow alb to access leek ES"
-    protocol        = "TCP"
-    from_port       = local.port_es
-    to_port         = local.port_es
-    security_groups = [aws_security_group.alb.id]
-  }
-
   # All
   egress {
     from_port   = 0

@@ -71,10 +71,6 @@ variable "leek_enable_agent" {
   default     = true
   description = "Whether Enable Local Agent component"
 }
-variable "leek_enable_es" {
-  default = true
-  description = "Whether Enable Local ES component"
-}
 
 # DNS
 variable "leek_domain" {
