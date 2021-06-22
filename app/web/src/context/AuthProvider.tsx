@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Spin, message} from 'antd';
 
+import env from "../utils/vars";
 import getFirebase from '../utils/firebase';
 import Auth from '../containers/Auth'
 
@@ -25,8 +26,8 @@ function AuthProvider({children}) {
      *  gRPC Service Callbacks
      ---------------------- **/
     const [firebase, setFirebase] = useState();
-    const [loading, setLoading] = useState<boolean>(true);
-    const [bootstrapping, setBootstrapping] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [bootstrapping, setBootstrapping] = useState<boolean>(false);
     const [user, setUser] = useState<any>(null);
 
 
@@ -65,6 +66,8 @@ function AuthProvider({children}) {
      *  Hooks
      ---------------------- */
     useEffect(() => {
+        if (env.LEEK_API_ENABLE_AUTH !== "true")
+            return
         setBootstrapping(true);
         setLoading(true);
         const fb = getFirebase();
@@ -86,7 +89,7 @@ function AuthProvider({children}) {
             }
         }>
             {
-                user ? children : bootstrapping ?
+                env.LEEK_API_ENABLE_AUTH !== "true" ? children : user ? children : bootstrapping ?
                     <Spin spinning={loading} size="large" style={{
                         width: "100%",
                         height: "100vh",

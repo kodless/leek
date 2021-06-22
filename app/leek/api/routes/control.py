@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, request, g
+from flask import Blueprint, g
 from flask_restx import Resource
 from elasticsearch import exceptions as es_exceptions
 
@@ -24,15 +24,12 @@ class TaskRetry(Resource):
         """
         Retry a celery task
         """
-        app_name = request.headers["x-leek-app-name"]
-        org_name = g.org_name
-        index_alias = f"{org_name}-{app_name}"
         try:
             task_doc = search.get_task_by_uuid(
-                index_alias=index_alias,
+                index_alias=g.index_alias,
                 task_uuid=task_uuid
             )
-            return task.retry_task(app_name, task_doc["_source"])
+            return task.retry_task(g.app_name, task_doc["_source"])
         except es_exceptions.ConnectionError:
             return responses.cache_backend_unavailable
         except es_exceptions.NotFoundError:

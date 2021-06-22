@@ -1,6 +1,4 @@
-import getFirebase from "../utils/firebase";
-import env from "../utils/vars";
-import {Task, TaskFilters} from "./task";
+import {request} from "./request";
 
 export interface Control {
     retryTask(
@@ -14,22 +12,14 @@ export class ControlService implements Control {
         app_name: string,
         task_uuid: string,
     ) {
-        let fb = getFirebase();
-        if (fb && fb.auth().currentUser) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(
-                    `${env.LEEK_API_URL}/v1/control/tasks/${task_uuid}/retry`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                        body: JSON.stringify({})
-                    }
-                )
-            );
-        } else return Promise.reject("unauthenticated")
+        return request(
+            {
+                method: "POST",
+                path: `/v1/control/tasks/${task_uuid}/retry`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 }

@@ -44,25 +44,29 @@ def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
     def decorator(route):
         @wraps(route)
         def wrapper(*args, **kwargs):
-            get_claims()
-            if len(settings.LEEK_API_WHITELISTED_ORGS) and g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:
-                raise JWTError(f'Only {settings.LEEK_API_WHITELISTED_ORGS} are whitelisted to use this app')
-            if allowed_org_names:
-                if g.org_name not in allowed_org_names:
-                    raise JWTError(f'Only {allowed_org_names} org can access this endpoint')
-            if only_app_owner:
-                try:
-                    app_name = request.headers["x-leek-app-name"]
-                except KeyError as e:
-                    return responses.missing_headers
-                try:
-                    app = get_app(f"{g.org_name}-{app_name}")
-                    if g.email != app.get("owner"):
-                        return responses.insufficient_permission
-                except es_exceptions.NotFoundError:
-                    return responses.application_not_found
-                except es_exceptions.ConnectionError:
-                    return responses.cache_backend_unavailable
+            g.app_name = request.headers.get("x-leek-app-name")
+            if settings.LEEK_API_ENABLE_AUTH:
+                get_claims()
+                if len(settings.LEEK_API_WHITELISTED_ORGS) and g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:
+                    raise JWTError(f'Only {settings.LEEK_API_WHITELISTED_ORGS} are whitelisted to use this app')
+                if allowed_org_names:
+                    if g.org_name not in allowed_org_names:
+                        raise JWTError(f'Only {allowed_org_names} org can access this endpoint')
+                if only_app_owner:
+                    if not g.app_name:
+                        return responses.missing_headers
+                    try:
+                        app = get_app(f"{g.org_name}-{g.app_name}")
+                        if g.email != app.get("owner"):
+                            return responses.insufficient_permission
+                    except es_exceptions.NotFoundError:
+                        return responses.application_not_found
+                    except es_exceptions.ConnectionError:
+                        return responses.cache_backend_unavailable
+            else:
+                g.org_name = "mono"
+
+            g.index_alias = f"{g.org_name}-{g.app_name}"
 
             return route(*args, **kwargs)
 

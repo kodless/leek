@@ -1,6 +1,5 @@
-import getFirebase from "../utils/firebase";
-import env from "../utils/vars";
 import {buildQueryString} from "./search";
+import {request} from "./request";
 
 export interface Application {
     listApplications(): any;
@@ -24,158 +23,112 @@ export interface Application {
 
 export class ApplicationService implements Application {
     listApplications() {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                })
-            );
-        }
+        return request(
+            {
+                method: "GET",
+                path: "/v1/applications",
+            }
+        )
     }
 
     createApplication(application) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(application)
-                })
-            );
-        }
+        return request(
+            {
+                method: "POST",
+                path: "/v1/applications",
+                body: application,
+            }
+        )
     }
 
     purgeApplication(app_name) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/purge`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: `/v1/applications/purge`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     cleanApplication(app_name, kind, count, unit="minutes") {
-        let fb = getFirebase();
         let params = {
             kind: kind,
             count: count,
             unit: unit
         };
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/clean${buildQueryString(params)}`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: `/v1/applications/clean${buildQueryString(params)}`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     deleteApplication(app_name) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: `/v1/applications`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     addFanoutTrigger(app_name, trigger) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                        body: JSON.stringify(trigger)
-                    })
-            );
-        }
+        return request(
+            {
+                method: "POST",
+                path: `/v1/applications/fo-triggers`,
+                body: trigger,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     editFanoutTrigger(app_name, trigger_id, trigger) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                        body: JSON.stringify(trigger)
-                    })
-            );
-        }
+        return request(
+            {
+                method: "PUT",
+                path: `/v1/applications/fo-triggers/${trigger_id}`,
+                body: trigger,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     deleteFanoutTrigger(app_name, trigger_id) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/fo-triggers/${trigger_id}`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: `/v1/applications/fo-triggers/${trigger_id}`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     listApplicationIndices(app_name) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/applications/${app_name}/indices`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "GET",
+                path: `/v1/applications/indices`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 }
