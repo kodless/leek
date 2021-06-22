@@ -42,6 +42,7 @@ ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
+LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
 
 LOGO = """
 8 8888         8 8888888888   8 8888888888   8 8888     ,88'
@@ -91,36 +92,52 @@ if ENABLE_ES:
                    "ES docker image to run a sidecar elasticsearch container.")
 
 # WEB VARIABLES
-if ENABLE_WEB and LEEK_ENV == "PROD":
-    LEEK_FIREBASE_PROJECT_ID = os.environ.get("LEEK_FIREBASE_PROJECT_ID")
-    LEEK_FIREBASE_APP_ID = os.environ.get("LEEK_FIREBASE_APP_ID")
-    LEEK_FIREBASE_API_KEY = os.environ.get("LEEK_FIREBASE_API_KEY")
-    LEEK_FIREBASE_AUTH_DOMAIN = os.environ.get("LEEK_FIREBASE_AUTH_DOMAIN")
-    none_fb_prams = [LEEK_FIREBASE_PROJECT_ID, LEEK_FIREBASE_APP_ID, LEEK_FIREBASE_API_KEY,
-                     LEEK_FIREBASE_AUTH_DOMAIN].count(None)
-    if 1 <= none_fb_prams <= 3:
-        abort(
-            "If one of [LEEK_FIREBASE_PROJECT_ID, LEEK_FIREBASE_APP_ID, LEEK_FIREBASE_API_KEY, "
-            "LEEK_FIREBASE_AUTH_DOMAIN] is provided all should be provided, Or if you want to "
-            "use default firebase project do not set any of these env variables"
-        )
+if ENABLE_WEB:
+    if LEEK_API_ENABLE_AUTH is True:
+        if LEEK_ENV == "PROD":
+            LEEK_FIREBASE_PROJECT_ID = os.environ.get("LEEK_FIREBASE_PROJECT_ID")
+            LEEK_FIREBASE_APP_ID = os.environ.get("LEEK_FIREBASE_APP_ID")
+            LEEK_FIREBASE_API_KEY = os.environ.get("LEEK_FIREBASE_API_KEY")
+            LEEK_FIREBASE_AUTH_DOMAIN = os.environ.get("LEEK_FIREBASE_AUTH_DOMAIN")
+            none_fb_prams = [LEEK_FIREBASE_PROJECT_ID, LEEK_FIREBASE_APP_ID, LEEK_FIREBASE_API_KEY,
+                             LEEK_FIREBASE_AUTH_DOMAIN].count(None)
+            if 1 <= none_fb_prams <= 3:
+                abort(
+                    "If one of [LEEK_FIREBASE_PROJECT_ID, LEEK_FIREBASE_APP_ID, LEEK_FIREBASE_API_KEY, "
+                    "LEEK_FIREBASE_AUTH_DOMAIN] is provided all should be provided, Or if you want to "
+                    "use default firebase project do not set any of these env variables"
+                )
 
-    if none_fb_prams == 4:
-        logger.warning("Using default firebase project for authentication!")
+            if none_fb_prams == 4:
+                logger.warning("Using default firebase project for authentication!")
 
-    web_conf = f"""
-    window.leek_config = {{
-        "LEEK_API_URL": "{LEEK_API_URL}",
-        "LEEK_FIREBASE_PROJECT_ID": "{LEEK_FIREBASE_PROJECT_ID or "kodhive-leek"}",
-        "LEEK_FIREBASE_APP_ID": "{LEEK_FIREBASE_APP_ID or "1:894368938723:web:e14677d1835ce9bd09e3d6"}",
-        "LEEK_FIREBASE_API_KEY": "{LEEK_FIREBASE_API_KEY or "AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk"}",
-        "LEEK_FIREBASE_AUTH_DOMAIN": "{LEEK_FIREBASE_AUTH_DOMAIN or "kodhive-leek.firebaseapp.com"}",
-    }};
-    """
+            web_conf = f"""
+            window.leek_config = {{
+                "LEEK_API_URL": "{LEEK_API_URL}",
+                "LEEK_API_ENABLE_AUTH": "true",
+                "LEEK_FIREBASE_PROJECT_ID": "{LEEK_FIREBASE_PROJECT_ID or "kodhive-leek"}",
+                "LEEK_FIREBASE_APP_ID": "{LEEK_FIREBASE_APP_ID or "1:894368938723:web:e14677d1835ce9bd09e3d6"}",
+                "LEEK_FIREBASE_API_KEY": "{LEEK_FIREBASE_API_KEY or "AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk"}",
+                "LEEK_FIREBASE_AUTH_DOMAIN": "{LEEK_FIREBASE_AUTH_DOMAIN or "kodhive-leek.firebaseapp.com"}",
+            }};
+            """
 
-    web_conf_file = "/opt/app/public/leek-config.js"
-    with open(web_conf_file, 'w') as f:
-        f.write(web_conf)
+            web_conf_file = "/opt/app/public/leek-config.js"
+            with open(web_conf_file, 'w') as f:
+                f.write(web_conf)
+        else:
+            logger.warning("Using default firebase project for authentication!")
+    else:
+        web_conf = f"""
+        window.leek_config = {{
+            "LEEK_API_URL": "{LEEK_API_URL}",
+            "LEEK_API_ENABLE_AUTH": "false",
+        }};
+        """
+
+        web_conf_file = "/opt/app/public/leek-config.js"
+        with open(web_conf_file, 'w') as f:
+            f.write(web_conf)
 
 
 def validate_subscriptions(subs):
@@ -154,6 +171,9 @@ def validate_subscriptions(subs):
 
             if not subscription.get("prefetch_count"):
                 subscription["prefetch_count"] = 1000
+
+            if LEEK_API_ENABLE_AUTH:
+                subscription["org_name"] = "mono"
     return subs
 
 

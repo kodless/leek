@@ -10,6 +10,7 @@ import {
 import Image from "../../components/Image";
 import {useAuth} from "../../context/AuthProvider";
 import {useApplication} from "../../context/ApplicationProvider";
+import env from "../../utils/vars";
 
 const {SubMenu} = Menu;
 
@@ -175,11 +176,13 @@ const Header = () => {
                                     </a>
                                 </Col>
 
+                                {env.LEEK_API_ENABLE_AUTH === "true" &&
                                 <Col key="/logout" style={{float: 'right'}}>
                                     <Button size="small" danger onClick={logout} style={{textAlign: "center"}}>
                                         <LogoutOutlined/>
                                     </Button>
                                 </Col>
+                                }
                             </Row>
                         </Col>
                     </Row>

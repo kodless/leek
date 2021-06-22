@@ -1,5 +1,4 @@
-import getFirebase from "../utils/firebase";
-import env from "../utils/vars";
+import {request} from "./request";
 
 export function buildQueryString(obj: {}) {
     const keyValuePairs: string[] = [];
@@ -10,21 +9,14 @@ export function buildQueryString(obj: {}) {
 }
 
 export function search(app_name, query, params: {} = {}) {
-    let fb = getFirebase();
-    if (fb && fb.auth().currentUser) {
-        return fb.auth().currentUser.getIdToken().then(token =>
-            fetch(
-                `${env.LEEK_API_URL}/v1/search${buildQueryString(params)}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                        "x-leek-app-name": app_name
-                    },
-                    body: JSON.stringify(query)
-                }
-            )
-        );
-    } else return Promise.reject("unauthenticated")
+    return request(
+        {
+            method: "POST",
+            path: `/v1/search${buildQueryString(params)}`,
+            body: query,
+            headers: {
+                "x-leek-app-name": app_name,
+            },
+        }
+    )
 }
