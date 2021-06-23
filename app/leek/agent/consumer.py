@@ -1,6 +1,8 @@
+import time
 from urllib.parse import urljoin
 
 import gevent
+from amqp import RecoverableConnectionError
 from gevent.pool import Pool
 import requests
 from requests import adapters
@@ -13,10 +15,8 @@ logger = get_logger(__name__)
 
 
 class LeekConsumer(ConsumerMixin):
-    MAX_RETRIES = 1000
     SUCCESS_STATUS_CODES = [200, 201]
     BACKOFF_STATUS_CODES = [400, 404, 503]
-    DOWN_DELAY_S = 20
     BACKOFF_DELAY_S = 5
     LEEK_WEBHOOKS_ENDPOINT = "/v1/events/process"
 
@@ -79,6 +79,7 @@ class LeekConsumer(ConsumerMixin):
 
         # CONNECTION TO BROKER
         self.ensure_connection_to_broker()
+        self.init_fanout_queue()
 
         # CONNECTION TO API
         self.session = self.ensure_connection_to_api()
@@ -88,11 +89,19 @@ class LeekConsumer(ConsumerMixin):
         )
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
+        self.retry = False
 
     def ensure_connection_to_broker(self):
         logger.info(f"Ensure connection to the broker {self.connection.as_uri()}...")
         self.connection.ensure_connection(max_retries=10)
         logger.info("Broker is up!")
+
+    def init_fanout_queue(self):
+        logger.info("Declaring Exchange/Queue and binding them...")
+        with Connection(self.broker) as conn:
+            with conn.channel() as channel:
+                self.queue.declare(channel=channel)
+        logger.info("Exchange/Queue declared and bound!")
 
     def ensure_connection_to_api(self):
         logger.info(f"Ensure connection to the API {self.api_url}...")
@@ -115,10 +124,6 @@ class LeekConsumer(ConsumerMixin):
             channel.basic_qos(prefetch_size=0, prefetch_count=self.prefetch_count, a_global=False)
         logger.info("Channel Configured...")
 
-        logger.info("Declaring Exchange/Queue and binding them...")
-        self.queue.declare(channel=channel)
-        logger.info("Exchange/Queue declared and bound!")
-
         logger.info("Creating consumer...")
         consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json'], tag_prefix=self.subscription_name)
         logger.info("Consumer created!")
@@ -130,7 +135,8 @@ class LeekConsumer(ConsumerMixin):
         :param body: Message body
         :param message: Message
         """
-        self._pool.spawn(self.handler, body, message)
+        if self.should_stop is not True:
+            self._pool.spawn(self.handler, body, message)
 
     def handler(self, body, message):
         """
@@ -146,7 +152,6 @@ class LeekConsumer(ConsumerMixin):
             response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             logger.error("Failed to connect to Leek API, Leek is Down.")
-            gevent.sleep(self.DOWN_DELAY_S)
         except requests.exceptions.HTTPError as e:
             status_code = e.response.status_code
             if status_code in self.BACKOFF_STATUS_CODES:
@@ -155,11 +160,54 @@ class LeekConsumer(ConsumerMixin):
                     f"Failed to send message with status code {status_code}, "
                     f"backoff for {self.BACKOFF_DELAY_S} seconds."
                 )
-                gevent.sleep(self.BACKOFF_DELAY_S)
             else:
-                logger.error(f"status code: {e.response.status_code}")
                 logger.error(e.response.content)
-                gevent.sleep(self.DOWN_DELAY_S)
+                logger.error(f"status code: {e.response.status_code}")
         else:
             if response.status_code in self.SUCCESS_STATUS_CODES:
-                message.ack()
+                try:
+                    message.ack()
+                    return
+                except (BrokenPipeError, ConnectionResetError, RecoverableConnectionError):
+                    logger.error(f"Unhealthy connection!")
+        self.backoff()
+
+    def backoff(self):
+        self.should_stop = True
+
+    def run(self, _tokens=1, **kwargs):
+        while True:
+            time.sleep(self.BACKOFF_DELAY_S)
+            if self.app_is_ready():
+                logger.info("App is ready!")
+            else:
+                continue
+            # Start/Resume Processing
+            self.should_stop = False
+            super(LeekConsumer, self).run(_tokens=1, **kwargs)
+
+    def app_is_ready(self):
+        try:
+            response = self.session.get(
+                url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
+            )
+            response.raise_for_status()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            logger.error("Failed to connect to Leek API, Leek is Down.")
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code
+            logger.warning(f"Application not ready with status code {status_code}")
+            logger.warning(e.response.content)
+        else:
+            if response.status_code == 200:
+                return True
+        return False
+
+    def on_connection_revived(self):
+        logger.info("Connection revived!")
+
+    def on_consume_ready(self, connection, channel, consumers, **kwargs):
+        logger.info("Consumer ready!")
+
+    def on_consume_end(self, connection, channel):
+        logger.info("Consumer end!")

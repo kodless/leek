@@ -26,8 +26,8 @@ function AuthProvider({children}) {
      *  gRPC Service Callbacks
      ---------------------- **/
     const [firebase, setFirebase] = useState();
-    const [loading, setLoading] = useState<boolean>(false);
-    const [bootstrapping, setBootstrapping] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [bootstrapping, setBootstrapping] = useState<boolean>(true);
     const [user, setUser] = useState<any>(null);
 
 
@@ -66,17 +66,21 @@ function AuthProvider({children}) {
      *  Hooks
      ---------------------- */
     useEffect(() => {
-        if (env.LEEK_API_ENABLE_AUTH !== "true")
-            return
-        setBootstrapping(true);
-        setLoading(true);
-        const fb = getFirebase();
-        setFirebase(fb);
-        fb.auth().onAuthStateChanged((user) => {
-            setUser(user);
+        if (env.LEEK_API_ENABLE_AUTH !== "true") {
             setBootstrapping(false);
             setLoading(false);
-        });
+        }
+        else {
+            setBootstrapping(true);
+            setLoading(true);
+            const fb = getFirebase();
+            setFirebase(fb);
+            fb.auth().onAuthStateChanged((user) => {
+                setUser(user);
+                setBootstrapping(false);
+                setLoading(false);
+            });
+        }
     }, []);
 
     return (

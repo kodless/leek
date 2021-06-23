@@ -1,0 +1,101 @@
+version: "2.4"
+services:
+  app:
+    image: kodhive/leek
+    environment:
+      # General
+      - LEEK_API_LOG_LEVEL=INFO
+      - LEEK_AGENT_LOG_LEVEL=INFO
+      # Components
+      - LEEK_ENABLE_API=true
+      - LEEK_ENABLE_AGENT=true
+      - LEEK_ENABLE_WEB=true
+      # URLs
+      - LEEK_API_URL=http://0.0.0.0:5000
+      - LEEK_WEB_URL=http://0.0.0.0:8000
+      - LEEK_ES_URL=http://es01:9200
+      # Authentication
+      - LEEK_API_ENABLE_AUTH=false
+      # Subscriptions
+      - |
+        LEEK_AGENT_SUBSCRIPTIONS=
+        {
+          "leek-prod": {
+            "broker": "amqp://admin:admin@mq//",
+            "backend": null,
+            "exchange": "celeryev",
+            "queue": "leek.fanout",
+            "routing_key": "#",
+            "org_name": "mono",
+            "app_name": "leek",
+            "app_env": "prod",
+            "prefetch_count": 1000,
+            "concurrency_pool_size": 2
+          }
+        }
+      - LEEK_AGENT_API_SECRET=not-secret
+    ports:
+      - 5000:5000
+      - 8000:8000
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local demo!! (Test worker)
+  worker:
+    image: kodhive/leek-demo
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local demo!! (Test client)
+  publisher:
+    image: kodhive/leek-demo
+    environment:
+      - BROKER_URL=pyamqp://admin:admin@mq:5672
+    command: >
+      bash -c "python3 publisher.py"
+    depends_on:
+      mq:
+        condition: service_healthy
+
+  # Just for local demo!! (Test broker)
+  mq:
+    image: rabbitmq:3.8.9-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{level,error}]}]"
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 2s
+      timeout: 4s
+      retries: 20
+
+  # Just for local development!! (Test index db)
+  es01:
+    image: elasticsearch:7.10.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    command: ["elasticsearch", "-Elogger.level=ERROR"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
