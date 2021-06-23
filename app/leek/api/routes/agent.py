@@ -41,7 +41,14 @@ class AgentControl(Resource):
         """
         Retrieve agent status
         """
-        return self.server.supervisor.getProcessInfo("agent"), 200
+        # Check if agent is local
+        if not settings.LEEK_ENABLE_AGENT:
+            return {"type": "standalone"}, 200
+
+        info = self.server.supervisor.getProcessInfo("agent")
+        info["type"] = "local"
+
+        return info, 200
 
     @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def post(self):
