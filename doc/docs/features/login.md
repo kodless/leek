@@ -10,6 +10,15 @@ For now Leek only supports Google SSO with GSuite accounts or Standard GMails ac
 
 ![Login](/img/docs/login.png)
 
+If you want to enable Firebase auth you can set `LEEK_API_ENABLE_AUTH` to `true` and set the other firebase environment
+variables:
+
+If you are willing to deploy Leek inside a VPC as an internal tool, and you don't care about authentication/authorization
+you can set `LEEK_API_ENABLE_AUTH` to `false` and skip firebase setup.
+
+If you disable authentication/authorization there will be no user context and leek won't be able to distinguish the
+application owner from normal user, so anyone that has access to leek can delete applications, purge applications ...
+
 ### Individual vs Organization
 
 Leek can be used by organizations with GSuite accounts and/or individuals with Standard google accounts.

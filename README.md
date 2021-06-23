@@ -82,40 +82,34 @@ tasks queue over time, tasks failure over time ...
 - `Filter by anything` - unlike other alternatives that doesn't provide a good support for filters, leek provides a wide
 range of filters.
 
+- `Tasks control` - for now leek can retry tasks only, more tasks/workers control features may be introduced in the 
+  future.
 
 
 ### Running a local demo
 
 To experiment with leek, you can run one of these demo docker-compose files:
-- [RabbitMQ Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-rmq.yml)
+- [RabbitMQ Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-rmq-no-auth.yml)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-rmq.yml > docker-compose.yml
+curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-rmq-no-auth.yml > docker-compose.yml
 docker-compose up
 ```
 
-- [Redis Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-redis.yml)
+- [Redis Demo](https://github.com/kodless/leek/blob/master/demo/docker-compose-redis-no-auth.yml)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-redis.yml > docker-compose.yml
+curl -sSL https://raw.githubusercontent.com/kodless/leek/master/demo/docker-compose-redis-no-auth.yml > docker-compose.yml
 docker-compose up
 ```
 
 This is an example of a demo, that includes 4 services:
 
 - Leek main application
-- A RabbitMQ broker
+- A RabbitMQ or Redis broker
+- An elasticsearch node
 - Demo celery client (publisher)
 - Demo celery workers (consumer)
-
-Things to consider when running the demo:
-
-- change app service `LEEK_API_OWNER_ORG` to your GSuite domain if leek owner is a GSuite Organisation (Organisation 
-demo) or use your GMail username (the one before @gmail.com) if leek owner is an individual (Individual demo).
-
-- change app service `LEEK_API_WHITELISTED_ORGS` to a list of GSuite organisations domains allowed to use/authenticate 
-to leek using GSuite account (Organisation demo) or to a list of GMail usernames (the one before @gmail.com) to allow 
-multiple GMail accounts (Individuals demo)
 
 - After running the services with `docker-compose up`, wait for the services to start and navigate to 
 http://0.0.0.0:8000.
@@ -143,13 +137,7 @@ services:
       - LEEK_WEB_URL=http://0.0.0.0:8000
       - LEEK_ES_URL=http://es01:9200
       # Authentication
-      - LEEK_FIREBASE_PROJECT_ID=kodhive-leek
-      - LEEK_FIREBASE_APP_ID=1:894368938723:web:e14677d1835ce9bd09e3d6
-      - LEEK_FIREBASE_API_KEY=AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk
-      - LEEK_FIREBASE_AUTH_DOMAIN=kodhive-leek.firebaseapp.com
-      # Authorization
-      - LEEK_API_OWNER_ORG=example.com
-      - LEEK_API_WHITELISTED_ORGS=example.com,
+      - LEEK_API_ENABLE_AUTH=false
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
@@ -160,7 +148,7 @@ services:
             "exchange": "celeryev",
             "queue": "leek.fanout",
             "routing_key": "#",
-            "org_name": "example.com",
+            "org_name": "mono",
             "app_name": "leek",
             "app_env": "prod",
             "prefetch_count": 1000,

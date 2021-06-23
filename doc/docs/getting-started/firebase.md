@@ -4,8 +4,18 @@ title: Firebase
 sidebar_label: Firebase
 ---
 
-Leek uses Firebase Auth and Google SSO for authentication. you can use the default Firebase settings but it will only
+Leek uses Firebase Auth and Google SSO for authentication. you can use the default Firebase settings, but it will only
 work for development.
+
+If you want to enable Firebase auth you can set `LEEK_API_ENABLE_AUTH` to `true` and set the other firebase environment 
+variables:
+
+If you are willing to deploy Leek inside a VPC as an internal tool, and you don't care about authentication/authorization
+you can set `LEEK_API_ENABLE_AUTH` to `false` and skip firebase setup.
+
+If you disable authentication/authorization there will be no user context and leek won't be able to distinguish the 
+application owner from normal user, so anyone that has access to leek can delete applications, purge applications ...
+
 
 ![Application](/img/docs/auth.png)
 
