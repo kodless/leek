@@ -172,7 +172,7 @@ def validate_subscriptions(subs):
             if not subscription.get("prefetch_count"):
                 subscription["prefetch_count"] = 1000
 
-            if LEEK_API_ENABLE_AUTH:
+            if not LEEK_API_ENABLE_AUTH:
                 subscription["org_name"] = "mono"
     return subs
 
