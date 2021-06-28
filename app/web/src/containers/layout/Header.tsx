@@ -176,7 +176,7 @@ const Header = () => {
                                     </a>
                                 </Col>
 
-                                {env.LEEK_API_ENABLE_AUTH === "true" &&
+                                {env.LEEK_API_ENABLE_AUTH !== "false" &&
                                 <Col key="/logout" style={{float: 'right'}}>
                                     <Button size="small" danger onClick={logout} style={{textAlign: "center"}}>
                                         <LogoutOutlined/>

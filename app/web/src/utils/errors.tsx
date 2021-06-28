@@ -1,6 +1,7 @@
 import {message, Typography} from "antd";
 import React from "react";
 import getFirebase from '../utils/firebase';
+import env from "../utils/vars";
 import {navigate} from '@reach/router';
 
 const Text = Typography.Text;

@@ -10,7 +10,7 @@ export function request(
     }
 ) {
     // NO-AUTH
-    if (env.LEEK_API_ENABLE_AUTH !== "true") {
+    if (env.LEEK_API_ENABLE_AUTH === "false") {
         return fetch(
             `${env.LEEK_API_URL}${path}`,
             {

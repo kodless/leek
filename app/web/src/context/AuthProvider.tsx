@@ -66,7 +66,7 @@ function AuthProvider({children}) {
      *  Hooks
      ---------------------- */
     useEffect(() => {
-        if (env.LEEK_API_ENABLE_AUTH !== "true") {
+        if (env.LEEK_API_ENABLE_AUTH === "false") {
             setBootstrapping(false);
             setLoading(false);
         }
@@ -93,7 +93,7 @@ function AuthProvider({children}) {
             }
         }>
             {
-                env.LEEK_API_ENABLE_AUTH !== "true" ? children : user ? children : bootstrapping ?
+                env.LEEK_API_ENABLE_AUTH === "false" ? children : user ? children : bootstrapping ?
                     <Spin spinning={loading} size="large" style={{
                         width: "100%",
                         height: "100vh",

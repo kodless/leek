@@ -13,7 +13,7 @@ const firebaseConfig = {
 let firebaseCache;
 
 const getFirebase = () => {
-    if (env.LEEK_API_ENABLE_AUTH !== "true")
+    if (env.LEEK_API_ENABLE_AUTH === "false")
         return
 
     if (firebaseCache) {
