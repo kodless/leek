@@ -77,7 +77,7 @@ export default props => {
                 <Col>{buildTag(props.task.state, props.task)} {adaptTime(props.task.timestamp)}</Col>
                 <Col>
                     <Space>
-                        { ["FAILED", "CRITICAL", "SUCCEEDED"].includes(props.task.state) &&
+                        { ["SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RECOVERED", "CRITICAL"].includes(props.task.state) &&
                             <Button onClick={handleRetryTask} loading={retrying} ghost type="primary">Retry</Button>
                         }
                         <Tag>{`${props.task.events_count} EVENTS`}</Tag>
