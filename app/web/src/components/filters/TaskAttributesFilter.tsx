@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {Card, Input, Row, Select, Button, Form, Badge, InputNumber, Col} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
@@ -45,6 +45,12 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
         props.onFilter(filters)
     }
 
+    const memoizedTaskNameOptions = useMemo(() => {
+        // memoize this because it's common to have many different task names, which causes the dropdown to be very laggy.
+        // This is a known problem in Ant Design
+        return seenTasks.map((task, key) => badgedOption(task))
+    }, [seenTasks]) 
+
     return (
         <Card title={
             <Button size="small" type="primary" onClick={form.submit}>
@@ -69,9 +75,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 allowClear
                                 showSearch
                                 dropdownMatchSelectWidth={false}>
-                            {
-                                seenTasks.map((task, key) => badgedOption(task))
-                            }
+                            {memoizedTaskNameOptions}
                         </Select>
                     </FormItem>
                 </Row>
