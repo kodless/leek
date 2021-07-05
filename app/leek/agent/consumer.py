@@ -2,7 +2,6 @@ import time
 from urllib.parse import urljoin
 
 import gevent
-from amqp import RecoverableConnectionError
 from gevent.pool import Pool
 import requests
 from requests import adapters
@@ -165,11 +164,13 @@ class LeekConsumer(ConsumerMixin):
                 logger.error(f"status code: {e.response.status_code}")
         else:
             if response.status_code in self.SUCCESS_STATUS_CODES:
+                # noinspection PyBroadException
                 try:
                     message.ack()
                     return
-                except (BrokenPipeError, ConnectionResetError, RecoverableConnectionError):
+                except Exception as ex:
                     logger.error(f"Unhealthy connection!")
+                    logger.error(ex)
         self.backoff()
 
     def backoff(self):

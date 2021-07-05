@@ -4,7 +4,7 @@ import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
-    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined, DeploymentUnitOutlined
+    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined
 } from '@ant-design/icons';
 
 import Image from "../../components/Image";
@@ -165,15 +165,6 @@ const Header = () => {
                                     >
                                         <span style={{color: "#00BFA6"}}>app:&nbsp;</span>{currentApp ? currentApp : "-"}
                                     </Dropdown.Button>
-                                </Col>
-
-                                <Col key="/docs">
-                                    <a href="https://tryleek.com" target="_blank" rel="noopener norefferer">
-                                        <Button size="small" type="primary"
-                                                style={{textAlign: "center"}}>
-                                            <FileWordOutlined/>
-                                        </Button>
-                                    </a>
                                 </Col>
 
                                 {env.LEEK_API_ENABLE_AUTH !== "false" &&

@@ -119,6 +119,7 @@ if ENABLE_WEB:
                 "LEEK_FIREBASE_APP_ID": "{LEEK_FIREBASE_APP_ID or "1:894368938723:web:e14677d1835ce9bd09e3d6"}",
                 "LEEK_FIREBASE_API_KEY": "{LEEK_FIREBASE_API_KEY or "AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk"}",
                 "LEEK_FIREBASE_AUTH_DOMAIN": "{LEEK_FIREBASE_AUTH_DOMAIN or "kodhive-leek.firebaseapp.com"}",
+                "LEEK_VERSION": "{LEEK_VERSION}",
             }};
             """
 
@@ -132,6 +133,7 @@ if ENABLE_WEB:
         window.leek_config = {{
             "LEEK_API_URL": "{LEEK_API_URL}",
             "LEEK_API_ENABLE_AUTH": "false",
+            "LEEK_VERSION": "{LEEK_VERSION}",
         }};
         """
 
@@ -154,8 +156,7 @@ def validate_subscriptions(subs):
         if not all(required_key in keys for required_key in required_keys):
             abort(f"Agent subscription configuration is invalid")
 
-    # Add extra keys
-    if ENABLE_API and ENABLE_AGENT:
+    if ENABLE_API:
         # Agent and API in the same runtime, prepare a shared secret for communication between them
         for subscription_name, subscription in subs.items():
             try:
@@ -166,14 +167,16 @@ def validate_subscriptions(subs):
             # Use local API URL not from LEEK_API_URL env var, LEEK_API_URL is used by Web app (browser)
             subscription["api_url"] = "http://0.0.0.0:5000"
 
-            if not subscription.get("concurrency_pool_size"):
-                subscription["concurrency_pool_size"] = 1
+    # Optional settings
+    for subscription_name, subscription in subs.items():
+        if not subscription.get("concurrency_pool_size"):
+            subscription["concurrency_pool_size"] = 1
 
-            if not subscription.get("prefetch_count"):
-                subscription["prefetch_count"] = 1000
+        if not subscription.get("prefetch_count"):
+            subscription["prefetch_count"] = 1000
 
-            if not LEEK_API_ENABLE_AUTH:
-                subscription["org_name"] = "mono"
+        if not LEEK_API_ENABLE_AUTH:
+            subscription["org_name"] = "mono"
     return subs
 
 
@@ -182,13 +185,19 @@ if ENABLE_AGENT:
     subscriptions_file = "/opt/app/conf/subscriptions.json"
     subscriptions = os.environ.get("LEEK_AGENT_SUBSCRIPTIONS")
     if subscriptions:
-        subscriptions = json.loads(subscriptions)
+        try:
+            subscriptions = json.loads(subscriptions)
+        except json.decoder.JSONDecodeError:
+            abort("LEEK_AGENT_SUBSCRIPTIONS env var should be a valid json string!")
         subscriptions = validate_subscriptions(subscriptions)
         with open(subscriptions_file, 'w') as f:
             json.dump(subscriptions, f, indent=4, sort_keys=False)
     else:
         with open(subscriptions_file) as s:
-            subscriptions = json.load(s)
+            try:
+                subscriptions = json.load(s)
+            except json.decoder.JSONDecodeError:
+                abort("Subscription file should be a valid json file!")
             subscriptions = validate_subscriptions(subscriptions)
         if not len(subscriptions):
             logger.warning(f"LEEK_AGENT_SUBSCRIPTIONS environment variable is not set, and subscriptions file does not "

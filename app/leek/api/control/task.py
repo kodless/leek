@@ -130,6 +130,7 @@ def retry_task(app_name, task_doc):
             serializer="json",
             headers={"hostname": "leek@control"},
             delivery_mode=2,
+            expiration=60 * 60 * 24 * 2  # EXPIRES IN 2 DAYS
         )
     except Exception as ex:
         logger.warning(f"Failed to send `task-sent` event for the retried task! with exception: {ex}")
