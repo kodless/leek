@@ -1,5 +1,4 @@
-import {buildQueryString} from "./search";
-import {request} from "./request";
+import {buildQueryString, request} from "./request";
 
 export interface Application {
     listApplications(): any;

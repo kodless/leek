@@ -1,12 +1,4 @@
-import {request} from "./request";
-
-export function buildQueryString(obj: {}) {
-    const keyValuePairs: string[] = [];
-    for (const key in obj) {
-        keyValuePairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`);
-    }
-    return `?${keyValuePairs.join('&')}`;
-}
+import {buildQueryString, request} from "./request";
 
 export function search(app_name, query, params: {} = {}) {
     return request(

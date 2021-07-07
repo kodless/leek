@@ -1,6 +1,15 @@
 import getFirebase from "../utils/firebase";
 import env from "../utils/vars";
 
+
+export function buildQueryString(obj: {}) {
+    const keyValuePairs: string[] = [];
+    for (const key in obj) {
+        keyValuePairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`);
+    }
+    return `?${keyValuePairs.join('&')}`;
+}
+
 export function request(
     {
         method = "GET",

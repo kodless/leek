@@ -1,5 +1,22 @@
 import React, {useState} from 'react';
-import {Typography, Tabs, List, Row, Col, Tag, message, Space, Button, Modal, Spin} from 'antd';
+import {
+    Typography,
+    Tabs,
+    List,
+    Row,
+    Col,
+    Tag,
+    message,
+    Space,
+    Button,
+    Modal,
+    Spin,
+    Form,
+    Select,
+    Input,
+    InputNumber,
+    Checkbox
+} from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -15,12 +32,17 @@ const Text = Typography.Text;
 const {TabPane} = Tabs;
 
 const {confirm} = Modal;
+const FormItem = Form.Item;
+const Option = Select.Option;
+const TerminalStates = ["SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RECOVERED", "CRITICAL"];
 
 export default props => {
 
     const {currentApp} = useApplication();
     const service = new ControlService();
     const [retrying, setRetrying] = useState<boolean>();
+    const [revoking, setRevoking] = useState<boolean>();
+    const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
 
 
     function retry() {
@@ -41,7 +63,8 @@ export default props => {
             icon: <ExclamationCircleOutlined/>,
             content: <>
                 <Typography.Paragraph>Task retry is an experimental feature for now!</Typography.Paragraph>
-                <Typography.Paragraph>Tasks part of chains, groups or chords will not be retried as part of them!</Typography.Paragraph>
+                <Typography.Paragraph>Tasks part of chains, groups or chords will not be retried as part of
+                    them!</Typography.Paragraph>
             </>,
             onOk: () => {
                 return retry()
@@ -56,10 +79,11 @@ export default props => {
             title: "Task retried!",
             icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
             content: <>
-                <Typography.Paragraph>Task retried successfully with uuid <Typography.Text code>{task_id}</Typography.Text></Typography.Paragraph>
+                <Typography.Paragraph>Task retried successfully with uuid <Typography.Text
+                    code>{task_id}</Typography.Text></Typography.Paragraph>
             </>,
             onOk: () => {
-                window.open(`/task?app=${currentApp}&uuid=${task_id}`,"_self")
+                window.open(`/task?app=${currentApp}&uuid=${task_id}`, "_self")
             },
             onCancel: () => {
                 window.open(`/task?app=${currentApp}&uuid=${task_id}`, "_blank")
@@ -69,16 +93,89 @@ export default props => {
         });
     }
 
+    function revoke(args) {
+        console.log(args);
+        if (!currentApp) return;
+        setRevoking(true);
+        return service.revokeTaskByID(currentApp, props.task.uuid, args.terminate, args.signal)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setIsRevokeModalVisible(false);
+                pendingRevocation()
+            }, handleAPIError)
+            .catch(handleAPIError)
+            .finally(() => setRevoking(false));
+    }
+
+    function pendingRevocation() {
+        confirm({
+            title: "Task pending revocation!",
+            icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
+            content: <>
+                <Typography.Paragraph>Task revocation command queued!</Typography.Paragraph>
+            </>,
+            okText: "Ok",
+            cancelButtonProps: {style: {display: 'none'}}
+        });
+    }
+
     return (
         <TaskDetails>
+            <Modal
+                title={
+                    <><ExclamationCircleOutlined style={{color: "#d89614"}}/> Do you really want to revoke this task?</>
+                }
+                footer={[
+                    <Button form="revokeForm" key="submit" htmlType="submit" loading={revoking}>
+                        Revoke
+                    </Button>
+                ]}
+                onCancel={() => setIsRevokeModalVisible(false)}
+                visible={isRevokeModalVisible}
+            >
+                <Form id="revokeForm" onFinish={revoke}
+                      initialValues={{terminate: false, signal: "SIGTERM"}}
+                      style={{marginTop: 10}}
+                >
+                    <Typography.Paragraph>
+                        Revoking tasks works by sending a broadcast message to all the workers, the workers then keep a
+                        list of revoked tasks in memory. When a worker receives a task in the list, it will skip
+                        executing the task, but it won’t terminate an already executing task unless the terminate option
+                        is set.</Typography.Paragraph>
+
+                    <Input.Group compact style={{marginTop: 16}}>
+                        <FormItem name="terminate" valuePropName="checked">
+                            <Checkbox>Terminate if started with</Checkbox>
+                        </FormItem>
+                        <FormItem name="signal">
+                            <Select style={{width: 100}}>
+                                <Option value="SIGTERM">SIGTERM</Option>
+                                <Option value="SIGKILL">SIGKILL</Option>
+                            </Select>
+                        </FormItem>
+                    </Input.Group>
+
+                    <Typography.Text type="secondary">
+                        When a worker starts up it will synchronize revoked tasks with other workers in the cluster.
+                        However, if The list of revoked tasks is in-memory and if all workers restart the list of
+                        revoked ids will also vanish. If you want to preserve this list between restarts you need to
+                        specify a file for these to be stored in by using the –statedb argument to celery worker.
+                    </Typography.Text>
+                </Form>
+            </Modal>
+
             {/* Header */}
 
             <Row justify="space-between">
                 <Col>{buildTag(props.task.state, props.task)} {adaptTime(props.task.timestamp)}</Col>
                 <Col>
                     <Space>
-                        { ["SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RECOVERED", "CRITICAL"].includes(props.task.state) &&
-                            <Button onClick={handleRetryTask} loading={retrying} ghost type="primary">Retry</Button>
+                        {!TerminalStates.includes(props.task.state) &&
+                        <Button onClick={() => setIsRevokeModalVisible(true)} loading={revoking} ghost
+                                danger>Revoke</Button>
+                        }
+                        {TerminalStates.includes(props.task.state) &&
+                        <Button onClick={handleRetryTask} loading={retrying} ghost type="primary">Retry</Button>
                         }
                         <Tag>{`${props.task.events_count} EVENTS`}</Tag>
                         <Text copyable={{text: window.location.href}} strong>LINK</Text>
@@ -89,7 +186,8 @@ export default props => {
             <Tabs defaultActiveKey="basic"
                   tabBarExtraContent={
                       props.loading !== undefined && <Space>
-                          <Typography.Text code> { props.loading ? <SyncOutlined spin />: <LoadingOutlined />} Refreshes every 5 seconds</Typography.Text>
+                          <Typography.Text code> {props.loading ? <SyncOutlined spin/> : <LoadingOutlined/>} Refreshes
+                              every 5 seconds</Typography.Text>
                       </Space>
                   }
             >
