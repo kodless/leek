@@ -45,6 +45,7 @@ def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
         @wraps(route)
         def wrapper(*args, **kwargs):
             g.app_name = request.headers.get("x-leek-app-name")
+            g.app_env = request.headers.get("x-leek-app-env")
             if settings.LEEK_API_ENABLE_AUTH:
                 get_claims()
                 if len(settings.LEEK_API_WHITELISTED_ORGS) and g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:

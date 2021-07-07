@@ -1,19 +1,50 @@
 import ast
 import logging
+import signal
 import time
+from typing import Union, List
 
 from kombu.utils.uuid import uuid
-from kombu import Connection
+from kombu import Connection, Exchange
 from amqp import AccessRefused
 
 from leek.api.conf import settings
+from leek.api.db.store import STATES_TERMINAL
 from leek.api.errors import responses
 from leek.api.control.utils import get_subscription
 
 logger = logging.getLogger(__name__)
 
 
+def get_control_exchange():
+    return Exchange(f'{settings.LEEK_CONTROL_EXCHANGE_NAME}.pidbox',
+                    type='fanout',
+                    durable=False,
+                    delivery_mode='transient')
+
+
+def broadcast_worker_command(command, arguments, producer):
+    message = {"method": command,
+               "arguments": arguments,
+               "destination": None,
+               "pattern": None,
+               "matcher": None}
+    exchange = get_control_exchange()
+    producer.publish(
+        message, exchange=exchange.name, declare=[exchange],
+        headers={
+            "clock": 1,
+            "expires": 300  # 5 minutes, before an unused remote control command queue is deleted from the broker
+        },
+        serializer="json",
+        retry=True,
+    )
+
+
 def retry_task(app_name, task_doc):
+    if task_doc.get("state") not in STATES_TERMINAL:
+        return responses.task_retry_state_precondition_failed
+
     # Check if task is routable
     if not task_doc.get("exchange", "tasks") and not task_doc.get("routing_key"):
         return responses.task_not_routable
@@ -86,17 +117,21 @@ def retry_task(app_name, task_doc):
         },
     )
     # Queue actual task
-    producer.publish(
-        body,
-        exchange=task_doc["exchange"],
-        routing_key=task_doc["routing_key"],
-        serializer="json",
-        compression=None,
-        retry=False,
-        delivery_mode=2,  # Persistent
-        headers=headers,
-        **properties
-    )
+    try:
+        producer.publish(
+            body,
+            exchange=task_doc["exchange"],
+            routing_key=task_doc["routing_key"],
+            serializer="json",
+            compression=None,
+            retry=False,
+            delivery_mode=2,  # Persistent
+            headers=headers,
+            **properties
+        )
+    except Exception as ex:
+        logger.error(ex)
+        return responses.task_retry_failed
     # Send task-sent event
     sent_event = {
         "type": "task-sent",
@@ -136,3 +171,41 @@ def retry_task(app_name, task_doc):
         logger.warning(f"Failed to send `task-sent` event for the retried task! with exception: {ex}")
     connection.release()
     return {"task_id": task_id}, 200
+
+
+def revoke(app_name, app_env, task_uuid: Union[str, List[str]], args):
+    # Check if agent is local
+    if not settings.LEEK_ENABLE_AGENT:
+        return responses.control_operations_not_supported
+
+    # Retrieve subscription
+    subscription = get_subscription(f"{app_name}-{app_env}")
+    if subscription is None:
+        return responses.task_retry_subscription_not_found
+
+    # Prepare connection/producer
+    # noinspection PyBroadException
+    try:
+        connection = Connection(subscription["broker"])
+        connection.ensure_connection(max_retries=2)
+        producer = connection.Producer()
+    except AccessRefused:
+        return responses.wrong_access_refused
+    except Exception:
+        return responses.broker_not_reachable
+
+    arguments = {
+        "task_id": task_uuid,
+        **args,
+    }
+
+    # noinspection PyBroadException
+    try:
+        broadcast_worker_command("revoke", arguments, producer)
+    except Exception as ex:
+        logger.error(ex)
+        return responses.task_revocation_failed
+    connection.release()
+
+    revocation_count = len(task_uuid) if isinstance(task_uuid, List) else 1
+    return {"acknowledged": True, "revocation_count": revocation_count}, 200

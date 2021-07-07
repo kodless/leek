@@ -25,3 +25,6 @@ LEEK_API_URL = "http://0.0.0.0:5000"
 LEEK_WEB_URL = os.environ["LEEK_WEB_URL"]
 LEEK_AGENT_API_SECRET = os.environ.get("LEEK_AGENT_API_SECRET", str(uuid.uuid4()))
 LEEK_ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
+
+# Control
+LEEK_CONTROL_EXCHANGE_NAME = os.environ.get("LEEK_CONTROL_EXCHANGE_NAME", "celery")

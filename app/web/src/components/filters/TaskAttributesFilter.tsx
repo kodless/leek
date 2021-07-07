@@ -1,31 +1,12 @@
 import React, {useMemo} from "react";
-import {Card, Input, Row, Select, Button, Form, Badge, InputNumber, Col} from "antd";
+import {Card, Input, Row, Select, Button, Form, InputNumber} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
 import {TaskStateClosable} from "../tags/TaskState";
+import {badgedOption} from "../tags/BadgedOption";
 
 const {Option} = Select;
 const FormItem = Form.Item;
-const overflowCount = 999999;
-
-let badgeStyle = {
-    backgroundColor: "#00BFA6",
-    color: "#333",
-    fontWeight: 600
-};
-
-const badgedOption = (item) => {
-    return (<Option key={item.key} value={item.key}>
-        <Row style={{width: "100%"}} justify="space-between">
-            <Col>
-                {item.key}
-            </Col>
-            <Col>
-                <Badge count={item.doc_count} overflowCount={overflowCount} size="small" style={badgeStyle}/>
-            </Col>
-        </Row>
-    </Option>)
-};
 
 interface TasksFilterContextData {
     onFilter(value: {});

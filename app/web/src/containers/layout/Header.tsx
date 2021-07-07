@@ -4,7 +4,7 @@ import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
-    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined
+    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined, ControlOutlined
 } from '@ant-design/icons';
 
 import Image from "../../components/Image";
@@ -54,6 +54,13 @@ const Header = () => {
             <Link to="/tasks">
                 <UnorderedListOutlined/>
                 Tasks
+            </Link>
+        </Menu.Item>,
+
+        <Menu.Item key="/control">
+            <Link to="/control">
+                <ControlOutlined />
+                Control
             </Link>
         </Menu.Item>,
 

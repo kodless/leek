@@ -1,0 +1,26 @@
+import React from 'react';
+import {Badge, Col, Row, Select} from "antd";
+
+
+const Option = Select.Option;
+const overflowCount = 999999;
+const badgeStyle = {
+    backgroundColor: "#00BFA6",
+    color: "#333",
+    fontWeight: 600
+};
+
+export const badgedOption = (item) => {
+    return (
+        <Option key={item.key} value={item.key}>
+            <Row style={{width: "100%"}} justify="space-between">
+                <Col>
+                    {item.key}
+                </Col>
+                <Col>
+                    <Badge count={item.doc_count} overflowCount={overflowCount} size="small" style={badgeStyle}/>
+                </Col>
+            </Row>
+        </Option>
+    );
+};
