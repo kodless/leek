@@ -170,7 +170,7 @@ export default props => {
                                 <li>
                                     When a worker starts up it will synchronize revoked tasks with other workers
                                     in the cluster unless you have disabled synchronization using worker arg
-                                    <Typography.Text code>--without-gossip</Typography.Text>.
+                                    <Typography.Text code>--without-mingle</Typography.Text>.
                                 </li>
                                 <li>
                                     If The list of revoked tasks is in-memory and if all workers restart the
