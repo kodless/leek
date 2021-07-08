@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Steps, Row, Button, Card, Select, Typography, Checkbox, Input, Modal} from 'antd';
+import {Steps, Row, Button, Card, Select, Typography, Checkbox, Input, Modal, Divider} from 'antd';
 import {CheckCircleOutlined} from "@ant-design/icons";
 
 import {useApplication} from "../context/ApplicationProvider";
@@ -128,6 +128,13 @@ const ControlPage = () => {
 
                     {current == 1 && command === "revoke" && (
                         <Row justify="center" style={{width: "100%"}}>
+
+                            <Typography.Paragraph>
+                                Revoking tasks works by sending a broadcast message to all the workers, the workers then
+                                keep a list of revoked tasks in memory. When a worker receives a task in the list, it
+                                will skip executing the task.
+                            </Typography.Paragraph>
+
                             <Select placeholder="Task name"
                                     style={{width: "100%"}}
                                     allowClear
@@ -151,6 +158,35 @@ const ControlPage = () => {
                                     <Option value="SIGKILL">SIGKILL</Option>
                                 </Select>
                             </Row>
+
+                            <Row justify="start" style={{width: "100%", marginTop: 10}}>
+                                <Typography.Paragraph type="secondary">
+                                    The worker won’t terminate an already executing task unless the terminate option
+                                    is set.
+                                </Typography.Paragraph>
+                            </Row>
+
+                            <Divider/>
+
+                            <Row justify="start" style={{width: "100%"}}>
+                                <Typography.Text type="secondary">
+                                    <Typography.Text strong type="warning">Caveats:</Typography.Text>
+                                    <ul>
+                                        <li>
+                                            When a worker starts up it will synchronize revoked tasks with other workers
+                                            in the cluster unless you have disabled synchronization using worker arg
+                                            <Typography.Text code>--without-gossip</Typography.Text>.
+                                        </li>
+                                        <li>
+                                            If The list of revoked tasks is in-memory and if all workers restart the
+                                            list of revoked ids will also vanish. If you want to preserve this list
+                                            between restarts you need to specify a file for these to be stored in by
+                                            using the <Typography.Text code>–statedb</Typography.Text> argument to
+                                            celery worker.
+                                        </li>
+                                    </ul>
+                                </Typography.Text>
+                            </Row>
                         </Row>
                     )}
 
@@ -158,7 +194,9 @@ const ControlPage = () => {
                         <>
                             <Row justify="center" style={{width: "100%"}}>
                                 <Typography.Paragraph>
-                                    Found <Typography.Text code>{revocationCount}</Typography.Text> pending (  <TaskState state="QUEUED"/> <TaskState state="RECEIVED"/> <TaskState state="STARTED"/>) instances of
+                                    Found <Typography.Text code>{revocationCount}</Typography.Text> pending ( <TaskState
+                                    state="QUEUED"/> <TaskState state="RECEIVED"/> <TaskState state="STARTED"/>)
+                                    instances of
                                     task <Typography.Text code>{taskName}</Typography.Text>.
                                     Are you sure you want to revoke them all?
                                 </Typography.Paragraph>
@@ -166,7 +204,8 @@ const ControlPage = () => {
                             {terminate &&
                             <Row justify="center" style={{width: "100%"}}>
                                 <Typography.Paragraph type="secondary">
-                                    If an instance is already <TaskState state="STARTED"/> it will be terminated using <Typography.Text
+                                    If an instance is already <TaskState state="STARTED"/> it will be terminated
+                                    using <Typography.Text
                                     code>{signal}</Typography.Text> signal!
                                 </Typography.Paragraph>
                             </Row>

@@ -15,7 +15,7 @@ import {
     Select,
     Input,
     InputNumber,
-    Checkbox
+    Checkbox, Divider
 } from 'antd';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -138,10 +138,10 @@ export default props => {
                       style={{marginTop: 10}}
                 >
                     <Typography.Paragraph>
-                        Revoking tasks works by sending a broadcast message to all the workers, the workers then keep a
-                        list of revoked tasks in memory. When a worker receives a task in the list, it will skip
-                        executing the task, but it won’t terminate an already executing task unless the terminate option
-                        is set.</Typography.Paragraph>
+                        Revoking tasks works by sending a broadcast message to all the workers, the workers then
+                        keep a list of revoked tasks in memory. When a worker receives a task in the list, it
+                        will skip executing the task.
+                    </Typography.Paragraph>
 
                     <Input.Group compact style={{marginTop: 16}}>
                         <FormItem name="terminate" valuePropName="checked">
@@ -155,12 +155,33 @@ export default props => {
                         </FormItem>
                     </Input.Group>
 
-                    <Typography.Text type="secondary">
-                        When a worker starts up it will synchronize revoked tasks with other workers in the cluster.
-                        However, if The list of revoked tasks is in-memory and if all workers restart the list of
-                        revoked ids will also vanish. If you want to preserve this list between restarts you need to
-                        specify a file for these to be stored in by using the –statedb argument to celery worker.
-                    </Typography.Text>
+                    <Typography.Paragraph type="secondary">
+                        The worker won’t terminate an already executing task unless the terminate option
+                        is set.
+                    </Typography.Paragraph>
+
+                    <Divider/>
+
+                    <Row justify="start" style={{width: "100%"}}>
+                        <Typography.Text type="secondary">
+                            <Typography.Text strong type="warning">Caveats:</Typography.Text>
+
+                            <ul>
+                                <li>
+                                    When a worker starts up it will synchronize revoked tasks with other workers
+                                    in the cluster unless you have disabled synchronization using worker arg
+                                    <Typography.Text code>--without-gossip</Typography.Text>.
+                                </li>
+                                <li>
+                                    If The list of revoked tasks is in-memory and if all workers restart the
+                                    list of revoked ids will also vanish. If you want to preserve this list
+                                    between restarts you need to specify a file for these to be stored in by
+                                    using the <Typography.Text code>–statedb</Typography.Text> argument to
+                                    celery worker.
+                                </li>
+                            </ul>
+                        </Typography.Text>
+                    </Row>
                 </Form>
             </Modal>
 
