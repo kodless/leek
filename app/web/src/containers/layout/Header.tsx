@@ -4,12 +4,13 @@ import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
-    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, FileWordOutlined, DeploymentUnitOutlined
+    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined, ControlOutlined
 } from '@ant-design/icons';
 
 import Image from "../../components/Image";
 import {useAuth} from "../../context/AuthProvider";
 import {useApplication} from "../../context/ApplicationProvider";
+import env from "../../utils/vars";
 
 const {SubMenu} = Menu;
 
@@ -53,6 +54,13 @@ const Header = () => {
             <Link to="/tasks">
                 <UnorderedListOutlined/>
                 Tasks
+            </Link>
+        </Menu.Item>,
+
+        <Menu.Item key="/control">
+            <Link to="/control">
+                <ControlOutlined />
+                Control
             </Link>
         </Menu.Item>,
 
@@ -166,20 +174,13 @@ const Header = () => {
                                     </Dropdown.Button>
                                 </Col>
 
-                                <Col key="/docs">
-                                    <a href="https://tryleek.com" target="_blank" rel="noopener norefferer">
-                                        <Button size="small" type="primary"
-                                                style={{textAlign: "center"}}>
-                                            <FileWordOutlined/>
-                                        </Button>
-                                    </a>
-                                </Col>
-
+                                {env.LEEK_API_ENABLE_AUTH !== "false" &&
                                 <Col key="/logout" style={{float: 'right'}}>
                                     <Button size="small" danger onClick={logout} style={{textAlign: "center"}}>
                                         <LogoutOutlined/>
                                     </Button>
                                 </Col>
+                                }
                             </Row>
                         </Col>
                     </Row>

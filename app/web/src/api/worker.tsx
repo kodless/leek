@@ -3,6 +3,7 @@ import {search} from "./search";
 export interface Worker {
     filter(
         app_name: string,
+        app_env: string | undefined,
         hostname: string | null,
         size: number,
         from_: number,
@@ -18,6 +19,7 @@ export interface Worker {
 export class WorkerService implements Worker {
     filter(
         app_name: string,
+        app_env: string | undefined,
         hostname: string | null,
         size: number,
         from_: number,
@@ -25,6 +27,7 @@ export class WorkerService implements Worker {
     ) {
         let filters = [
             {"match": {"kind": "worker"}},
+            app_env && {"match": {"app_env": app_env}},
             state && {"match": {"state": state}},
             hostname && {"match": {"hostname": hostname}}
         ];

@@ -11,6 +11,19 @@ let metricsInterval;
 let metadataInterval;
 const workerStates = ["HEARTBEAT", "ONLINE", "OFFLINE"];
 
+const tasksStatesDefaults = [
+    {key: "QUEUED", doc_count: 0},
+    {key: "RECEIVED", doc_count: 0},
+    {key: "STARTED", doc_count: 0},
+    {key: "SUCCEEDED", doc_count: 0},
+    {key: "FAILED", doc_count: 0},
+    {key: "REJECTED", doc_count: 0},
+    {key: "REVOKED", doc_count: 0},
+    {key: "RETRY", doc_count: 0},
+    {key: "RECOVERED", doc_count: 0},
+    {key: "CRITICAL", doc_count: 0},
+];
+
 interface ApplicationContextData {
     applications: {
         app_name: string,
@@ -74,7 +87,7 @@ const initial = {
     processedEvents: 0,
     processedTasks: 0,
     seenStates: [],
-    seenTaskStates: [],
+    seenTaskStates: tasksStatesDefaults,
     seenRoutingKeys: [],
     seenQueues: [],
     seenEnvs: []
@@ -140,10 +153,10 @@ function ApplicationProvider({children}) {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
                 setSeenStates(result.aggregations.seen_states.buckets);
-                setSeenTaskStates(
-                    result.aggregations.seen_states.buckets.filter(
-                        item => !workerStates.includes(item.key)
-                    )
+                setSeenTaskStates(tasksStatesDefaults
+                    .map(obj => result.aggregations.seen_states.buckets
+                        .find(o => o.key === obj.key) || obj)
+                    .filter(item => !workerStates.includes(item.key))
                 );
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
                 setSeenQueues(result.aggregations.seen_queues.buckets);

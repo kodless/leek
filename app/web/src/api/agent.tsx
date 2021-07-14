@@ -1,12 +1,10 @@
-import getFirebase from "../utils/firebase";
-import env from "../utils/vars";
+import {request} from "./request";
+
 
 export interface Agent {
     retrieveAgent(): any;
 
     startOrRestartAgent(): any;
-
-    stopAgent(): any;
 
     stopAgent(): any;
 
@@ -19,99 +17,66 @@ export interface Agent {
 
 export class AgentService implements Agent {
     retrieveAgent() {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/control`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                })
-            );
-        }
+        return request(
+            {
+                method: "GET",
+                path: "/v1/agent/control",
+            }
+        )
     }
 
     startOrRestartAgent() {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/control`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({})
-                })
-            );
-        }
+        return request(
+            {
+                method: "POST",
+                path: "/v1/agent/control",
+            }
+        )
     }
 
     stopAgent() {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/control`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: "/v1/agent/control",
+            }
+        )
     }
 
     getSubscriptions(app_name) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/subscriptions`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                        "x-leek-app-name": app_name
-                    },
-                })
-            );
-        }
+        return request(
+            {
+                method: "GET",
+                path: "/v1/agent/subscriptions",
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     addSubscription(app_name, subscription) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/subscriptions`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                        "x-leek-app-name": app_name
-                    },
-                    body: JSON.stringify(subscription)
-                })
-            );
-        }
+        return request(
+            {
+                method: "POST",
+                path: "/v1/agent/subscriptions",
+                body: subscription,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 
     deleteSubscription(app_name, subscription_name) {
-        let fb = getFirebase();
-        if (fb) {
-            return fb.auth().currentUser.getIdToken().then(token =>
-                fetch(`${env.LEEK_API_URL}/v1/agent/subscriptions/${subscription_name}`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                            "x-leek-app-name": app_name
-                        },
-                    })
-            );
-        }
+        return request(
+            {
+                method: "DELETE",
+                path: `/v1/agent/subscriptions/${subscription_name}`,
+                headers: {
+                    "x-leek-app-name": app_name
+                }
+            }
+        )
     }
 }

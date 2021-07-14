@@ -22,9 +22,6 @@ class Search(Resource):
         """
         Search index
         """
-        org_name = g.org_name
-        app_name = request.headers["x-leek-app-name"]
-        index_alias = f"{org_name}-{app_name}"
         query = request.get_json()
         params = SearchParamsSchema.validate(request.args.to_dict())
-        return search_index(index_alias, query, params)
+        return search_index(g.index_alias, query, params)

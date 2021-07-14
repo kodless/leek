@@ -15,38 +15,32 @@ services:
       - LEEK_ENABLE_API=true
       - LEEK_ENABLE_AGENT=true
       - LEEK_ENABLE_WEB=false
-      - LEEK_ENABLE_ES=true
       # URLs
       - LEEK_API_URL=http://0.0.0.0:5000
       - LEEK_WEB_URL=http://0.0.0.0:8000
-      - LEEK_ES_URL=http://0.0.0.0:9200
+      - LEEK_ES_URL=http://es01:9200
       # Authentication
-      - LEEK_FIREBASE_PROJECT_ID=kodhive-leek
-      - LEEK_FIREBASE_APP_ID=1:894368938723:web:e14677d1835ce9bd09e3d6
-      - LEEK_FIREBASE_API_KEY=AIzaSyBiv9xF6VjDsv62ufzUb9aFJUreHQaFoDk
-      - LEEK_FIREBASE_AUTH_DOMAIN=kodhive-leek.firebaseapp.com
-      # Authorization
-      - LEEK_API_OWNER_ORG=ramp.com
-      - LEEK_API_WHITELISTED_ORGS=ramp.com,
+      - LEEK_API_ENABLE_AUTH=false
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
         {
-          "default": {
+          "leek-prod": {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",
             "routing_key": "#",
-            "org_name": "ramp.com",
+            "org_name": "mono",
             "app_name": "leek",
-            "app_env": "prod"
+            "app_env": "prod",
+            "prefetch_count": 1000,
+            "concurrency_pool_size": 3
           }
         }
       - LEEK_AGENT_API_SECRET=not-secret
     ports:
       - 5000:5000
-      - 9200:9200
     depends_on:
       mq:
         condition: service_healthy
@@ -88,3 +82,26 @@ services:
       interval: 2s
       timeout: 4s
       retries: 20
+
+  # Just for local development!! (Test index db)
+  es01:
+    image: elasticsearch:7.10.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    command: ["elasticsearch", "-Elogger.level=ERROR"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200

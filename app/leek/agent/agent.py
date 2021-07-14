@@ -1,5 +1,8 @@
-import json
+import gevent
+from gevent import monkey
+monkey.patch_all()
 
+import json
 from signal import signal, SIGTERM
 from multiprocessing import Process
 

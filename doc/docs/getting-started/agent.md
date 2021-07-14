@@ -41,7 +41,7 @@ controlled using `supervisor` through RPC interface methods, you can:
 not belong to you. you can instruct infrastructure owners to use the standalone Leek agent to fanout events to your Leek 
 API. the communication will be secured between the standalone agent and the API using an API KEY defined in the 
 subscriptions environment variable. you can enable standalone agent by setting `LEEK_ENABLE_AGENT` to true and disable 
-all other services by setting `LEEK_ENABLE_API`, `LEEK_ENABLE_WEB` and `LEEK_ENABLE_ES` to false.
+all other services by setting `LEEK_ENABLE_API`, `LEEK_ENABLE_WEB` to false.
 
 > You cannot control a standalone agent using the agent page at http://0.0.0.0:8000/agent as it lives in another 
 > instance
@@ -61,6 +61,11 @@ parameters to connect to the brokers and APIs.
     - **routing_key** - should be `#` for now.
     - **org_name** - leek organisation name (GSuite domain for organizations and GMail user id for individual users)
     - **app_name** - leek application name chosen when creating the application the first time
+
+- Optional parameters - will fallback to defaults if not set:
+  - **prefetch_count** - used to specify how many messages are being sent at the same time from the broker to agent.
+  - **concurrency_pool_size** - The gevent pool size, or the number green threads that the agent can spawn for the 
+    current subscription to send events concurrently to Leek API.
 
 - Optional parameters - only required for standalone agents:
     - **app_key** - the app key generated when creating the application
@@ -83,7 +88,9 @@ illustrate how you can subscribe to multiple brokers:
     "app_name": "leek",
     "app_env": "qa",
     "app_key": "not-secret",
-    "api_url": "http://0.0.0.0:5000"
+    "api_url": "http://0.0.0.0:5000",
+    "prefetch_count": 1000,
+    "concurrency_pool_size": 2
   },
  "leek-prod": {
     "broker": "amqp://admin:admin@mq-prod//",
@@ -95,7 +102,9 @@ illustrate how you can subscribe to multiple brokers:
     "app_name": "leek",
     "app_env": "prod",
     "app_key": "not-secret",
-    "api_url": "http://0.0.0.0:5000"
+    "api_url": "http://0.0.0.0:5000",
+    "prefetch_count": 1000,
+    "concurrency_pool_size": 2
   }
 }
 ```

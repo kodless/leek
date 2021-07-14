@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Modal, Form, Input, Divider, Space, Select} from 'antd'
+import {Button, Modal, Form, Input, Divider, Space, Select, InputNumber} from 'antd'
 import {DeploymentUnitOutlined, NodeIndexOutlined} from "@ant-design/icons";
 
 
@@ -91,6 +91,26 @@ const AddSubscription = (props) => {
                     rules={[]}
                 >
                     <Input placeholder="Routing Key - default: #"/>
+                </FormItem>
+
+                <FormItem
+                    name="prefetch_count"
+                    rules={[]}
+                >
+                    <InputNumber min={1000} max={10000} step={1}
+                                 placeholder="Prefetch count - default: 1000"
+                                 style={{width: "100%"}}
+                    />
+                </FormItem>
+
+                <FormItem
+                    name="concurrency_pool_size"
+                    rules={[]}
+                >
+                    <InputNumber min={1} max={20} step={1}
+                                 placeholder="Concurrency pool size - default: 1"
+                                 style={{width: "100%"}}
+                    />
                 </FormItem>
             </Form>
         </Modal>

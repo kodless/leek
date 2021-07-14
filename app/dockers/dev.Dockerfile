@@ -6,12 +6,10 @@ ENV LEEK_ENV=DEV
 ENV PYTHONUNBUFFERED=1
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-RUN apt-get update && apt-get install -y --no-install-recommends gnupg2 wget \
-    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-    elasticsearch \
+    gnupg2 \
+    wget \
     procps \
     build-essential \
     supervisor \
@@ -25,8 +23,7 @@ RUN pip3 install -r /opt/app/leek/requirements.txt
 
 # Copy Application
 ADD . ./
-ADD conf/es /etc/elasticsearch
 
 # Expose Backend/Frontend ports
-EXPOSE 5000 8000 9200
+EXPOSE 5000 8000
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

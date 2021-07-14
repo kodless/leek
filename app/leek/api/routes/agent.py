@@ -41,7 +41,14 @@ class AgentControl(Resource):
         """
         Retrieve agent status
         """
-        return self.server.supervisor.getProcessInfo("agent"), 200
+        # Check if agent is local
+        if not settings.LEEK_ENABLE_AGENT:
+            return {"type": "standalone"}, 200
+
+        info = self.server.supervisor.getProcessInfo("agent")
+        info["type"] = "local"
+
+        return info, 200
 
     @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def post(self):
@@ -77,7 +84,6 @@ class AgentSubscriptionsList(Resource):
         """
         Get subscriptions
         """
-        app_name = request.headers["x-leek-app-name"]
         with open(SUBSCRIPTIONS_FILE) as s:
             subscriptions = json.load(s)
         app_subscriptions = [
@@ -87,7 +93,7 @@ class AgentSubscriptionsList(Resource):
                 "backend": Connection(subscription.get("backend")).as_uri() if subscription.get("backend") else None
             } for subscription_name, subscription in
             subscriptions.items() if
-            subscription.get("app_name") == app_name and subscription.get("org_name") == g.org_name]
+            subscription.get("app_name") == g.app_name and subscription.get("org_name") == g.org_name]
         return app_subscriptions, 200
 
     # noinspection PyBroadException
@@ -97,11 +103,10 @@ class AgentSubscriptionsList(Resource):
         Add subscription
         """
         data = request.get_json()
-        app_name = request.headers["x-leek-app-name"]
         subscription = SubscriptionSchema.validate(data)
         subscription.update({
             "org_name": g.org_name,
-            "app_name": app_name,
+            "app_name": g.app_name,
             "app_key": settings.LEEK_AGENT_API_SECRET,
             "api_url": settings.LEEK_API_URL
         })

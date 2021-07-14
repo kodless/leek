@@ -10,7 +10,6 @@ locals {
     LEEK_ENABLE_API   = var.leek_enable_api ? "true":"false"
     LEEK_ENABLE_AGENT = var.leek_enable_agent ? "true":"false"
     LEEK_ENABLE_WEB   = var.leek_enable_web ? "true":"false"
-    LEEK_ENABLE_ES    = var.leek_enable_es ? "true":"false"
     # URLs
     LEEK_API_URL = "https://${var.leek_domain}:5000"
     LEEK_WEB_URL = "https://${var.leek_domain}"

@@ -30,8 +30,9 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
                     "number_of_shards": "1",
                     "number_of_replicas": "0",
                 },
-                "index.lifecycle.name": lifecycle_policy_name,
-                "index.lifecycle.rollover_alias": f"{index_alias}-rolled"
+                # TODO: uncomment when ILM is supported by leek
+                # "index.lifecycle.name": lifecycle_policy_name,
+                # "index.lifecycle.rollover_alias": f"{index_alias}-rolled"
             },
             "aliases": {
                 index_alias: {}
@@ -53,7 +54,8 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
         return meta, 201
     except es_exceptions.ConnectionError:
         return responses.cache_backend_unavailable
-    except es_exceptions.RequestError:
+    except es_exceptions.RequestError as e:
+        print(e.info)
         return responses.application_already_exist
 
 

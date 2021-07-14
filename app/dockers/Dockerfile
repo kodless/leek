@@ -7,7 +7,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 WORKDIR /opt/app
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-RUN python3 -m venv $VIRTUAL_ENV  \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m venv $VIRTUAL_ENV \
     && python3 -m pip install --upgrade pip
 
 # Install Backend Dependencies
@@ -40,17 +43,13 @@ ENV LEEK_ENV=PROD
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y gnupg2 wget \
-    && wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-7.x.list \
-    && apt-get update \
     && apt-get install --no-install-recommends -y \
+    gnupg2 \
+    wget \
     nginx \
     supervisor \
-    elasticsearch \
     procps
 COPY --from=compile-image /opt /opt
-ADD conf/es /etc/elasticsearch
 
 ARG LEEK_VERSION="-.-.-"
 ARG LEEK_RELEASE_DATE="0000/00/00 00:00:00"
@@ -58,5 +57,5 @@ ENV LEEK_VERSION=$LEEK_VERSION
 ENV LEEK_RELEASE_DATE=$LEEK_RELEASE_DATE
 
 # Expose Backend/Frontend ports
-EXPOSE 9200 5000 8000
+EXPOSE 5000 8000
 CMD ["/usr/bin/supervisord", "-c", "/opt/app/conf/supervisord.conf"]

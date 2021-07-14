@@ -1,30 +1,12 @@
-import React from "react";
-import {Card, Input, Row, Select, Button, Form, Badge, InputNumber, Col} from "antd";
+import React, {useMemo} from "react";
+import {Card, Input, Row, Select, Button, Form, InputNumber} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
+import {TaskStateClosable} from "../tags/TaskState";
+import {badgedOption} from "../tags/BadgedOption";
 
 const {Option} = Select;
 const FormItem = Form.Item;
-const overflowCount = 999999;
-
-let badgeStyle = {
-    backgroundColor: "#00BFA6",
-    color: "#333",
-    fontWeight: 600
-};
-
-const badgedOption = (item) => {
-    return (<Option key={item.key} value={item.key}>
-        <Row style={{width: "100%"}} justify="space-between">
-            <Col>
-                {item.key}
-            </Col>
-            <Col>
-                <Badge count={item.doc_count} overflowCount={overflowCount} size="small" style={badgeStyle}/>
-            </Col>
-        </Row>
-    </Option>)
-};
 
 interface TasksFilterContextData {
     onFilter(value: {});
@@ -43,6 +25,12 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
     function onSubmit(filters) {
         props.onFilter(filters)
     }
+
+    const memoizedTaskNameOptions = useMemo(() => {
+        // memoize this because it's common to have many different task names, which causes the dropdown to be very laggy.
+        // This is a known problem in Ant Design
+        return seenTasks.map((task, key) => badgedOption(task))
+    }, [seenTasks]) 
 
     return (
         <Card title={
@@ -63,19 +51,20 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="name" style={{width: "100%"}}>
                         <Select placeholder="Name"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear
                                 showSearch
                                 dropdownMatchSelectWidth={false}>
-                            {
-                                seenTasks.map((task, key) => badgedOption(task))
-                            }
+                            {memoizedTaskNameOptions}
                         </Select>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="state" style={{width: "100%"}}>
                         <Select placeholder="State"
+                                mode="multiple"
+                                tagRender={TaskStateClosable}
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -87,6 +76,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="routing_key" style={{width: "100%"}}>
                         <Select placeholder="Routing key"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -98,6 +88,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="queue" style={{width: "100%"}}>
                         <Select placeholder="Queue"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -109,6 +100,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 <Row>
                     <FormItem name="worker" style={{width: "100%"}}>
                         <Select placeholder="Worker"
+                                mode="multiple"
                                 style={{width: "100%"}}
                                 allowClear>
                             {
@@ -127,7 +119,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         </FormItem>
                         <FormItem name="runtime" style={{width: "70%"}}>
                             <InputNumber style={{width: '100%'}}
-                                         min={0} max={10} step={0.0001}
+                                         min={0} max={10000} step={0.0001}
                                          placeholder="Runtime"
                             />
                         </FormItem>
@@ -144,7 +136,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         </FormItem>
                         <FormItem name="retries" style={{width: "70%"}}>
                             <InputNumber style={{width: '100%'}}
-                                         min={0} max={1000} step={1}
+                                         min={0} max={10000} step={1}
                                          placeholder="Retries"
                             />
                         </FormItem>

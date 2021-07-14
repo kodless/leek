@@ -49,29 +49,3 @@ resource "aws_alb_target_group" "backend" {
     },
   )
 }
-
-resource "aws_alb_target_group" "es" {
-  name                 = "${local.prefix}-es"
-  port                 = local.port_es
-  vpc_id               = var.vpc_id
-  protocol             = "HTTP"
-  target_type          = "ip"
-  deregistration_delay = 10
-
-  health_check {
-    path              = "/_cluster/health"
-    protocol          = "HTTP"
-    port              = local.port_es
-    matcher           = 200
-    healthy_threshold = 2
-    interval          = 5
-    timeout           = 4
-  }
-
-  tags = merge(
-  local.common_tags,
-  {
-    "Name" = "${local.prefix}-es"
-  },
-  )
-}

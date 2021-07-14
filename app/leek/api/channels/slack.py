@@ -59,7 +59,7 @@ def send_slack(app_name: str, event: Union[Task, Worker], wh_url: str, extra: di
             {
                 "color": get_color(event.state),
                 "title": f"Task: {event.name}",
-                "title_link": f"{settings.LEEK_WEB_URL}/tasks?app={app_name}&uuid={event.uuid}",
+                "title_link": f"{settings.LEEK_WEB_URL}/task?app={app_name}&uuid={event.uuid}",
                 "fields": fields,
             },
         ],

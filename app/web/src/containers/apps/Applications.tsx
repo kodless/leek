@@ -43,13 +43,13 @@ const inferOrgName = () => {
         else
             return parts[1];
     }
-    return "org.com"
+    return "mono"
 };
 
 const agentSubscriptionsSnippet = (app) => {
     return `
     {
-        "${app.app_name}_prod": {
+        "${app.app_name}-prod": {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Spin, message} from 'antd';
 
+import env from "../utils/vars";
 import getFirebase from '../utils/firebase';
 import Auth from '../containers/Auth'
 
@@ -65,15 +66,21 @@ function AuthProvider({children}) {
      *  Hooks
      ---------------------- */
     useEffect(() => {
-        setBootstrapping(true);
-        setLoading(true);
-        const fb = getFirebase();
-        setFirebase(fb);
-        fb.auth().onAuthStateChanged((user) => {
-            setUser(user);
+        if (env.LEEK_API_ENABLE_AUTH === "false") {
             setBootstrapping(false);
             setLoading(false);
-        });
+        }
+        else {
+            setBootstrapping(true);
+            setLoading(true);
+            const fb = getFirebase();
+            setFirebase(fb);
+            fb.auth().onAuthStateChanged((user) => {
+                setUser(user);
+                setBootstrapping(false);
+                setLoading(false);
+            });
+        }
     }, []);
 
     return (
@@ -86,7 +93,7 @@ function AuthProvider({children}) {
             }
         }>
             {
-                user ? children : bootstrapping ?
+                env.LEEK_API_ENABLE_AUTH === "false" ? children : user ? children : bootstrapping ?
                     <Spin spinning={loading} size="large" style={{
                         width: "100%",
                         height: "100vh",
