@@ -22,7 +22,7 @@ WorkerEventSchema = Schema(
         "utcoffset": And(int),
         "pid": And(int),
         "clock": And(int),
-        "freq": And(float),
+        "freq": And(Or(float, int)),
         "active": And(int),
         "processed": And(int),
         "loadavg": And(list),
