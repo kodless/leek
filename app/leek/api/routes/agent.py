@@ -36,11 +36,7 @@ class AgentControl(Resource):
                          transport=supervisor.xmlrpc.SupervisorTransport(
                              None, None, serverurl="unix:///var/run/supervisor.sock"))
 
-    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
-    def get(self):
-        """
-        Retrieve agent status
-        """
+    def get_agent_info(self):
         # Check if agent is local
         if not settings.LEEK_ENABLE_AGENT:
             return {"type": "standalone"}, 200
@@ -49,6 +45,13 @@ class AgentControl(Resource):
         info["type"] = "local"
 
         return info, 200
+
+    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
+    def get(self):
+        """
+        Retrieve agent status
+        """
+        return self.get_agent_info()
 
     @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def post(self):
@@ -65,7 +68,7 @@ class AgentControl(Resource):
         if agent["statename"] == "RUNNING":
             self.server.supervisor.stopProcess("agent")
         self.server.supervisor.startProcess("agent")
-        return self.server.supervisor.getProcessInfo("agent"), 200
+        return self.get_agent_info()
 
     @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
     def delete(self):
@@ -73,7 +76,7 @@ class AgentControl(Resource):
         Stop leek agent
         """
         self.server.supervisor.stopProcess("agent")
-        return self.server.supervisor.getProcessInfo("agent"), 200
+        return self.get_agent_info()
 
 
 @agent_ns.route('/subscriptions')

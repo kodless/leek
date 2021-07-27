@@ -47,7 +47,6 @@ const AgentPage = () => {
         service.stopAgent()
             .then(handleAPIResponse)
             .then((agent: any) => {
-                console.log(agent);
                 setAgent(agent);
             }, handleAPIError)
             .catch(handleAPIError)
