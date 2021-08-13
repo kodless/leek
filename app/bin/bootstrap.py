@@ -258,7 +258,7 @@ if ENABLE_API:
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])
     # Make sure the API is up before starting the agent
-    ensure_connection(f"{LEEK_API_URL}/v1/events/process")
+    ensure_connection(f"http://0.0.0.0:5000/v1/events/process")
 
 if ENABLE_AGENT:
     # Start agent.
