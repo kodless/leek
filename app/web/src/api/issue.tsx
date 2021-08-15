@@ -1,11 +1,10 @@
-import {TaskFilters, getTimeFilterQuery} from "./task";
-import {search} from "./search";
+import {getTimeFilterQuery, search, TimeFilters} from "./search";
 
 export interface Issue {
     filter(
         app_name: string,
         app_env: string | undefined,
-        filters: TaskFilters,
+        filters: TimeFilters,
     ): any;
 }
 
@@ -13,7 +12,7 @@ export class IssueService implements Issue {
     filter(
         app_name: string,
         app_env: string | undefined,
-        filters: TaskFilters,
+        filters: TimeFilters,
     ) {
         let query = [getTimeFilterQuery(filters),];
         if (app_env)

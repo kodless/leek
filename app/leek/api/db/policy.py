@@ -106,4 +106,4 @@ def create_or_update_default_lifecycle_policy(
     try:
         return es.connection.ilm.put_lifecycle("default", body=policy), 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable

@@ -19,7 +19,7 @@ def search_index(index_alias, query, params):
         return d, 200
     except es_exceptions.ConnectionError as e:
         logger.warning(e.info)
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.NotFoundError:
         return responses.application_not_found
 

@@ -46,7 +46,7 @@ def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
         else:
             return [], 201
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.RequestError as e:
         print(json.dumps(e.info, indent=4))
         return f"Request error", 409

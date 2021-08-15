@@ -8,19 +8,8 @@ from leek.api.errors import responses
 from leek.api.db.properties import properties
 
 
-def create_index_template(index_alias, lifecycle_policy_name="default", meta=None):
-    """
-    This is considered as an organization project
-    An organization can have multiple applications(templates)
-    Each day events will be sent to a new index orgName-appName-2020-08-24
-    The newly created index will be assigned the template if index name matches index_patterns
-    Each day indexes older than 14 days will be deleted using curator
-    :param lifecycle_policy_name: Index Lifecycle Policy Name
-    :param meta: application level settings
-    :param index_alias: index alias in the form of orgName-appName
-    """
-    connection = es.connection
-    body = {
+def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=None):
+    return {
         "index_patterns": [
             f"{index_alias}*"
         ],
@@ -47,13 +36,28 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
             },
         }
     }
+
+
+def create_index_template(index_alias, lifecycle_policy_name="default", meta=None):
+    """
+    This is considered as an organization project
+    An organization can have multiple applications(templates)
+    Each day events will be sent to a new index orgName-appName-2020-08-24
+    The newly created index will be assigned the template if index name matches index_patterns
+    Each day indexes older than 14 days will be deleted using curator
+    :param lifecycle_policy_name: Index Lifecycle Policy Name
+    :param meta: application level settings
+    :param index_alias: index alias in the form of orgName-appName
+    """
+    connection = es.connection
+    body = prepare_template_body(index_alias, lifecycle_policy_name=lifecycle_policy_name, meta=meta)
     try:
         connection.indices.put_index_template(name=index_alias, body=body, create=True)
         # Create first index
         connection.indices.create(f"{index_alias}-000001")
         return meta, 201
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.RequestError as e:
         print(e.info)
         return responses.application_already_exist
@@ -68,7 +72,7 @@ def get_index_templates(template_prefix):
             applications.append(template["index_template"]["template"]["mappings"]["_meta"])
         return applications, 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.NotFoundError:
         return [], 200
 
@@ -102,7 +106,7 @@ def add_or_update_app_fo_trigger(index_alias, trigger):
         es.connection.indices.put_index_template(name=index_alias, body=template)
         return app, 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.NotFoundError:
         return responses.application_not_found
 
@@ -126,7 +130,7 @@ def delete_app_fo_trigger(index_alias, trigger_id):
         es.connection.indices.put_index_template(name=index_alias, body=template)
         return app, 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.NotFoundError:
         return responses.application_not_found
 
@@ -143,7 +147,7 @@ def delete_application(index_alias):
         connection.indices.delete(f"{index_alias}*")
         return "Done", 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist
 
@@ -160,7 +164,7 @@ def purge_application(index_alias):
         connection.indices.create(f"{index_alias}-000001")
         return "Done", 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist
 
@@ -191,7 +195,7 @@ def clean_documents_older_than(index_alias, kind="task", count=30, unit="seconds
                                        params=dict(wait_for_completion="false", refresh="true", conflicts="proceed"))
         return d, 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.NotFoundError:
         return responses.application_not_found
 
@@ -206,6 +210,6 @@ def get_application_indices(index_alias):
     try:
         return connection.indices.stats(f"{index_alias}*"), 200
     except es_exceptions.ConnectionError:
-        return responses.cache_backend_unavailable
+        return responses.search_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist

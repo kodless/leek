@@ -7,7 +7,8 @@ properties = {
         "type": "keyword",
     },
     "timestamp": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "exact_timestamp": {
         "type": "double"
@@ -51,34 +52,44 @@ properties = {
     },
     # Times
     "eta": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "expires": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "queued_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "received_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "started_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "succeeded_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "failed_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "rejected_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "revoked_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "retried_at": {
-        "type": "long"
+        "type": "date",
+        "format": "epoch_millis"
     },
     "args": {
         "type": "text",

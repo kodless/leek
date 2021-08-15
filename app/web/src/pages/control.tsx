@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Steps, Row, Button, Card, Select, Typography, Checkbox, Input, Modal, Divider} from 'antd';
+import {Steps, Row, Button, Card, Select, Typography, Checkbox, Modal, Divider} from 'antd';
 import {CheckCircleOutlined} from "@ant-design/icons";
 
 import {useApplication} from "../context/ApplicationProvider";
@@ -8,6 +8,7 @@ import {ControlService} from "../api/control";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 import {badgedOption} from "../components/tags/BadgedOption";
 import {TaskState} from "../components/tags/TaskState";
+import {MetricsService} from "../api/metrics";
 
 const {Step} = Steps;
 const Option = Select.Option;
@@ -18,11 +19,13 @@ const ControlPage = () => {
 
     const [current, setCurrent] = useState(0);
     const [command, setCommand] = useState<string>("revoke");
-    const {seenTasks, currentApp, currentEnv} = useApplication();
+    const {currentApp, currentEnv} = useApplication();
 
     const service = new ControlService();
+    const metricsService = new MetricsService();
     const [broadcasting, setBroadcasting] = useState<boolean>();
 
+    const [seenTasks, setSeenTasks] = useState([]);
     const [taskName, setTaskName] = useState<string>();
     const [terminate, setTerminate] = useState<boolean>(false);
     const [signal, setSignal] = useState<string>("SIGTERM");
@@ -83,6 +86,16 @@ const ControlPage = () => {
         });
     }
 
+    function getSeenTasks(open) {
+        if (!currentApp || !open) return;
+        metricsService.getSeenTasks(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSeenTasks(result.aggregations.seen_tasks.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
     return (
         <>
             <Helmet
@@ -140,7 +153,8 @@ const ControlPage = () => {
                                     allowClear
                                     showSearch
                                     dropdownMatchSelectWidth={false}
-                                // @ts-ignore
+                                    onDropdownVisibleChange={getSeenTasks}
+                                    // @ts-ignore
                                     onSelect={value => setTaskName(value)}
                             >
                                 {memoizedTaskNameOptions}

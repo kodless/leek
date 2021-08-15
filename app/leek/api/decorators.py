@@ -63,7 +63,7 @@ def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
                     except es_exceptions.NotFoundError:
                         return responses.application_not_found
                     except es_exceptions.ConnectionError:
-                        return responses.cache_backend_unavailable
+                        return responses.search_backend_unavailable
             else:
                 g.org_name = "mono"
 
@@ -104,7 +104,7 @@ def get_app_context(_route=None):
             except es_exceptions.NotFoundError:
                 return responses.application_not_found
             except es_exceptions.ConnectionError:
-                return responses.cache_backend_unavailable
+                return responses.search_backend_unavailable
 
             # Build context
             g.context = {

@@ -62,6 +62,6 @@ class ProcessEvents(Resource):
         except es_exceptions.NotFoundError:
             return responses.application_not_found
         except es_exceptions.ConnectionError:
-            return responses.cache_backend_unavailable
+            return responses.search_backend_unavailable
 
         return "Ready!", 200

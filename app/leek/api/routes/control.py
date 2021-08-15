@@ -33,7 +33,7 @@ class TaskRetry(Resource):
             )
             return task.retry_task(g.app_name, task_doc["_source"])
         except es_exceptions.ConnectionError:
-            return responses.cache_backend_unavailable
+            return responses.search_backend_unavailable
         except es_exceptions.NotFoundError:
             return responses.application_not_found
 
@@ -60,7 +60,7 @@ class RevokeTaskByID(Resource):
             # Send revocation command
             return task.revoke(g.app_name, t["app_env"], t["uuid"], args)
         except es_exceptions.ConnectionError:
-            return responses.cache_backend_unavailable
+            return responses.search_backend_unavailable
         except es_exceptions.NotFoundError:
             return responses.application_not_found
 
@@ -93,6 +93,6 @@ class RevokeTaskByName(Resource):
             # Send revocation command
             return task.revoke(g.app_name, g.app_env, revocable_tasks, args)
         except es_exceptions.ConnectionError:
-            return responses.cache_backend_unavailable
+            return responses.search_backend_unavailable
         except es_exceptions.NotFoundError:
             return responses.application_not_found

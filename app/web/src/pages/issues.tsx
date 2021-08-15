@@ -20,7 +20,7 @@ const IssuesPage = () => {
     const [pagination, setPagination] = useState<any>({pageSize: 10, current: 1});
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
-        interval_type: "at",
+        interval_type: "past",
         offset: 900000
     });
 
