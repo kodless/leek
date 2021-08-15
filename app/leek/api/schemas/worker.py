@@ -1,4 +1,4 @@
-from schema import Schema, And, Or
+from schema import Schema, And, Or, Optional
 
 WORKER_EVENT_TYPES = (
     "worker-online",
@@ -23,9 +23,9 @@ WorkerEventSchema = Schema(
         "pid": And(int),
         "clock": And(int),
         "freq": And(Or(float, int)),
-        "active": And(int),
-        "processed": And(int),
-        "loadavg": And(list),
+        Optional("active", default=None): And(int),
+        Optional('processed', default=None): And(int),
+        Optional('loadavg', default=None): And(list),
         "sw_ident": And(str),
         "sw_ver": And(str),
         "sw_sys": And(str),
