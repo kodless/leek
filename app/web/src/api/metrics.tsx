@@ -50,15 +50,18 @@ export class MetricsService implements Metrics {
         )
     }
 
-    aggregate(app_name, app_env, aggregations) {
-        let query;
+    aggregate(app_name, app_env, query, aggregations) {
         if (app_env)
-            query = {"match": {"app_env": app_env}};
+            query.push({"match": {"app_env": app_env}});
         return search(
             app_name,
             {
                 "size": 0,
-                "query": query,
+                "query": {
+                    "bool": {
+                        "must": query.filter(Boolean)
+                    }
+                },
                 "aggs": aggregations
             },
             {
@@ -68,9 +71,10 @@ export class MetricsService implements Metrics {
         )
     }
 
-    getSeenTasks(app_name, app_env) {
+    getSeenTasks(app_name, app_env, filters: TimeFilters) {
+        let query = [getTimeFilterQuery(filters),];
         return this.aggregate(
-            app_name, app_env,
+            app_name, app_env, query,
             {
                 "seen_tasks": {
                     "terms": {"field": "name", "size": 1000,}
@@ -79,9 +83,10 @@ export class MetricsService implements Metrics {
         )
     }
 
-    getSeenQueues(app_name, app_env) {
+    getSeenQueues(app_name, app_env, filters: TimeFilters) {
+        let query = [getTimeFilterQuery(filters),];
         return this.aggregate(
-            app_name, app_env,
+            app_name, app_env, query,
             {
                 "seen_queues": {
                     "terms": {"field": "queue", "size": 100,}
@@ -90,9 +95,10 @@ export class MetricsService implements Metrics {
         )
     }
 
-    getSeenRoutingKeys(app_name, app_env) {
+    getSeenRoutingKeys(app_name, app_env, filters: TimeFilters) {
+        let query = [getTimeFilterQuery(filters),];
         return this.aggregate(
-            app_name, app_env,
+            app_name, app_env, query,
             {
                 "seen_routing_keys": {
                     "terms": {"field": "routing_key", "size": 100,}
@@ -101,9 +107,11 @@ export class MetricsService implements Metrics {
         )
     }
 
-    getSeenWorkers(app_name, app_env) {
+    getSeenWorkers(app_name, app_env, filters: TimeFilters) {
+        let query = [getTimeFilterQuery(filters),];
+        query.push({"match": {"kind": "worker"}},)
         return this.aggregate(
-            app_name, app_env,
+            app_name, app_env, query,
             {
                 "seen_workers": {
                     "terms": {"field": "hostname", "size": 1000,}

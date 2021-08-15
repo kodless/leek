@@ -88,7 +88,7 @@ const ControlPage = () => {
 
     function getSeenTasks(open) {
         if (!currentApp || !open) return;
-        metricsService.getSeenTasks(currentApp, currentEnv)
+        metricsService.getSeenTasks(currentApp, currentEnv, {})
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
