@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Steps, Row, Button, Card, Select, Typography, Checkbox, Modal, Divider} from 'antd';
+import {Steps, Row, Button, Card, Select, Typography, Checkbox, Modal, Divider, Spin} from 'antd';
 import {CheckCircleOutlined} from "@ant-design/icons";
 
 import {useApplication} from "../context/ApplicationProvider";
@@ -14,6 +14,7 @@ const {Step} = Steps;
 const Option = Select.Option;
 const {confirm} = Modal;
 
+const loadingIndicator = <Row justify="center" align="middle" style={{width: "100%"}}><Spin size="small"/></Row>;
 
 const ControlPage = () => {
 
@@ -30,6 +31,8 @@ const ControlPage = () => {
     const [terminate, setTerminate] = useState<boolean>(false);
     const [signal, setSignal] = useState<string>("SIGTERM");
     const [revocationCount, setRevocationCount] = useState<number>(0);
+
+    const [seenTasksFetching, setSeenTasksFetching] = useState<boolean>();
 
 
     const next = () => {
@@ -88,12 +91,14 @@ const ControlPage = () => {
 
     function getSeenTasks(open) {
         if (!currentApp || !open) return;
+        setSeenTasksFetching(true);
         metricsService.getSeenTasks(currentApp, currentEnv, {})
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setSeenTasksFetching(false));
     }
 
     return (
@@ -154,6 +159,7 @@ const ControlPage = () => {
                                     showSearch
                                     dropdownMatchSelectWidth={false}
                                     onDropdownVisibleChange={getSeenTasks}
+                                    notFoundContent={seenTasksFetching ? loadingIndicator : null}
                                     // @ts-ignore
                                     onSelect={value => setTaskName(value)}
                             >

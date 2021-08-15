@@ -3,6 +3,7 @@ import time
 
 from elasticsearch import exceptions as es_exceptions
 
+from leek.api.conf import settings
 from leek.api.ext import es
 from leek.api.errors import responses
 from leek.api.db.properties import properties
@@ -18,6 +19,7 @@ def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=Non
                 "index": {
                     "number_of_shards": "1",
                     "number_of_replicas": "0",
+                    "refresh_interval": settings.LEEK_ES_DEFAULT_REFRESH_INTERVAL
                 },
                 # TODO: uncomment when ILM is supported by leek
                 # "index.lifecycle.name": lifecycle_policy_name,

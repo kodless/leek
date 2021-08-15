@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from "react";
-import {Card, Input, Row, Select, Button, Form, InputNumber, Col, Badge} from "antd";
+import {Card, Input, Row, Select, Button, Form, InputNumber, Spin} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
 import {TaskStateClosable} from "../tags/TaskState";
@@ -15,6 +15,8 @@ interface TasksFilterContextData {
     filters: any
 }
 
+const loadingIndicator = <Row justify="center" align="middle" style={{width: "100%"}}><Spin size="small"/></Row>;
+
 const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
     const {currentEnv, currentApp} = useApplication();
     const metricsService = new MetricsService();
@@ -24,6 +26,13 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
     const [seenRoutingKeys, setSeenRoutingKeys] = useState([]);
     const [seenQueues, setSeenQueues] = useState([]);
     const [seenWorkers, setSeenWorkers] = useState([]);
+
+    // Fetch progress
+    const [seenTasksFetching, setSeenTasksFetching] = useState<boolean>();
+    const [seenRoutingKeysFetching, setSeenRoutingKeysFetching] = useState<boolean>();
+    const [seenQueuesFetching, setSeenQueuesFetching] = useState<boolean>();
+    const [seenWorkersFetching, setSeenWorkersFetching] = useState<boolean>();
+
 
     // UI Callbacks
     function handleReset() {
@@ -37,42 +46,50 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
 
     function getSeenTasks(open) {
         if (!currentApp || !open) return;
+        setSeenTasksFetching(true);
         metricsService.getSeenTasks(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setSeenTasksFetching(false));
     }
 
     function getSeenRoutingKeys(open) {
         if (!currentApp || !open) return;
+        setSeenRoutingKeysFetching(true);
         metricsService.getSeenRoutingKeys(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setSeenRoutingKeysFetching(false));
     }
 
     function getSeenQueues(open) {
         if (!currentApp || !open) return;
+        setSeenQueuesFetching(true);
         metricsService.getSeenQueues(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenQueues(result.aggregations.seen_queues.buckets);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setSeenQueuesFetching(false));
     }
 
     function getSeenWorkers(open) {
         if (!currentApp || !open) return;
+        setSeenWorkersFetching(true);
         metricsService.getSeenWorkers(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
             }, handleAPIError)
-            .catch(handleAPIError);
+            .catch(handleAPIError)
+            .finally(() => setSeenWorkersFetching(false));
     }
 
 
@@ -107,6 +124,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 showSearch
                                 dropdownMatchSelectWidth={false}
                                 onDropdownVisibleChange={getSeenTasks}
+                                notFoundContent={seenTasksFetching ? loadingIndicator : null}
                         >
                             {memoizedTaskNameOptions}
                         </Select>
@@ -137,6 +155,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Routing key"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                notFoundContent={seenRoutingKeysFetching ? loadingIndicator : null}
                                 onDropdownVisibleChange={getSeenRoutingKeys}
                                 allowClear>
                             {
@@ -150,6 +169,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Queue"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                notFoundContent={seenQueuesFetching ? loadingIndicator : null}
                                 onDropdownVisibleChange={getSeenQueues}
                                 allowClear>
                             {
@@ -163,6 +183,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Worker"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                notFoundContent={seenWorkersFetching ? loadingIndicator : null}
                                 onDropdownVisibleChange={getSeenWorkers}
                                 allowClear>
                             {
