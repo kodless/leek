@@ -14,11 +14,11 @@ task_revocation_failed = {
                                 }
                             }, 500
 
-cache_backend_unavailable = {
+search_backend_unavailable = {
                                 "error": {
                                     "code": "503001",
                                     "message": "Service temporary unavailable",
-                                    "reason": "Cache backend unavailable"
+                                    "reason": "Search backend unavailable"
                                 }
                             }, 503
 

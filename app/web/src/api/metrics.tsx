@@ -1,22 +1,27 @@
-import {search} from "./search";
-
+import {getTimeFilterQuery, search, TimeFilters} from "./search";
 
 export interface Metrics {
-    getBasicMetrics(app_name: string, app_env: string): any;
+    getBasicMetrics(app_name: string, app_env: string, filters: TimeFilters,): any;
+
     getMetadata(app_name: string): any;
 }
 
 export class MetricsService implements Metrics {
 
-    getBasicMetrics(app_name, app_env) {
-        let query;
+    getBasicMetrics(app_name, app_env, filters) {
+        console.log(filters)
+        let query = [getTimeFilterQuery(filters),];
         if (app_env)
-            query = {"match": {"app_env": app_env}};
+            query.push({"match": {"app_env": app_env}});
         return search(
             app_name,
             {
                 "size": 0,
-                "query": query,
+                "query": {
+                    "bool": {
+                        "must": query.filter(Boolean)
+                    }
+                },
                 "aggs": {
                     "seen_tasks": {
                         "terms": {"field": "name", "size": 1000,}
@@ -41,6 +46,68 @@ export class MetricsService implements Metrics {
             {
                 size: 0,
                 from_: 0
+            }
+        )
+    }
+
+    aggregate(app_name, app_env, aggregations) {
+        let query;
+        if (app_env)
+            query = {"match": {"app_env": app_env}};
+        return search(
+            app_name,
+            {
+                "size": 0,
+                "query": query,
+                "aggs": aggregations
+            },
+            {
+                size: 0,
+                from_: 0
+            }
+        )
+    }
+
+    getSeenTasks(app_name, app_env) {
+        return this.aggregate(
+            app_name, app_env,
+            {
+                "seen_tasks": {
+                    "terms": {"field": "name", "size": 1000,}
+                }
+            }
+        )
+    }
+
+    getSeenQueues(app_name, app_env) {
+        return this.aggregate(
+            app_name, app_env,
+            {
+                "seen_queues": {
+                    "terms": {"field": "queue", "size": 100,}
+                }
+            }
+        )
+    }
+
+    getSeenRoutingKeys(app_name, app_env) {
+        return this.aggregate(
+            app_name, app_env,
+            {
+                "seen_routing_keys": {
+                    "terms": {"field": "routing_key", "size": 100,}
+                },
+            }
+        )
+    }
+
+    getSeenWorkers(app_name, app_env) {
+        return this.aggregate(
+            app_name, app_env,
+            {
+                "seen_workers": {
+                    "terms": {"field": "hostname", "size": 1000,}
+                }
             }
         )
     }

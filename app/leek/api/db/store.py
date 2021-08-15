@@ -63,7 +63,7 @@ class EV:
     kind: str
     state: str
     clock: str
-    timestamp: int
+    timestamp: Union[int, str]
     exact_timestamp: float
     utcoffset: int
     pid: int
@@ -118,18 +118,18 @@ class Task(EV):
     routing_key: Optional[str] = None
     queue: Optional[str] = None
     # RETRIES
-    eta: Optional[int] = None
-    expires: Optional[int] = None
+    eta: Optional[Union[int, str]] = None
+    expires: Optional[Union[int, str]] = None
     retries: Optional[int] = None
     # TIMESTAMPS
-    queued_at: Optional[int] = None
-    received_at: Optional[int] = None
-    started_at: Optional[int] = None
-    succeeded_at: Optional[int] = None
-    failed_at: Optional[int] = None
-    rejected_at: Optional[int] = None
-    revoked_at: Optional[int] = None
-    retried_at: Optional[int] = None
+    queued_at: Optional[Union[int, str]] = None
+    received_at: Optional[Union[int, str]] = None
+    started_at: Optional[Union[int, str]] = None
+    succeeded_at: Optional[Union[int, str]] = None
+    failed_at: Optional[Union[int, str]] = None
+    rejected_at: Optional[Union[int, str]] = None
+    revoked_at: Optional[Union[int, str]] = None
+    retried_at: Optional[Union[int, str]] = None
     # REVOCATION
     terminated: Optional[bool] = None
     expired: Optional[bool] = None

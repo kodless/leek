@@ -7,22 +7,7 @@ import {MetricsService} from "../api/metrics";
 import CreateApp from "../containers/apps/CreateApp";
 import {handleAPIError, handleAPIResponse} from "../utils/errors";
 
-let metricsInterval;
 let metadataInterval;
-const workerStates = ["HEARTBEAT", "ONLINE", "OFFLINE"];
-
-const tasksStatesDefaults = [
-    {key: "QUEUED", doc_count: 0},
-    {key: "RECEIVED", doc_count: 0},
-    {key: "STARTED", doc_count: 0},
-    {key: "SUCCEEDED", doc_count: 0},
-    {key: "FAILED", doc_count: 0},
-    {key: "REJECTED", doc_count: 0},
-    {key: "REVOKED", doc_count: 0},
-    {key: "RETRY", doc_count: 0},
-    {key: "RECOVERED", doc_count: 0},
-    {key: "CRITICAL", doc_count: 0},
-];
 
 interface ApplicationContextData {
     applications: {
@@ -35,33 +20,6 @@ interface ApplicationContextData {
     }[];
     currentApp: string | undefined;
     currentEnv: string | undefined;
-
-    seenWorkers: {
-        key: string;
-        doc_count: null;
-    }[];
-    seenTasks: {
-        key: string;
-        doc_count: null;
-    }[];
-    processedEvents: number;
-    processedTasks: number;
-    seenStates: {
-        key: string;
-        doc_count: null;
-    }[];
-    seenTaskStates: {
-        key: string;
-        doc_count: null;
-    }[];
-    seenRoutingKeys: {
-        key: string;
-        doc_count: null;
-    }[];
-    seenQueues: {
-        key: string;
-        doc_count: null;
-    }[];
     seenEnvs: {
         key: string;
         doc_count: null;
@@ -82,14 +40,6 @@ const initial = {
     applications: [],
     currentApp: undefined,
     currentEnv: undefined,
-    seenWorkers: [],
-    seenTasks: [],
-    processedEvents: 0,
-    processedTasks: 0,
-    seenStates: [],
-    seenTaskStates: tasksStatesDefaults,
-    seenRoutingKeys: [],
-    seenQueues: [],
     seenEnvs: []
 };
 
@@ -107,14 +57,6 @@ function ApplicationProvider({children}) {
 
     // Metadata
     const metricsService = new MetricsService();
-    const [seenWorkers, setSeenWorkers] = useState<ApplicationContextData["seenWorkers"]>([]);
-    const [seenTasks, setSeenTasks] = useState<ApplicationContextData["seenTasks"]>([]);
-    const [processedEvents, setProcessedEvents] = useState<ApplicationContextData["processedEvents"]>(0);
-    const [processedTasks, setProcessedTasks] = useState<ApplicationContextData["processedTasks"]>(0);
-    const [seenStates, setSeenStates] = useState<ApplicationContextData["seenStates"]>([]);
-    const [seenTaskStates, setSeenTaskStates] = useState<ApplicationContextData["seenStates"]>([]);
-    const [seenRoutingKeys, setSeenRoutingKeys] = useState<ApplicationContextData["seenRoutingKeys"]>([]);
-    const [seenQueues, setSeenQueues] = useState<ApplicationContextData["seenQueues"]>([]);
     const [seenEnvs, setSeenEnvs] = useState<ApplicationContextData["seenEnvs"]>([]);
 
     function listApplications() {
@@ -135,33 +77,6 @@ function ApplicationProvider({children}) {
             // .finally(() => {
             //     setLoading(false);
             // });
-    }
-
-    function getMetrics() {
-        if (!currentApp) return;
-        metricsService.getBasicMetrics(currentApp, currentEnv)
-            .then(handleAPIResponse)
-            .then((result: any) => {
-                setProcessedEvents(result.aggregations.processed_events.value);
-                const processed = result.aggregations.seen_states.buckets.reduce((result, item) => {
-                    if (!workerStates.includes(item.key)) {
-                        return result + item.doc_count;
-                    }
-                    return result;
-                }, 0);
-                setProcessedTasks(processed);
-                setSeenWorkers(result.aggregations.seen_workers.buckets);
-                setSeenTasks(result.aggregations.seen_tasks.buckets);
-                setSeenStates(result.aggregations.seen_states.buckets);
-                setSeenTaskStates(tasksStatesDefaults
-                    .map(obj => result.aggregations.seen_states.buckets
-                        .find(o => o.key === obj.key) || obj)
-                    .filter(item => !workerStates.includes(item.key))
-                );
-                setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
-                setSeenQueues(result.aggregations.seen_queues.buckets);
-            }, handleAPIError)
-            .catch(handleAPIError);
     }
 
     function getMetadata() {
@@ -185,7 +100,6 @@ function ApplicationProvider({children}) {
     useEffect(() => {
         listApplications();
         return () => {
-            clearInterval(metricsInterval);
             clearInterval(metadataInterval);
         }
     }, []);
@@ -193,7 +107,6 @@ function ApplicationProvider({children}) {
 
     useEffect(() => {
         // Stop refreshing metadata
-        if (metricsInterval) clearInterval(metricsInterval);
         if (metadataInterval) clearInterval(metadataInterval);
         // If no application specified, return
         if (!currentApp)
@@ -206,10 +119,6 @@ function ApplicationProvider({children}) {
             getMetadata();
         }, 60000);
 
-        getMetrics();
-        metricsInterval = setInterval(() => {
-            getMetrics();
-        }, 10000);
     }, [currentApp, currentEnv]);
 
 
@@ -256,20 +165,12 @@ function ApplicationProvider({children}) {
                 applications: applications,
                 currentApp: currentApp,
                 currentEnv: currentEnv,
-                seenWorkers: seenWorkers,
-                seenTasks: seenTasks,
-                processedEvents: processedEvents,
-                processedTasks: processedTasks,
-                seenStates: seenStates,
-                seenTaskStates: seenTaskStates,
-                seenRoutingKeys: seenRoutingKeys,
-                seenQueues: seenQueues,
                 seenEnvs: seenEnvs,
                 listApplications: listApplications,
                 deleteApplication: deleteApplication,
                 updateApplication: updateApplication,
                 selectApplication: selectApplication,
-                selectEnv: selectEnv
+                selectEnv: selectEnv,
             }
         }>
             {

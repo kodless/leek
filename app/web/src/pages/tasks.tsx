@@ -22,7 +22,7 @@ const TasksPage: React.FC = () => {
     const [filters, setFilters] = useState<any>();
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
-        interval_type: "at",
+        interval_type: "past",
         offset: 900000
     });
     const [order, setOrder] = useState<string>("desc");
@@ -58,20 +58,6 @@ const TasksPage: React.FC = () => {
             }, handleAPIError)
             .catch(handleAPIError)
             .finally(() => setLoading(false));
-    }
-
-    function getTaskByUUID(uuid: string) {
-        if (!currentApp) return;
-        service.getById(currentApp, uuid)
-            .then(handleAPIResponse)
-            .then((result: any) => {
-                if (result.hits.total == 0) {
-                    message.warning("Task not found, maybe its very old");
-                    return;
-                }
-                handleShowTaskDetails(result.hits.hits[0]._source);
-            }, handleAPIError)
-            .catch(handleAPIError);
     }
 
     // Hooks

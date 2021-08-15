@@ -1,9 +1,11 @@
-import React, {useMemo} from "react";
-import {Card, Input, Row, Select, Button, Form, InputNumber} from "antd";
+import React, {useMemo, useState} from "react";
+import {Card, Input, Row, Select, Button, Form, InputNumber, Col, Badge} from "antd";
 
 import {useApplication} from "../../context/ApplicationProvider";
 import {TaskStateClosable} from "../tags/TaskState";
 import {badgedOption} from "../tags/BadgedOption";
+import {MetricsService} from "../../api/metrics";
+import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 
 const {Option} = Select;
 const FormItem = Form.Item;
@@ -13,8 +15,14 @@ interface TasksFilterContextData {
 }
 
 const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
-    const {seenTasks, seenWorkers, seenTaskStates, seenRoutingKeys, seenQueues} = useApplication();
+    const {currentEnv, currentApp} = useApplication();
+    const metricsService = new MetricsService();
     const [form] = Form.useForm();
+
+    const [seenTasks, setSeenTasks] = useState([]);
+    const [seenRoutingKeys, setSeenRoutingKeys] = useState([]);
+    const [seenQueues, setSeenQueues] = useState([]);
+    const [seenWorkers, setSeenWorkers] = useState([]);
 
     // UI Callbacks
     function handleReset() {
@@ -25,6 +33,48 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
     function onSubmit(filters) {
         props.onFilter(filters)
     }
+
+    function getSeenTasks(open) {
+        if (!currentApp || !open) return;
+        console.log(open)
+        metricsService.getSeenTasks(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSeenTasks(result.aggregations.seen_tasks.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
+    function getSeenRoutingKeys(open) {
+        if (!currentApp || !open) return;
+        metricsService.getSeenRoutingKeys(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
+    function getSeenQueues(open) {
+        if (!currentApp || !open) return;
+        metricsService.getSeenQueues(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSeenQueues(result.aggregations.seen_queues.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
+    function getSeenWorkers(open) {
+        if (!currentApp || !open) return;
+        metricsService.getSeenWorkers(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSeenWorkers(result.aggregations.seen_workers.buckets);
+            }, handleAPIError)
+            .catch(handleAPIError);
+    }
+
 
     const memoizedTaskNameOptions = useMemo(() => {
         // memoize this because it's common to have many different task names, which causes the dropdown to be very laggy.
@@ -55,7 +105,9 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 style={{width: "100%"}}
                                 allowClear
                                 showSearch
-                                dropdownMatchSelectWidth={false}>
+                                dropdownMatchSelectWidth={false}
+                                onDropdownVisibleChange={getSeenTasks}
+                        >
                             {memoizedTaskNameOptions}
                         </Select>
                     </FormItem>
@@ -67,9 +119,16 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                                 tagRender={TaskStateClosable}
                                 style={{width: "100%"}}
                                 allowClear>
-                            {
-                                seenTaskStates.map((state, key) => badgedOption(state))
-                            }
+                            <Option key="QUEUED" value="QUEUED">QUEUED</Option>
+                            <Option key="RECEIVED" value="RECEIVED">RECEIVED</Option>
+                            <Option key="STARTED" value="STARTED">STARTED</Option>
+                            <Option key="SUCCEEDED" value="SUCCEEDED">SUCCEEDED</Option>
+                            <Option key="RECOVERED" value="RECOVERED">RECOVERED</Option>
+                            <Option key="RETRY" value="RETRY">RETRY</Option>
+                            <Option key="FAILED" value="FAILED">FAILED</Option>
+                            <Option key="CRITICAL" value="CRITICAL">CRITICAL</Option>
+                            <Option key="REJECTED" value="REJECTED">REJECTED</Option>
+                            <Option key="REVOKED" value="REVOKED">REVOKED</Option>
                         </Select>
                     </FormItem>
                 </Row>
@@ -78,6 +137,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Routing key"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                onDropdownVisibleChange={getSeenRoutingKeys}
                                 allowClear>
                             {
                                 seenRoutingKeys.map((rq, key) => badgedOption(rq))
@@ -90,6 +150,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Queue"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                onDropdownVisibleChange={getSeenQueues}
                                 allowClear>
                             {
                                 seenQueues.map((queue, key) => badgedOption(queue))
@@ -102,6 +163,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                         <Select placeholder="Worker"
                                 mode="multiple"
                                 style={{width: "100%"}}
+                                onDropdownVisibleChange={getSeenWorkers}
                                 allowClear>
                             {
                                 seenWorkers.map((worker, key) => badgedOption(worker))
