@@ -68,7 +68,7 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
                 </>
                 }
             </Select>
-            <Select defaultValue="at"
+            <Select defaultValue="past"
                     dropdownMatchSelectWidth
                     style={{width: 70}}
                     size="small"

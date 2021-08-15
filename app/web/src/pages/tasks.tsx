@@ -111,6 +111,7 @@ const TasksPage: React.FC = () => {
                 <Col xxl={5} xl={6} md={7} lg={8} sm={24} xs={24}>
                     <AttributesFilter
                         onFilter={handleFilterChange}
+                        filters={timeFilters}
                     />
                 </Col>
                 <Col xxl={19} xl={18} md={17} lg={16} sm={24} xs={24}>

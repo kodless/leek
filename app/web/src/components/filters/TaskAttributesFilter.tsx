@@ -12,6 +12,7 @@ const FormItem = Form.Item;
 
 interface TasksFilterContextData {
     onFilter(value: {});
+    filters: any
 }
 
 const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
@@ -36,8 +37,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
 
     function getSeenTasks(open) {
         if (!currentApp || !open) return;
-        console.log(open)
-        metricsService.getSeenTasks(currentApp, currentEnv)
+        metricsService.getSeenTasks(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenTasks(result.aggregations.seen_tasks.buckets);
@@ -47,7 +47,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
 
     function getSeenRoutingKeys(open) {
         if (!currentApp || !open) return;
-        metricsService.getSeenRoutingKeys(currentApp, currentEnv)
+        metricsService.getSeenRoutingKeys(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
@@ -57,7 +57,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
 
     function getSeenQueues(open) {
         if (!currentApp || !open) return;
-        metricsService.getSeenQueues(currentApp, currentEnv)
+        metricsService.getSeenQueues(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenQueues(result.aggregations.seen_queues.buckets);
@@ -67,7 +67,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
 
     function getSeenWorkers(open) {
         if (!currentApp || !open) return;
-        metricsService.getSeenWorkers(currentApp, currentEnv)
+        metricsService.getSeenWorkers(currentApp, currentEnv, props.filters)
             .then(handleAPIResponse)
             .then((result: any) => {
                 setSeenWorkers(result.aggregations.seen_workers.buckets);
