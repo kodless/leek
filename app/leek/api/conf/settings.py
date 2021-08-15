@@ -12,6 +12,7 @@ def get_bool(env_name, default="false"):
 
 # ES
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
+LEEK_ES_DEFAULT_REFRESH_INTERVAL = os.environ.get("LEEK_ES_DEFAULT_REFRESH_INTERVAL", "20s")
 
 # Authentication/Authorization
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", "true")
