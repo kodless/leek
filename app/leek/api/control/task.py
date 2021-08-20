@@ -11,7 +11,7 @@ from amqp import AccessRefused
 from leek.api.conf import settings
 from leek.api.db.store import STATES_TERMINAL
 from leek.api.errors import responses
-from leek.api.control.utils import get_subscription
+from leek.api.utils import lookup_subscription
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +54,8 @@ def retry_task(app_name, task_doc):
         return responses.control_operations_not_supported
 
     # Retrieve subscription
-    subscription = get_subscription(f"{app_name}-{task_doc['app_env']}")
-    if subscription is None:
+    found, subscription = lookup_subscription(app_name, task_doc['app_env'])
+    if not found:
         return responses.task_retry_subscription_not_found
 
     # Prepare connection/producer
@@ -179,8 +179,8 @@ def revoke(app_name, app_env, task_uuid: Union[str, List[str]], args):
         return responses.control_operations_not_supported
 
     # Retrieve subscription
-    subscription = get_subscription(f"{app_name}-{app_env}")
-    if subscription is None:
+    found, subscription = lookup_subscription(app_name, app_env)
+    if not found:
         return responses.task_retry_subscription_not_found
 
     # Prepare connection/producer

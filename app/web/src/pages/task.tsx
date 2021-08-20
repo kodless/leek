@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
 import {useQueryParam, StringParam} from "use-query-params";
-import {Row, message} from 'antd'
+import {Row, Empty, Typography} from 'antd'
 
 import TaskDetails from '../containers/tasks/TaskDetails'
 
@@ -10,6 +10,7 @@ import {TaskService} from "../api/task"
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 
 let timeout;
+const Title = Typography.Title;
 
 const TaskPage: React.FC = () => {
     // STATE
@@ -28,11 +29,9 @@ const TaskPage: React.FC = () => {
         service.getById(currentApp, uuid)
             .then(handleAPIResponse)
             .then((result: any) => {
-                if (result.hits.total == 0) {
-                    message.warning("Task not found, maybe its very old");
-                    return;
+                if (result.hits.hits.length > 0) {
+                    setTask(result.hits.hits[0]._source);
                 }
-                setTask(result.hits.hits[0]._source);
             }, handleAPIError)
             .catch(handleAPIError)
             .finally(() => setLoading(false));
@@ -67,8 +66,20 @@ const TaskPage: React.FC = () => {
                 <html lang="en"/>
             </Helmet>
 
-            <Row style={{marginTop: "20px", width: "100%"}} gutter={[12, 12]}>
-                <TaskDetails task={task} loading={loading}/>
+            <Row justify="center" style={{marginTop: "20px", width: "100%"}} gutter={[12, 12]}>
+
+                {task && Object.keys(task).length > 0
+                && <TaskDetails task={task} loading={loading}/>
+                }
+
+                {task && Object.keys(task).length === 0 &&
+                    <Empty
+                        description={
+                            <Title level={3}>Waiting task...</Title>
+                        }
+                    />
+                }
+
             </Row>
         </>
     )

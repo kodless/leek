@@ -30,10 +30,15 @@ class LeekAgent:
             return
 
         logger.info("Building consumers...")
-        for subscription_name, subscription_config in self.subscriptions.items():
-            consumer = LeekConsumer(subscription_name, **subscription_config)
+        for subscription in self.subscriptions:
+            subscription_name = self.infer_subscription_name(subscription)
+            consumer = LeekConsumer(subscription_name, **subscription)
             self.consumers.append(consumer)
         logger.info("Consumers built...")
+
+    @staticmethod
+    def infer_subscription_name(subscription):
+        return f"{subscription.get('app_name')}-{subscription.get('app_env')}"
 
     @staticmethod
     def load_subscriptions():

@@ -13,6 +13,7 @@ from leek.api.conf import settings
 from leek.api.decorators import auth
 from leek.api.routes.api_v1 import api_v1
 from leek.api.errors import responses
+from leek.api import utils
 
 agent_bp = Blueprint('agent', __name__, url_prefix='/v1/agent')
 agent_ns = api_v1.namespace('agent', 'Agent manager')
@@ -91,11 +92,12 @@ class AgentSubscriptionsList(Resource):
             subscriptions = json.load(s)
         app_subscriptions = [
             {
-                "name": subscription_name, **subscription,
+                "name": utils.infer_subscription_name(subscription),
+                **subscription,
                 "broker": Connection(subscription.get("broker")).as_uri(),
                 "backend": Connection(subscription.get("backend")).as_uri() if subscription.get("backend") else None
-            } for subscription_name, subscription in
-            subscriptions.items() if
+            } for subscription in
+            subscriptions if
             subscription.get("app_name") == g.app_name and subscription.get("org_name") == g.org_name]
         return app_subscriptions, 200
 
@@ -113,13 +115,12 @@ class AgentSubscriptionsList(Resource):
             "app_key": settings.LEEK_AGENT_API_SECRET,
             "api_url": settings.LEEK_API_URL
         })
-        name = subscription.pop("name")
-        # Check if there is already a subscription with the same name
-        with open(SUBSCRIPTIONS_FILE) as s:
-            subscriptions = json.load(s)
-        s = subscriptions.get(name)
-        if s:
+
+        # Check subscription already exist
+        exist, _ = utils.lookup_subscription(subscription["app_name"], subscription["app_env"])
+        if exist:
             return responses.subscription_already_exist
+
         # Ensure connection
         try:
             connection = Connection(subscription["broker"])
@@ -129,11 +130,15 @@ class AgentSubscriptionsList(Resource):
             return responses.wrong_access_refused
         except Exception:
             return responses.broker_not_reachable
+
         # Add subscription
-        subscriptions[name] = subscription
-        with open(SUBSCRIPTIONS_FILE, 'w') as f:
-            json.dump(subscriptions, f, indent=4, sort_keys=False)
-        return {"name": name, **subscription}, 200
+        with open(SUBSCRIPTIONS_FILE, "r+") as subscriptions_file:
+            subscriptions = json.load(subscriptions_file)
+            subscriptions.append(subscription)
+            subscriptions_file.seek(0)
+            json.dump(subscriptions, subscriptions_file)
+
+        return {"name": utils.infer_subscription_name(subscription), **subscription}, 200
 
 
 @agent_ns.route('/subscriptions/<string:subscription_name>')
@@ -151,12 +156,10 @@ class AgentSubscription(Resource):
         """
         Delete subscription
         """
-        with open(SUBSCRIPTIONS_FILE) as s:
-            subscriptions = json.load(s)
-
-        subscriptions.pop(subscription_name)
+        app_name, app_env = utils.infer_subscription_tags(subscription_name)
+        deleted, subscriptions = utils.delete_subscription(app_name, app_env)
 
         with open(SUBSCRIPTIONS_FILE, 'w') as f:
             json.dump(subscriptions, f, indent=4, sort_keys=False)
 
-        return "Deleted", 200
+        return {"Deleted": deleted}, 200

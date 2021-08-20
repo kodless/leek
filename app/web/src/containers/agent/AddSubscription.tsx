@@ -39,14 +39,6 @@ const AddSubscription = (props) => {
                 </FormItem>
 
                 <FormItem
-                    name="name"
-                    rules={[
-                        {required: true, message: 'Please input subscription name!'},]}
-                >
-                    <Input placeholder="name"/>
-                </FormItem>
-
-                <FormItem
                     name="broker"
                     rules={[
                         {required: true, message: 'Please input broker url!'}]}
@@ -64,7 +56,14 @@ const AddSubscription = (props) => {
                 <FormItem
                     name="app_env"
                     rules={[
-                        {required: true, message: 'Please input environment tag!'},
+                        {
+                            required: true,
+                            message: 'Please input environment tag!'
+                        },
+                        {
+                            pattern: /^[a-z]*$/g,
+                            message: "Wrong env tag, only lowercase letters allowed!"
+                        },
                     ]}
                 >
                     <Input placeholder="Environment Tag - eg: prod"/>

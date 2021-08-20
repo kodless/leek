@@ -14,7 +14,7 @@ TriggerSchema = Schema({
 
 ApplicationSchema = Schema(
     {
-        "app_name": And(str, len),
+        "app_name": And(str, lambda e: e.isalpha() and e.islower()),
         "app_description": And(str, len),
         Optional("fo_triggers", default=[]): []
     }
