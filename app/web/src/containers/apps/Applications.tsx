@@ -48,8 +48,8 @@ const inferOrgName = () => {
 
 const agentSubscriptionsSnippet = (app) => {
     return `
-    {
-        "${app.app_name}-prod": {
+    [
+        {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",
@@ -61,7 +61,7 @@ const agentSubscriptionsSnippet = (app) => {
             "app_key": "${app.app_key}",
             "api_url": "http://0.0.0.0:5000"
         }
-    }
+    ]
     `
 };
 

@@ -19,8 +19,8 @@ services:
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
-        {
-          "leek-prod": {
+        [
+          {
             "broker": "redis://:admin@mq:6379/0",
             "backend": null,
             "exchange": "celeryev",
@@ -32,7 +32,7 @@ services:
             "prefetch_count": 1000,
             "concurrency_pool_size": 2
           }
-        }
+        ]
       - LEEK_AGENT_API_SECRET=not-secret
     ports:
       - 5000:5000

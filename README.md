@@ -141,8 +141,8 @@ services:
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
-        {
-          "leek-prod": {
+        [
+          {
             "broker": "amqp://admin:admin@mq//",
             "backend": null,
             "exchange": "celeryev",
@@ -154,7 +154,7 @@ services:
             "prefetch_count": 1000,
             "concurrency_pool_size": 2
           }
-        }
+        ]
       - LEEK_AGENT_API_SECRET=not-secret
     ports:
       - 5000:5000

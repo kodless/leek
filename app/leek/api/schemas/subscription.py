@@ -1,10 +1,9 @@
 from schema import Schema, And, Optional, Use
 
 SubscriptionSchema = Schema({
-    "name": And(str, len),
     "broker": And(str, len),
     Optional("backend"): And(str, len),
-    "app_env": And(str, len),
+    "app_env": And(str, lambda e: e.isalpha() and e.islower()),
     # --
     Optional("exchange", default="celeryev"): And(str, len),
     Optional("queue", default="leek.fanout"): And(str, len),

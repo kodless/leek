@@ -77,8 +77,8 @@ You can configure the agent statically with `LEEK_AGENT_SUBSCRIPTIONS` environme
 illustrate how you can subscribe to multiple brokers:
 
 ```json
-{
-  "leek-qa": {
+[
+  {
     "broker": "amqp://admin:admin@mq-QA//",
     "backend": null,
     "exchange": "celeryev",
@@ -92,7 +92,7 @@ illustrate how you can subscribe to multiple brokers:
     "prefetch_count": 1000,
     "concurrency_pool_size": 2
   },
- "leek-prod": {
+  {
     "broker": "amqp://admin:admin@mq-prod//",
     "backend": null,
     "exchange": "celeryev",
@@ -106,7 +106,7 @@ illustrate how you can subscribe to multiple brokers:
     "prefetch_count": 1000,
     "concurrency_pool_size": 2
   }
-}
+]
 ```
 
 > Stringify the json object before storing it to `LEEK_AGENT_SUBSCRIPTIONS`
@@ -130,7 +130,7 @@ With dynamic agent you can:
 To add a new subscription you can click on the green add button on top-right of subscriptions list, and specify the
 broker parameters.
 
-Before adding the agent Leek will verify if the broker is reachable and the broker credentials are valid, if not the
+Before adding the agent Leek will verify if the broker is reachable, and the broker credentials are valid, if not the
 operation will fail.
 
 ![Add subscriptions](/img/docs/subscriptions-add.png)

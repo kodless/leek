@@ -142,12 +142,26 @@ if ENABLE_WEB:
             f.write(web_conf)
 
 
-def validate_subscriptions(subs):
-    if not isinstance(subs, dict):
-        abort(f"Agent subscriptions should be a dict of subscriptions")
+def infer_subscription_name(subscription):
+    return f"{subscription.get('app_name')}-{subscription.get('app_env')}"
 
-    # Validate each subscription
-    for subscription_name, subscription in subs.items():
+
+def infer_subscription_tags(subscription_name: str):
+    app_name, app_env = subscription_name.split("-")
+    return app_name, app_env
+
+
+def validate_subscriptions(subs):
+    # Validate type
+    if isinstance(subs, dict):
+        abort(f"Passing agent subscriptions as dict is deprecated, "
+              f"now it should be provided as a list of subscriptions!")
+
+    if not isinstance(subs, list):
+        abort(f"Agent subscriptions should be a list of subscriptions!")
+
+    # Validate required fields
+    for subscription in subs:
         required_keys = [
             "broker", "exchange", "queue", "routing_key", "org_name",
             "app_name", "app_env",  # "app_key", "api_url"
@@ -156,9 +170,26 @@ def validate_subscriptions(subs):
         if not all(required_key in keys for required_key in required_keys):
             abort(f"Agent subscription configuration is invalid")
 
+        if not (subscription["app_name"].isalpha() and subscription["app_name"].islower()):
+            abort(f"app_name value should be lowercase alphabetic string")
+
+        if not (subscription["app_env"].isalpha() and subscription["app_env"].islower()):
+            abort(f"app_env value should be lowercase alphabetic string")
+
+    # Validate uniqueness
+    unique_counts = {}
+    for subscription in subs:
+        unique_counts[infer_subscription_name(subscription)] = unique_counts.get(
+            infer_subscription_name(subscription), 0) + 1
+    for subscription_name, count in unique_counts.items():
+        if count > 1:
+            app_name, app_env = infer_subscription_tags(subscription_name)
+            abort(f"{count} subscriptions with the same app name [{app_name}]"
+                  f" and app env [{app_env}] defined multiple times!")
+
     if ENABLE_API:
         # Agent and API in the same runtime, prepare a shared secret for communication between them
-        for subscription_name, subscription in subs.items():
+        for subscription in subs:
             try:
                 subscription["app_key"] = os.environ["LEEK_AGENT_API_SECRET"]
             except KeyError:
@@ -168,7 +199,7 @@ def validate_subscriptions(subs):
             subscription["api_url"] = "http://0.0.0.0:5000"
 
     # Optional settings
-    for subscription_name, subscription in subs.items():
+    for subscription in subs:
         if not subscription.get("concurrency_pool_size"):
             subscription["concurrency_pool_size"] = 1
 
