@@ -19,3 +19,28 @@ etting  `LEEK_ENABLE_ES` to true.
 > true, and if you still want a local elasticsearch you can use the official elasticsearch docker image to run a 
 > sidecar container. this decision is made to improve leek docker image size and also to encourage the use of a managed 
 > and well configured elasticsearch instances.
+
+
+## Caveats
+
+### Virtual memory
+
+Elasticsearch uses a `mmapfs` directory by default to store its indices. The default operating system limits on mmap 
+counts is likely to be too low, which may result in out of memory exceptions.
+
+On Linux, you can increase the limits by running the following command as `root`:
+
+```bash
+sysctl -w vm.max_map_count=262144
+```
+
+To set this value permanently, update the `vm.max_map_count` setting in `/etc/sysctl.conf`. To verify after rebooting, 
+run `sysctl vm.max_map_count`.
+
+The RPM and Debian packages will configure this setting automatically. No further configuration is required.
+
+If you use docker to take effect you should restart it:
+
+```bash
+systemctl restart docker
+```

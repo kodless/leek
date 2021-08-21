@@ -151,6 +151,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
     ports:
       - 9200:9200
 ```
@@ -304,6 +307,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
     ports:
       - 9200:9200
 ```
