@@ -92,31 +92,13 @@ properties = {
         "format": "epoch_millis"
     },
     "args": {
-        "type": "text",
-        "fields": {
-            "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-            }
-        }
+        "type": "wildcard",
     },
     "kwargs": {
-        "type": "text",
-        "fields": {
-            "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-            }
-        }
+        "type": "wildcard",
     },
     "result": {
-        "type": "text",
-        "fields": {
-            "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-            }
-        }
+        "type": "wildcard"
     },
     "runtime": {
         "type": "double"
@@ -134,13 +116,7 @@ properties = {
         }
     },
     "traceback": {
-        "type": "text",
-        "fields": {
-            "keyword": {
-                "type": "keyword",
-                "ignore_above": 256
-            }
-        }
+        "type": "wildcard"
     },
     # Workers specific
     "hostname": {
