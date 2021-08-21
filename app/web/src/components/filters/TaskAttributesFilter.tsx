@@ -232,22 +232,22 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                 </Row>
                 <Row>
                     <FormItem name="traceback" style={{width: "100%"}}>
-                        <Input placeholder="Traceback" allowClear/>
+                        <Input placeholder="Traceback (wildcard, ex: *cel*y*)" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="args" style={{width: "100%"}}>
-                        <Input placeholder="args" allowClear/>
+                        <Input placeholder="args (wildcard)" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="kwargs" style={{width: "100%"}}>
-                        <Input placeholder="kwargs" allowClear/>
+                        <Input placeholder="kwargs (wildcard)" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
                     <FormItem name="result" style={{width: "100%"}}>
-                        <Input placeholder="Result" allowClear/>
+                        <Input placeholder="Result (wildcard)" allowClear/>
                     </FormItem>
                 </Row>
                 <Row>
