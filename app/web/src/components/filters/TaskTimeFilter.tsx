@@ -106,6 +106,8 @@ const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterCont
                     <Option value="14400000">4 Hours</Option>
                     <Option value="86400000">1 day</Option>
                     <Option value="172800000">2 days</Option>
+                    <Option value="604800000">1 week</Option>
+                    <Option value="2592000000">1 month</Option>
                 </Select>
             }
         </Group>
