@@ -92,13 +92,13 @@ properties = {
         "format": "epoch_millis"
     },
     "args": {
-        "type": "wildcard",
+        "type": "keyword",
     },
     "kwargs": {
-        "type": "wildcard",
+        "type": "keyword",
     },
     "result": {
-        "type": "wildcard"
+        "type": "keyword"
     },
     "runtime": {
         "type": "double"
@@ -116,7 +116,7 @@ properties = {
         }
     },
     "traceback": {
-        "type": "wildcard"
+        "type": "keyword"
     },
     # Workers specific
     "hostname": {
