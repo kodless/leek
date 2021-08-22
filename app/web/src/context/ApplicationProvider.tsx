@@ -27,7 +27,7 @@ interface ApplicationContextData {
 
     listApplications();
 
-    selectApplication(app_name: string);
+    selectApplication(app_name: string | undefined);
 
     deleteApplication(app_name: string);
 
@@ -109,8 +109,10 @@ function ApplicationProvider({children}) {
         // Stop refreshing metadata
         if (metadataInterval) clearInterval(metadataInterval);
         // If no application specified, return
-        if (!currentApp)
+        if (!currentApp){
+            setQPApp(undefined);
             return;
+        }
         setQPApp(currentApp);
 
         // Else, get metadata every 10 seconds

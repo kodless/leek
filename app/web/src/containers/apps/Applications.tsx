@@ -10,11 +10,10 @@ import {
     Tag,
     message,
     Modal,
-    Divider,
     Input,
-    InputNumber, Select, Form
+    InputNumber, Select, Form, Radio
 } from 'antd'
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import {ExclamationCircleOutlined, AppstoreOutlined} from '@ant-design/icons';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import {atelierCaveDark} from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
@@ -81,6 +80,7 @@ const Applications = () => {
     } | undefined>();
 
     const [isCleanModalVisible, setIsCleanModalVisible] = useState(false);
+    const [subscriptionVisible, setSubscriptionVisible] = useState<boolean>(false);
 
     useEffect(() => {
         listApplications();
@@ -233,36 +233,58 @@ const Applications = () => {
                             </Button>,
                         ]}
                     >
-                        <Card size="small" style={{marginBottom: "24px"}}>
-                            <Row style={{marginBottom: "16px"}}>
-                                <Space direction="horizontal">
-                                    <Text strong>API KEY</Text>
-                                    <Text copyable code>{selectedApp.app_key}</Text>
-                                </Space>
-                            </Row>
+                        <Card
+                            size="small"
+                            style={{marginBottom: "24px"}}
+                            extra={
+                                <Radio.Group onChange={v => {
+                                    v.target.value === "INFO" ? setSubscriptionVisible(false) : setSubscriptionVisible(true)
+                                }} defaultValue="INFO" size="small">
+                                    <Radio.Button value="INFO">INFO</Radio.Button>
+                                    <Radio.Button value="SUBSCRIPTION">SUBSCRIPTION</Radio.Button>
+                                </Radio.Group>
+                            }
+                            title={<Row justify="space-between">
+                                <Col>
+                                    <Space>
+                                        <AppstoreOutlined />
+                                        <Text strong>Application</Text>
+                                    </Space>
+                                </Col>
+                            </Row>}
+                        >
+                            {
+                                subscriptionVisible ?
+                                    <Row>
+                                        <SyntaxHighlighter customStyle={{width: "100%"}} style={atelierCaveDark}
+                                                           language="json">
+                                            {agentSubscriptionsSnippet(selectedApp)}
+                                        </SyntaxHighlighter>
+                                    </Row>
+                                    : <>
+                                        <Row style={{marginBottom: "16px"}}>
+                                            <Space direction="horizontal">
+                                                <Text strong>API KEY</Text>
+                                                <Text copyable code>{selectedApp.app_key}</Text>
+                                            </Space>
+                                        </Row>
 
-                            <Row style={{marginBottom: "16px"}}>
-                                <Space direction="horizontal">
-                                    <Text strong>Created</Text>
-                                    <Text code>{adaptTime(selectedApp.created_at)}</Text>
-                                </Space>
-                            </Row>
+                                        <Row style={{marginBottom: "16px"}}>
+                                            <Space direction="horizontal">
+                                                <Text strong>Created</Text>
+                                                <Text code>{adaptTime(selectedApp.created_at)}</Text>
+                                            </Space>
+                                        </Row>
 
-                            <Row>
-                                <Space direction="horizontal" style={{marginBottom: "16px"}}>
-                                    <Text strong>Owner</Text>
-                                    <Text code>{selectedApp.owner}</Text>
-                                </Space>
-                            </Row>
+                                        <Row>
+                                            <Space direction="horizontal" style={{marginBottom: "16px"}}>
+                                                <Text strong>Owner</Text>
+                                                <Text code>{selectedApp.owner}</Text>
+                                            </Space>
+                                        </Row>
+                                    </>
+                            }
 
-                            <Divider>agent subscription snippet</Divider>
-
-                            <Row>
-                                <SyntaxHighlighter customStyle={{width: "100%"}} style={atelierCaveDark}
-                                                   language="json">
-                                    {agentSubscriptionsSnippet(selectedApp)}
-                                </SyntaxHighlighter>
-                            </Row>
                         </Card>
 
                         <Triggers selectedApp={selectedApp} setSelectedApp={setSelectedApp}/>

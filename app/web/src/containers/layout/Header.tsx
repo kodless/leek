@@ -4,7 +4,7 @@ import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
-    ClearOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined, ControlOutlined
+    AppstoreOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined, ControlOutlined
 } from '@ant-design/icons';
 
 import Image from "../../components/Image";
@@ -94,7 +94,7 @@ const Header = () => {
 
         <Menu.Item key="/applications">
             <Link to="/applications">
-                <ClearOutlined/>
+                <AppstoreOutlined/>
                 Applications
             </Link>
         </Menu.Item>
