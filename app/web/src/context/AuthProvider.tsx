@@ -4,6 +4,7 @@ import {Spin, message} from 'antd';
 import env from "../utils/vars";
 import getFirebase from '../utils/firebase';
 import Auth from '../containers/Auth'
+import {useThemeSwitcher} from "react-css-theme-switcher";
 
 interface AuthContextData {
     user: any;
@@ -22,6 +23,9 @@ const AuthContext = React.createContext<AuthContextData>(initial as AuthContextD
 
 
 function AuthProvider({children}) {
+    const { status } = useThemeSwitcher();
+
+
     /** =======================
      *  gRPC Service Callbacks
      ---------------------- **/
@@ -82,6 +86,11 @@ function AuthProvider({children}) {
             });
         }
     }, []);
+
+    // Avoid theme change flicker
+    if (status === "loading") {
+        return null;
+    }
 
     return (
         <AuthContext.Provider value={

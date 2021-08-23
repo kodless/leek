@@ -1,21 +1,3 @@
-const {getThemeVariables} = require('antd/dist/theme');
-
-let theme = getThemeVariables({
-    dark: true, // Enable dark mode
-    compact: true, // Enable compact mode
-});
-
-const customTheme = {
-    ...theme,
-    // Primary
-    '@primary-color': "#00BFA6",
-    '@layout-header-height': '50px',
-    '@layout-footer-height': '50px',
-    '@layout-header-background': '@menu-bg',
-    '@body-background': '@menu-bg',
-    '@layout-body-background': '@body-background',
-};
-
 module.exports = {
     siteMetadata: {
         title: 'Real time celery tasks monitoring',
@@ -59,7 +41,6 @@ module.exports = {
             resolve: "gatsby-plugin-less",
             options: {
                 javascriptEnabled: true,
-                modifyVars: customTheme
             }
         },
         `gatsby-plugin-remove-trailing-slashes`,

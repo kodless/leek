@@ -1,6 +1,6 @@
 import React from 'react'
 import {Link} from 'gatsby'
-import {Menu, Layout, Button, Dropdown, Col, Row} from 'antd'
+import {Menu, Layout, Button, Dropdown, Col, Row, Switch} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
@@ -11,6 +11,7 @@ import Image from "../../components/Image";
 import {useAuth} from "../../context/AuthProvider";
 import {useApplication} from "../../context/ApplicationProvider";
 import env from "../../utils/vars";
+import {useThemeSwitcher} from "react-css-theme-switcher";
 
 const {SubMenu} = Menu;
 
@@ -19,6 +20,7 @@ const Header = () => {
     const {logout} = useAuth();
     const {applications, selectApplication, selectEnv, currentApp, currentEnv, seenEnvs} = useApplication();
 
+    const { switcher, currentTheme, themes } = useThemeSwitcher();
 
     function handleAppSelect(e) {
         selectApplication(e.key)
@@ -112,6 +114,14 @@ const Header = () => {
         ))}
     </Menu>;
 
+    const toggleTheme = (isChecked) => {
+        if (isChecked)
+            localStorage.setItem("theme", "dark")
+        else
+            localStorage.setItem("theme", "light")
+        switcher({ theme: isChecked ? themes.dark : themes.light });
+    };
+
     return (
         <Location>
             {({location}) => {
@@ -172,6 +182,16 @@ const Header = () => {
                                     >
                                         <span style={{color: "#00BFA6"}}>app:&nbsp;</span>{currentApp ? currentApp : "-"}
                                     </Dropdown.Button>
+                                </Col>
+
+                                <Col>
+                                    <Switch
+                                        checked={currentTheme === themes.dark}
+                                        onChange={toggleTheme}
+                                        checkedChildren={<span>🌙</span>}
+                                        unCheckedChildren={<span>☀</span>}
+                                        style={{background:"#555"}}
+                                    />
                                 </Col>
 
                                 {env.LEEK_API_ENABLE_AUTH !== "false" &&

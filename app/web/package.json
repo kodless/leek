@@ -32,6 +32,7 @@
     "prop-types": "15.7.2",
     "query-string": "^6.12.1",
     "react": "16.13.1",
+    "react-css-theme-switcher": "^0.3.0",
     "react-dom": "16.13.0",
     "react-helmet": "6.0.0",
     "react-is": "16.13.1",
@@ -71,7 +72,14 @@
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/react-helmet": "5.0.15",
+    "autoprefixer": "^9.8.4",
     "gatsby-plugin-remove-trailing-slashes": "2.3.0",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-debug": "^4.0.0",
+    "gulp-less": "^4.0.1",
+    "gulp-postcss": "^8.0.0",
+    "less-plugin-npm-import": "^2.1.0",
     "prettier": "1.18.2"
   }
 }
