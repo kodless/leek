@@ -161,6 +161,4 @@ export const themes = {
     },
 };
 
-let theme = themes.dark;
 export const getColors = chart => STATES_COLORS[chart.id];
-export default theme;

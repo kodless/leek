@@ -1,6 +1,6 @@
 import React from 'react';
 import {ResponsiveWaffle} from '@nivo/waffle';
-import theme from "./Themes";
+import {themes} from "./Themes";
 
 
 // make sure parent container have a defined height when using
@@ -20,7 +20,7 @@ export const LeekWaffle: React.FC<any> = (props) => {
             // @ts-ignore
             colors={{scheme: 'set3'}}
             borderColor={{from: 'color'}}
-            theme={theme}
+            theme={themes[props.theme]}
             // Legends
             legends={[
                 {

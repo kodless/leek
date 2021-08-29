@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import theme from "./Themes";
+import {themes} from "./Themes";
 
 export const LeekLine: React.FC<any> = (props) => {
     return (
@@ -30,7 +30,7 @@ export const LeekLine: React.FC<any> = (props) => {
                 legendPosition: 'middle'
             }}
             // Colors
-            theme={theme}
+            theme={themes[props.theme]}
             colors={{ scheme: 'set3' }}
             // Points
             pointColor={{ theme: 'background' }}

@@ -14,6 +14,7 @@ import {StatsService} from "../api/monitor"
 import {useApplication} from "../context/ApplicationProvider"
 import moment from "moment";
 import {TaskState} from "../components/tags/TaskState";
+import {useThemeSwitcher} from "react-css-theme-switcher";
 
 const {Option} = Select;
 const StatesKeys = [
@@ -32,6 +33,7 @@ const StatesKeys = [
 const MonitorPage = () => {
 
     const service = new StatsService();
+    const { currentTheme } = useThemeSwitcher();
     const [loading, setLoading] = useState<boolean>();
     const [totalHits, setTotalHits] = useState<number>(0);
     const [statesDistribution, setStatesDistribution] = useState<any>([]);
@@ -158,7 +160,7 @@ const MonitorPage = () => {
                                 size="small" style={{width: "100%"}}
                                 title="States distribution">
                                 <Row style={{height: "400px"}}>
-                                    <LeekPie data={statesDistribution}/>
+                                    <LeekPie data={statesDistribution} theme={currentTheme}/>
                                 </Row>
                             </Card>
                         </Col>
@@ -168,7 +170,7 @@ const MonitorPage = () => {
                                 size="small" style={{width: "100%"}}
                                 title="Queues distribution">
                                 <Row style={{height: "400px"}}>
-                                    <LeekWaffle total={totalHits} data={queuesDistribution}/>
+                                    <LeekWaffle total={totalHits} data={queuesDistribution} theme={currentTheme}/>
                                 </Row>
                             </Card>
                         </Col>
@@ -179,7 +181,7 @@ const MonitorPage = () => {
                             size="small" style={{width: "100%"}}
                             title="Top 5 Executed Tasks">
                             <Row style={{height: "400px"}}>
-                                <LeekBar data={topExecutions} keys={StatesKeys}/>
+                                <LeekBar data={topExecutions} keys={StatesKeys} theme={currentTheme}/>
                             </Row>
                         </Card>
                     </Row>
@@ -211,7 +213,7 @@ const MonitorPage = () => {
                             ]}
                         >
                             <Row style={{height: "400px"}}>
-                                <LeekLine data={tasksOverTimeDistribution}/>
+                                <LeekLine data={tasksOverTimeDistribution} theme={currentTheme}/>
                             </Row>
                         </Card>
                     </Row>
@@ -223,7 +225,8 @@ const MonitorPage = () => {
                                 state={"RECOVERED"}/>Tasks</>}
                         >
                             <Row style={{height: "400px"}}>
-                                <LeekVerticalBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"/>
+                                <LeekVerticalBar data={topSlow} keys={["runtime",]} color="yellow_orange_red"
+                                                 theme={currentTheme}/>
                             </Row>
                         </Card>
                     </Row>

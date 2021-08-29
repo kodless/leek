@@ -1,6 +1,6 @@
 import React from 'react';
 import {ResponsivePie} from '@nivo/pie';
-import theme, {getColors} from "./Themes";
+import {getColors, themes} from "./Themes";
 
 
 // make sure parent container have a defined height when using
@@ -23,7 +23,7 @@ export const LeekPie: React.FC<any> = (props) => {
             enableRadialLabels={false}
             sliceLabelsSkipAngle={10}
             // Colors
-            theme={theme}
+            theme={themes[props.theme]}
             colors={getColors}
             borderColor={{from: 'color', modifiers: [['darker', 0.2]]}}
             sliceLabelsTextColor="#333333"

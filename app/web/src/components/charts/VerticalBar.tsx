@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResponsiveBar } from '@nivo/bar';
-import theme, {getColors} from "./Themes";
+import {getColors, themes} from "./Themes";
 
 
 // make sure parent container have a defined height when using
@@ -21,7 +21,7 @@ export const LeekVerticalBar: React.FC<any> = (props) => {
             valueScale={{ type: 'linear' }}
             borderRadius={5}
             // Colors
-            theme={theme}
+            theme={themes[props.theme]}
             colors={props.color? {scheme: props.color} : getColors}
             borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             // Axis
