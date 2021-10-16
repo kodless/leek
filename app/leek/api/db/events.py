@@ -56,7 +56,7 @@ def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
             try:
                 err = error["update"]["error"]["caused_by"]["type"]
                 if err in ignorable_errors:
-                    print(f"Ignore error: {err}")
+                    print(f"Payload caused an error {err} and leek did not index it!")
                     return [], 201
             except KeyError:
                 pass
