@@ -63,7 +63,7 @@ TaskEventSchema = Schema(
         Optional("retries"): And(int),
         # Only available with task-failed, task-retried
         Optional("exception"): And(str),
-        Optional("traceback"): And(str),
+        Optional("traceback"): And(str, Use(lambda t: t[:30000])),
         # Only available with task-revoked events
         Optional("terminated"): And(bool),
         Optional("expired"): And(bool),
