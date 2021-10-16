@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
-import {Row, message, Col, Table, Button, Switch, Card, Empty} from 'antd'
+import {Row, Col, Table, Button, Switch, Card, Empty} from 'antd'
 import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons'
 
 import TaskDataColumns from "../components/data/TaskData"

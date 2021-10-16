@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {Helmet} from 'react-helmet'
-import {Row, Col} from 'antd'
+import moment from "moment";
+import {Row, Col, Statistic, Tooltip, Affix} from 'antd'
+import {FieldTimeOutlined, InfoCircleOutlined, EyeInvisibleOutlined} from "@ant-design/icons";
 
 
 import StickerWidget from "../components/stats/StickerWidget";
@@ -71,12 +73,26 @@ const IndexPage = () => {
     const [seenTaskStates, setSeenTaskStates] = useState<MetricsContextData["seenStates"]>([]);
     const [seenRoutingKeys, setSeenRoutingKeys] = useState<MetricsContextData["seenRoutingKeys"]>([]);
     const [seenQueues, setSeenQueues] = useState<MetricsContextData["seenQueues"]>([]);
+    const [searchDriftLoading, setSearchDriftLoading] = useState<boolean>();
+    const [searchDrift, setSearchDrift] = useState<any>(null);
 
     const [timeFilters, setTimeFilters] = useState<any>({
         timestamp_type: "timestamp",
         interval_type: "past",
         offset: 900000
     });
+
+    function getSearchDrift() {
+        if (!currentApp || !currentEnv) return;
+        setSearchDriftLoading(true);
+        metricsService.getSearchDrift(currentApp, currentEnv)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                setSearchDrift(result);
+            }, handleAPIError)
+            .catch(handleAPIError)
+            .finally(() => setSearchDriftLoading(false));
+    }
 
     function getMetrics() {
         if (!currentApp) return;
@@ -152,8 +168,10 @@ const IndexPage = () => {
 
         // Else, get metrics every 10 seconds
         getMetrics();
+        getSearchDrift();
         metricsInterval = setInterval(() => {
             getMetrics();
+            getSearchDrift();
         }, 10000);
     }, [currentApp, currentEnv, timeFilters]);
 
@@ -169,10 +187,24 @@ const IndexPage = () => {
                 <html lang="en"/>
             </Helmet>
 
-            <Row justify="center" align="middle" style={{marginBottom: 16}}>
-                <div>
+            <Row justify="space-between" align="middle" style={{marginBottom: 16}}>
+                {searchDrift && <Statistic
+                    title={<Tooltip title="The time of the latest event processed by leek."><span>Latest Event </span>
+                        <InfoCircleOutlined/></Tooltip>}
+                    value={searchDrift.latest_event_timestamp ? moment(searchDrift.latest_event_timestamp).format("MMM D HH:mm:ss Z") : "-"}
+                    prefix={<FieldTimeOutlined/>}/>}
+
+                <Affix style={{position: 'fixed', left: "50%", transform: "translate(-50%, 0)"}}>
                     <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
-                </div>
+                </Affix>
+
+                {searchDrift && <Statistic
+                    title={<Tooltip
+                        title="How many events in the queue waiting to be indexed."><span>Current Drift </span>
+                        <InfoCircleOutlined/></Tooltip>}
+                    value={searchDrift.messages_count ? searchDrift.messages_count : "0"}
+                    prefix={<EyeInvisibleOutlined/>}/>}
+
             </Row>
 
             <Row gutter={16} justify="center" align="middle">
