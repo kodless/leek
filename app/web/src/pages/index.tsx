@@ -154,6 +154,7 @@ const IndexPage = () => {
 
     useEffect(() => {
         getMetrics();
+        getSearchDrift();
         return () => {
             clearInterval(metricsInterval);
         }
