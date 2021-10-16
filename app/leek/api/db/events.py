@@ -51,5 +51,14 @@ def merge_events(index_alias, events: Dict[str, Union[Task, Worker]]):
         print(json.dumps(e.info, indent=4))
         return f"Request error", 409
     except bulk_errors.BulkIndexError as e:
+        ignorable_errors = ["max_bytes_length_exceeded_exception"]
+        for error in e.errors:
+            try:
+                err = error["update"]["error"]["caused_by"]["type"]
+                if err in ignorable_errors:
+                    print(f"Ignore error: {err}")
+                    return [], 201
+            except KeyError:
+                pass
         print(json.dumps(e.errors, indent=4))
         return f"Update error", 409
