@@ -18,10 +18,10 @@ import {TaskService} from "../api/task"
 import {ControlService} from "../api/control";
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 import {fixPagination} from "../utils/pagination";
-import {func} from "prop-types";
 
 const TerminalStates = ["SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RECOVERED", "CRITICAL"];
 const {confirm} = Modal;
+const {Text} = Typography;
 
 
 const TasksPage: React.FC = () => {
@@ -139,7 +139,7 @@ const TasksPage: React.FC = () => {
             icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
             content: <>
                 <Typography.Paragraph>
-                    Tasks queued to brokers, You can filter the retried tasks using {result.origin} as worker name!
+                    Tasks queued to brokers, You can filter the retried tasks using <Text copyable code>{result.origin}</Text> as worker name!
                     <ul>
                         <li>{result.succeeded_retries_count} tasks set to retry.</li>
                         <li>{result.failed_retries_count} tasks could not be retried.</li>
