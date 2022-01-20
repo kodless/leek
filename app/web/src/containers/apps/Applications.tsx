@@ -104,7 +104,7 @@ const Applications = () => {
             confirm({
                 title: 'Clean application',
                 icon: <ExclamationCircleOutlined/>,
-                content: `Do you really want to clean want to clean application ${clean.kind} older than ${clean.count} ${clean.unit}`,
+                content: `Do you really want to clean application ${clean.kind} older than ${clean.count} ${clean.unit}`,
                 onOk() {
                     setApplicationPurging(true);
                     service.cleanApplication(selectedApp.app_name, clean.kind, clean.count, clean.unit)

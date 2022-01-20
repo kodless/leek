@@ -1,7 +1,13 @@
 import React, {useState, useEffect} from "react";
 import {Helmet} from 'react-helmet'
-import {Row, Col, Table, Button, Switch, Card, Empty} from 'antd'
-import {SyncOutlined, CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons'
+import {Row, Col, Table, Button, Switch, Card, Empty, message, Space, Typography, Modal, List} from 'antd'
+import {
+    SyncOutlined,
+    CaretUpOutlined,
+    CaretDownOutlined,
+    CheckCircleOutlined,
+    ExclamationCircleOutlined
+} from '@ant-design/icons'
 
 import TaskDataColumns from "../components/data/TaskData"
 import AttributesFilter from '../components/filters/TaskAttributesFilter'
@@ -9,13 +15,19 @@ import TimeFilter from '../components/filters/TaskTimeFilter'
 
 import {useApplication} from "../context/ApplicationProvider"
 import {TaskService} from "../api/task"
+import {ControlService} from "../api/control";
 import {handleAPIError, handleAPIResponse} from "../utils/errors"
 import {fixPagination} from "../utils/pagination";
+import {func} from "prop-types";
+
+const TerminalStates = ["SUCCEEDED", "FAILED", "REJECTED", "REVOKED", "RECOVERED", "CRITICAL"];
+const {confirm} = Modal;
 
 
 const TasksPage: React.FC = () => {
     // STATE
     const service = new TaskService();
+    const controlService = new ControlService();
     const {currentApp, currentEnv} = useApplication();
 
     // Filters
@@ -31,6 +43,7 @@ const TasksPage: React.FC = () => {
     const columns = TaskDataColumns();
     const [pagination, setPagination] = useState<any>({pageSize: 20, current: 1});
     const [loading, setLoading] = useState<boolean>();
+    const [tasksRetrying, setTasksRetrying] = useState<boolean>();
     const [tasks, setTasks] = useState<any[]>([]);
 
     // API Calls
@@ -95,6 +108,76 @@ const TasksPage: React.FC = () => {
         setFilters(values)
     }
 
+    function bulkRetryConfirmation(result) {
+        console.log(result)
+        if (result.eligible_tasks_count == 0) {
+            message.warning("Found no eligible tasks for retrying!")
+            return
+        }
+        confirm({
+            title: "Retry Filtered Tasks",
+            icon: <ExclamationCircleOutlined/>,
+            content: <>
+                <Typography.Paragraph>
+                    Do you really want to retry filtered tasks?
+                    <ul>
+                        <li>{result.eligible_tasks_count} tasks are eligible to be retried.</li>
+                        <li>{result.ineligible_tasks_count} tasks are not eligible to be retried.</li>
+                    </ul>
+                </Typography.Paragraph>
+                {result.ineligible_tasks_count > 0 && <List dataSource={result.ineligible_tasks_ids}/>}
+            </>,
+            onOk() {
+                return retryFiltered(false)
+            }
+        });
+    }
+
+    function pendingBulkRetry(result) {
+        confirm({
+            title: "Bulk tasks retry initiated!",
+            icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
+            content: <>
+                <Typography.Paragraph>
+                    Tasks queued to brokers, You can filter the retried tasks using {result.origin} as worker name!
+                    <ul>
+                        <li>{result.succeeded_retries_count} tasks set to retry.</li>
+                        <li>{result.failed_retries_count} tasks could not be retried.</li>
+                    </ul>
+                </Typography.Paragraph>
+                {result.failed_retries_count > 0 && <List dataSource={result.failed_retries}/>}
+            </>,
+            okText: "Ok",
+            cancelButtonProps: {style: {display: 'none'}}
+        });
+    }
+
+    function retryFiltered(dryRun) {
+        if (!currentApp) return;
+        if (!currentEnv) return;
+        setTasksRetrying(true);
+        let allFilters = {
+            ...filters,
+            ...timeFilters,
+        };
+        return controlService.retryTasksByQuery(currentApp, currentEnv, allFilters, dryRun)
+            .then(handleAPIResponse)
+            .then((result: any) => {
+                if (dryRun) {
+                    bulkRetryConfirmation(result)
+                }
+                else {
+                    pendingBulkRetry(result)
+                }
+            }, handleAPIError)
+            .catch(handleAPIError)
+            .finally(() => setTasksRetrying(false));
+    }
+
+    function handleRetryFiltered() {
+        retryFiltered(true)
+    }
+
     return (
         <>
             <Helmet
@@ -137,8 +220,18 @@ const TasksPage: React.FC = () => {
                                         <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
                                     </Col>
                                     <Col span={3}>
-                                        <Button size="small" onClick={handleRefresh} icon={<SyncOutlined/>}
-                                                style={{float: "right"}}/>
+                                        <Space style={{float: "right"}}>
+                                            {
+                                                filters
+                                                && filters.state
+                                                && filters.state.length
+                                                && filters.state.every(s => TerminalStates.includes(s))
+                                                && <Button ghost type="primary" size="small"
+                                                           onClick={handleRetryFiltered}
+                                                           loading={tasksRetrying}>Retry Filtered</Button>
+                                            }
+                                            <Button size="small" onClick={handleRefresh} icon={<SyncOutlined/>} />
+                                        </Space>
                                     </Col>
                                 </Row>
                             }>

@@ -6,8 +6,8 @@ const {ApplicationProvider} = require("./src/context/ApplicationProvider");
 const {ThemeSwitcherProvider} = require("react-css-theme-switcher");
 
 const themes = {
-    dark: `css/dark-theme.css`,
-    light: `css/light-theme.css`,
+    dark: `/css/dark-theme.css`,
+    light: `/css/light-theme.css`,
 };
 
 // Wraps every page in a component

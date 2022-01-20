@@ -38,6 +38,33 @@ class TaskRetry(Resource):
             return responses.application_not_found
 
 
+@control_ns.route('/tasks/retry-by-query')
+class TaskRetryByQuery(Resource):
+
+    @auth
+    def post(self):
+        """
+        Retry celery tasks by query
+        Celery Tasks state should be in a terminal state
+        """
+        data = request.get_json()
+        query = data["query"]
+        dry_run = data.get("dry_run", False)
+        try:
+            result, _ = search.search_index(g.index_alias, query, {"size": 1000})
+            print(result)
+            return task.retry_tasks(
+                g.app_name,
+                g.app_env,
+                result["hits"]["hits"],
+                dry_run=dry_run
+            )
+        except es_exceptions.ConnectionError:
+            return responses.search_backend_unavailable
+        except es_exceptions.NotFoundError:
+            return responses.application_not_found
+
+
 @control_ns.route('/tasks/<string:task_uuid>/revoke-by-id')
 class RevokeTaskByID(Resource):
 
