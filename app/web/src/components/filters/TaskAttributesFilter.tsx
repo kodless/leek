@@ -193,6 +193,11 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (props: TasksFilt
                     </FormItem>
                 </Row>
                 <Row>
+                    <FormItem name="client" style={{width: "100%"}}>
+                        <Input placeholder="Client" allowClear/>
+                    </FormItem>
+                </Row>
+                <Row>
                     <Input.Group compact>
                         <FormItem name="runtime_op" style={{width: "30%"}}>
                             <Select style={{width: '100%'}}>
