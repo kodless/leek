@@ -139,7 +139,7 @@ const TasksPage: React.FC = () => {
             icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
             content: <>
                 <Typography.Paragraph>
-                    Tasks queued to the broker, You can filter the retried tasks using <Text copyable code>{result.origin}</Text> as client name!
+                    Tasks queued to the broker, You can filter the retried tasks using the client name <Text copyable code>{result.origin}</Text>!
                     <ul>
                         <li>{result.succeeded_retries_count} tasks set to retry.</li>
                         <li>{result.failed_retries_count} tasks could not be retried.</li>
