@@ -108,8 +108,22 @@ const TasksPage: React.FC = () => {
         setFilters(values)
     }
 
+    function prepareList(items) {
+        return <List
+            header={<Row justify="center"><Text strong>Ineligible Tasks IDs</Text></Row>}
+            dataSource={items}
+            style={{maxHeight: 200, overflow: "auto"}}
+            size="small"
+            bordered
+            renderItem={item => (
+                <List.Item>
+                    {item}
+                </List.Item>
+            )}
+        />
+    }
+
     function bulkRetryConfirmation(result) {
-        console.log(result)
         if (result.eligible_tasks_count == 0) {
             message.warning("Found no eligible tasks for retrying!")
             return
@@ -125,7 +139,7 @@ const TasksPage: React.FC = () => {
                         <li>{result.ineligible_tasks_count} tasks are not eligible to be retried.</li>
                     </ul>
                 </Typography.Paragraph>
-                {result.ineligible_tasks_count > 0 && <List dataSource={result.ineligible_tasks_ids}/>}
+                {result.ineligible_tasks_count > 0 && prepareList(result.ineligible_tasks_ids)}
             </>,
             onOk() {
                 return retryFiltered(false)
@@ -139,13 +153,14 @@ const TasksPage: React.FC = () => {
             icon: <CheckCircleOutlined style={{color: "#00BFA6"}}/>,
             content: <>
                 <Typography.Paragraph>
-                    Tasks queued to the broker, You can filter the retried tasks using the client name <Text copyable code>{result.origin}</Text>!
+                    Tasks queued to the broker, you can filter the retried tasks using the client name.
                     <ul>
+                        <li>Client name: <Text copyable code>{result.origin}</Text></li>
                         <li>{result.succeeded_retries_count} tasks set to retry.</li>
                         <li>{result.failed_retries_count} tasks could not be retried.</li>
                     </ul>
                 </Typography.Paragraph>
-                {result.failed_retries_count > 0 && <List dataSource={result.failed_retries}/>}
+                {result.failed_retries_count > 0 && prepareList(result.failed_retries)}
             </>,
             okText: "Ok",
             cancelButtonProps: {style: {display: 'none'}}
@@ -153,20 +168,15 @@ const TasksPage: React.FC = () => {
     }
 
     function retryFiltered(dryRun) {
-        if (!currentApp) return;
-        if (!currentEnv) return;
+        if (!currentApp || !currentEnv) return;
         setTasksRetrying(true);
-        let allFilters = {
-            ...filters,
-            ...timeFilters,
-        };
+        let allFilters = {...filters, ...timeFilters,};
         return controlService.retryTasksByQuery(currentApp, currentEnv, allFilters, dryRun)
             .then(handleAPIResponse)
             .then((result: any) => {
                 if (dryRun) {
                     bulkRetryConfirmation(result)
-                }
-                else {
+                } else {
                     pendingBulkRetry(result)
                 }
             }, handleAPIError)
@@ -222,15 +232,12 @@ const TasksPage: React.FC = () => {
                                     <Col span={3}>
                                         <Space style={{float: "right"}}>
                                             {
-                                                filters
-                                                && filters.state
-                                                && filters.state.length
-                                                && filters.state.every(s => TerminalStates.includes(s))
+                                                (filters && filters.state && filters.state.length && filters.state.every(s => TerminalStates.includes(s)))
                                                 && <Button ghost type="primary" size="small"
                                                            onClick={handleRetryFiltered}
                                                            loading={tasksRetrying}>Retry Filtered</Button>
                                             }
-                                            <Button size="small" onClick={handleRefresh} icon={<SyncOutlined/>} />
+                                            <Button size="small" onClick={handleRefresh} icon={<SyncOutlined/>}/>
                                         </Space>
                                     </Col>
                                 </Row>

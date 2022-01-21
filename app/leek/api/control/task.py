@@ -346,6 +346,7 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
     return {
                "succeeded_retries_count": len(succeeded_retries),
                "failed_retries_count": len(failed_retries),
+               "failed_retries": failed_retries,
                "origin": origin
            }, 200
 
