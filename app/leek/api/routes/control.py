@@ -51,7 +51,7 @@ class TaskRetryByQuery(Resource):
         query = data["query"]
         dry_run = data.get("dry_run", False)
         try:
-            result, _ = search.search_index(g.index_alias, query, {"size": 1000})
+            result, _ = search.search_index(g.index_alias, query, {"size": 10000})
             return task.retry_tasks(
                 g.app_name,
                 g.app_env,
