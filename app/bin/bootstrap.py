@@ -283,7 +283,7 @@ def ensure_connection(target):
 
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
-    ensure_connection(LEEK_ES_URL)
+    # ensure_connection(LEEK_ES_URL)
     # Create painless scripts used for merges
     create_painless_scripts()
     # Start API process
