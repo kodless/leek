@@ -149,8 +149,34 @@ const Subscriptions = (props) => {
                                    </Col>
                                    <Col span={6}>
                                        <List.Item.Meta
-                                           title={"Prefetch count/Pool size"}
-                                           description={<Tag>{record.prefetch_count}/{record.concurrency_pool_size}</Tag>}
+                                           title={"Prefetch count"}
+                                           description={<Tag>{record.prefetch_count}</Tag>}
+                                       />
+                                   </Col>
+                               </Row>
+                               <Row justify="space-between" style={{marginBottom: 6}}>
+                                   <Col span={6}>
+                                       <List.Item.Meta
+                                           title={"Batch size"}
+                                           description={<Tag>{`${record.batch_max_size_in_mb}mb`}</Tag>}
+                                       />
+                                   </Col>
+                                   <Col span={6}>
+                                       <List.Item.Meta
+                                           title={"Batch length"}
+                                           description={<Tag>{record.batch_max_number_of_messages}</Tag>}
+                                       />
+                                   </Col>
+                                   <Col span={6}>
+                                       <List.Item.Meta
+                                           title={"Batch window"}
+                                           description={<Tag>{`${record.batch_max_window_in_seconds}s`}</Tag>}
+                                       />
+                                   </Col>
+                                   <Col span={6}>
+                                       <List.Item.Meta
+                                           title={"Pool size"}
+                                           description={<Tag>{record.concurrency_pool_size}</Tag>}
                                        />
                                    </Col>
                                </Row>

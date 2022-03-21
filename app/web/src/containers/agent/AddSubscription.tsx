@@ -94,7 +94,16 @@ const AddSubscription = (props) => {
 
                 <FormItem
                     name="prefetch_count"
-                    rules={[]}
+                    rules={[
+                        ({ __ }) => ({
+                            validator(_, value) {
+                                if (value && (value<1000 || value>10000)) {
+                                    return Promise.reject(new Error("Should be between 1000 and 10000"));
+                                }
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
                 >
                     <InputNumber min={1000} max={10000} step={1}
                                  placeholder="Prefetch count - default: 1000"
@@ -102,12 +111,81 @@ const AddSubscription = (props) => {
                     />
                 </FormItem>
 
+                <Divider/>
+
                 <FormItem
                     name="concurrency_pool_size"
                     rules={[]}
                 >
                     <InputNumber min={1} max={20} step={1}
                                  placeholder="Concurrency pool size - default: 1"
+                                 style={{width: "100%"}}
+                    />
+                </FormItem>
+                {/* Batch */}
+                <FormItem
+                    name="batch_max_size_in_mb"
+                    rules={[
+                        ({ __ }) => ({
+                            validator(_, value) {
+                                if (value && (value<1 || value>10)) {
+                                    return Promise.reject(new Error("Should be between 1 and 10"));
+                                }
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
+                >
+                    <InputNumber min={1} max={10} step={1}
+                                 placeholder="Batch max size in MB - default: 1"
+                                 style={{width: "100%"}}
+                    />
+                </FormItem>
+
+                <FormItem
+                    name="batch_max_number_of_messages"
+                    dependencies={['prefetch_count']}
+                    rules={[
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value && !getFieldValue("prefetch_count")) {
+                                    return Promise.resolve();
+                                }
+                                if (value && (value<1000 || value>10000)) {
+                                    return Promise.reject(new Error("Should be between 1000 and 10000"));
+                                }
+                                if (value && !getFieldValue("prefetch_count") && value==1000) {
+                                    return Promise.resolve();
+                                }
+                                else if (value && getFieldValue("prefetch_count") && value<=getFieldValue("prefetch_count")) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error("Batch max number of messages should be <= prefetch count!"));
+                            },
+                        }),
+                    ]}
+                >
+                    <InputNumber min={1000} max={10000} step={1}
+                                 placeholder="Batch max number of messages - default: 1000"
+                                 style={{width: "100%"}}
+                    />
+                </FormItem>
+
+                <FormItem
+                    name="batch_max_window_in_seconds"
+                    rules={[
+                        ({ __ }) => ({
+                            validator(_, value) {
+                                if (value && (value<5 || value>20)) {
+                                    return Promise.reject(new Error("Should be between 5 and 20"));
+                                }
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
+                >
+                    <InputNumber min={5} max={20} step={1}
+                                 placeholder="Batch max window in seconds - default: 5"
                                  style={{width: "100%"}}
                     />
                 </FormItem>

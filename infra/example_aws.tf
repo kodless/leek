@@ -44,7 +44,7 @@ module "leek" {
 
   acm_certificate_arn = "arn:aws:acm:region:account:certificate/123456789012-1234-1234-1234-12345678"
 
-  leek_api_log_level   = "INFO"
+  leek_api_log_level   = "WARNING"
   leek_agent_log_level = "INFO"
 
   leek_enable_api   = true

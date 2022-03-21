@@ -200,14 +200,26 @@ def validate_subscriptions(subs):
 
     # Optional settings
     for subscription in subs:
-        if not subscription.get("concurrency_pool_size"):
-            subscription["concurrency_pool_size"] = 1
-
-        if not subscription.get("prefetch_count"):
-            subscription["prefetch_count"] = 1000
+        subscription.setdefault("concurrency_pool_size", 1)
+        subscription.setdefault("prefetch_count", 1000)
+        subscription.setdefault("batch_max_size_in_mb", 1)
+        subscription.setdefault("batch_max_number_of_messages", subscription["prefetch_count"])
+        subscription.setdefault("batch_max_window_in_seconds", 5)
 
         if not LEEK_API_ENABLE_AUTH:
             subscription["org_name"] = "mono"
+
+        if subscription["prefetch_count"] < 1000 or subscription["prefetch_count"] > 10000:
+            abort("Subscription prefetch_count should be between 1,000 and 10,000 messages!")
+
+        if subscription["batch_max_size_in_mb"] < 1 or subscription["batch_max_size_in_mb"] > 10:
+            abort("Subscription batch_max_size_in_mb should be between 1 and 10 megabytes!")
+
+        if subscription["batch_max_number_of_messages"] > subscription["prefetch_count"]:
+            abort("Subscription batch_max_number_of_messages should be <= prefetch_count!")
+
+        if subscription["batch_max_window_in_seconds"] < 5 or subscription["batch_max_window_in_seconds"] > 20:
+            abort("Subscription batch_max_window_in_seconds should be between 5 and 20 seconds!")
     return subs
 
 
@@ -242,8 +254,7 @@ START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM
 """
 
 
-def create_painless_scripts():
-    connection = Elasticsearch(LEEK_ES_URL)
+def create_painless_scripts(connection):
     with open('/opt/app/conf/painless/TaskMerge.groovy', 'r') as script:
         task_merge_source = script.read()
 
@@ -264,6 +275,7 @@ def create_painless_scripts():
             }
         })
         if t["acknowledged"] is True and w["acknowledged"] is True:
+            connection.close()
             return
     except Exception:
         pass
@@ -281,11 +293,23 @@ def ensure_connection(target):
     abort(f"Could not connect to target {target}")
 
 
+def ensure_es_connection():
+    logging.getLogger("elasticsearch").setLevel(logging.ERROR)
+    connection = Elasticsearch(LEEK_ES_URL)
+    for i in range(10):
+        if connection.ping():
+            logging.getLogger("elasticsearch").setLevel(logging.INFO)
+            return connection
+        time.sleep(5)
+    else:
+        abort(f"Could not connect to target {LEEK_ES_URL}")
+
+
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
-    # ensure_connection(LEEK_ES_URL)
+    connection = ensure_es_connection()
     # Create painless scripts used for merges
-    create_painless_scripts()
+    create_painless_scripts(connection)
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])
     # Make sure the API is up before starting the agent

@@ -1,10 +1,12 @@
-import json
+import logging
 from typing import Union
 
-import urllib3
+import requests
 
 from leek.api.db.store import Task, Worker, STATES_SUCCESS, STATES_EXCEPTION, STATES_UNREADY
 from leek.api.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def get_color(state):
@@ -64,13 +66,11 @@ def send_slack(app_name: str, event: Union[Task, Worker], wh_url: str, extra: di
             },
         ],
     }
-    http = urllib3.PoolManager()
     try:
-        http.request(
-            "POST",
+        requests.post(
             wh_url,
             headers={"Accept": "application/json", "Content-Type": "application/json"},
-            body=json.dumps(body)
-        )
-    except urllib3.exceptions.HTTPError as e:
-        print('Request to slack returned an error:', e.reason)
+            json=body
+        ).raise_for_status()
+    except Exception as e:
+        logger.error(f"Request to slack returned an error: {e}")

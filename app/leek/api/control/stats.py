@@ -57,13 +57,23 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
         return responses.broker_not_reachable
 
     try:
-        name, messages, consumers = connection.channel().queue_declare(queue=subscription["queue"], passive=True)
+        name, messages, consumers = 0, 0, 0
+        if connection.transport.driver_type == "redis":
+            # Events over redis transport are not durable because celery sends them in fanout mode.
+            # Therefore, if we try to get events queue depth, the client will raise 404 error.
+            # If you want the events to be persisted, use RabbitMQ instead!
+            pass
+        else:
+            name, messages, consumers = connection.channel().queue_declare(
+                queue=subscription["queue"],
+                passive=True
+            )
         result = {
-                   "queue_name": name,
-                   "messages_count": messages,
-                   "consumers_count": consumers,
-                   "latest_event_timestamp": latest_event_timestamp
-               }
+            "queue_name": name,
+            "messages_count": messages,
+            "consumers_count": consumers,
+            "latest_event_timestamp": latest_event_timestamp
+        }
     except NotFound as ex:
         logger.error(ex)
     else:

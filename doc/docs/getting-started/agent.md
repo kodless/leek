@@ -63,9 +63,18 @@ parameters to connect to the brokers and APIs.
     - **app_name** - leek application name chosen when creating the application the first time
 
 - Optional parameters - will fallback to defaults if not set:
-  - **prefetch_count** - used to specify how many messages are being sent at the same time from the broker to agent.
+  - **prefetch_count** - used to specify how many messages are being sent at the same time from the broker to agent. it
+    defaults to 1,000 and should be between 1,000 and 10,000.
   - **concurrency_pool_size** - The gevent pool size, or the number green threads that the agent can spawn for the 
     current subscription to send events concurrently to Leek API.
+  - **batch_max_size_in_mb** - The maximum batch size in MB before Leek agent sends the events batch to Leek API. It 
+    defaults to 1 and should be <= 10.
+  - **batch_max_number_of_messages** - The maximum number of messages in a batch before Leek agent sends the batch to 
+    Leek API. It defaults to **prefetch_count** and if specified it should be less than **prefetch_count**
+  - **batch_max_window_in_seconds** - If **batch_max_number_of_messages** and **batch_max_size_in_mb** are not fulfilled 
+    during the **batch_max_window_in_seconds**, Leek agent sends the batch to Leek API to avoid keeping events for a long 
+    time in the agent, This is useful for environments where the messages rate is too low. It defaults to 5 seconds and 
+    should be <= 20
 
 - Optional parameters - only required for standalone agents:
     - **app_key** - the app key generated when creating the application
@@ -90,7 +99,10 @@ illustrate how you can subscribe to multiple brokers:
     "app_key": "not-secret",
     "api_url": "http://0.0.0.0:5000",
     "prefetch_count": 1000,
-    "concurrency_pool_size": 2
+    "concurrency_pool_size": 2,
+    "batch_max_size_in_mb": 1,
+    "batch_max_number_of_messages": 1000,
+    "batch_max_window_in_seconds": 5
   },
   {
     "broker": "amqp://admin:admin@mq-prod//",
@@ -104,7 +116,10 @@ illustrate how you can subscribe to multiple brokers:
     "app_key": "not-secret",
     "api_url": "http://0.0.0.0:5000",
     "prefetch_count": 1000,
-    "concurrency_pool_size": 2
+    "concurrency_pool_size": 2,
+    "batch_max_size_in_mb": 1,
+    "batch_max_number_of_messages": 1000,
+    "batch_max_window_in_seconds": 5
   }
 ]
 ```

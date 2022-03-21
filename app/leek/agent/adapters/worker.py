@@ -1,3 +1,4 @@
+import fastjsonschema
 from schema import Schema, And, Or, Optional
 
 WORKER_EVENT_TYPES = (
@@ -18,7 +19,7 @@ WorkerEventSchema = Schema(
             *WORKER_EVENT_TYPES
         ),
         "hostname": And(str, len),
-        "timestamp": And(float,),
+        "timestamp": And(float),
         "utcoffset": And(int),
         "pid": And(int),
         "clock": And(int),
@@ -31,3 +32,6 @@ WorkerEventSchema = Schema(
         "sw_sys": And(str),
     }
 )
+
+json_schema = WorkerEventSchema.json_schema("https://tryleek.com/schemas/worker.json")
+CompiledWorkerEventSchema = fastjsonschema.compile(json_schema)

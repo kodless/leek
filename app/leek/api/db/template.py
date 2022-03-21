@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 import time
 
@@ -7,6 +8,8 @@ from leek.api.conf import settings
 from leek.api.ext import es
 from leek.api.errors import responses
 from leek.api.db.properties import properties
+
+logger = logging.getLogger(__name__)
 
 
 def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=None):
@@ -61,7 +64,7 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
     except es_exceptions.RequestError as e:
-        print(e.info)
+        logger.error(e.info)
         return responses.application_already_exist
 
 

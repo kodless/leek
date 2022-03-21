@@ -1,5 +1,5 @@
+import fastjsonschema
 from ciso8601 import parse_datetime
-
 from schema import Schema, And, Or, Optional, Use
 
 TASK_EVENT_TYPES = (
@@ -72,3 +72,6 @@ TaskEventSchema = Schema(
         Optional("requeue"): And(bool),
     }
 )
+
+json_schema = TaskEventSchema.json_schema("https://tryleek.com/schemas/task.json")
+CompiledTaskEventSchema = fastjsonschema.compile(json_schema)
