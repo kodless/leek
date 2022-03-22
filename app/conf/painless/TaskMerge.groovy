@@ -39,6 +39,7 @@ Map TaskStateFields = [
 ];
 
 int events_count = ctx._source.events_count;
+int new_events_count = params.events_count;
 List events = ctx._source.events;
 List attrs_to_upsert = [];
 
@@ -135,6 +136,6 @@ if (ctx._source.parent_id != null && ctx._source.parent_id.equals(ctx._source.id
 }
 
 // Increment events count
-ctx._source.events_count = events_count + 1;
+ctx._source.events_count = events_count + new_events_count;
 events.add(params.state);
 ctx._source.events = events;

@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import string
 
@@ -6,6 +7,7 @@ import requests
 
 from leek.api.db.store import FanoutTrigger
 
+logger = logging.getLogger(__name__)
 SUBSCRIPTIONS_FILE = "/opt/app/conf/subscriptions.json"
 
 
@@ -15,7 +17,6 @@ def generate_app_key(length=48):
 
 
 def init_trigger(tr, app_name):
-    print(tr)
     trigger = FanoutTrigger(**tr)
     if trigger.slack_wh_url:
         text = f"Leek trigger configured for application `{app_name}`:\n" \
@@ -80,5 +81,5 @@ def delete_subscription(app_name, app_env):
     """
     with open(SUBSCRIPTIONS_FILE) as subscription_file:
         subscriptions = json.load(subscription_file)
-    subs = [s for s in subscriptions if not s["app_name"] == app_name and not s["app_env"] == app_env]
+    subs = list(filter(lambda s: f"{s['app_name']}-{s['app_env']}" != f"{app_name}-{app_env}", subscriptions))
     return len(subscriptions) > len(subs), subs

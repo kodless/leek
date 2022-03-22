@@ -10,6 +10,8 @@ def get_bool(env_name, default="false"):
     return os.environ.get(env_name, default).lower() == "true"
 
 
+LEEK_API_LOG_LEVEL = os.environ.get("LEEK_API_LOG_LEVEL", "INFO")
+
 # ES
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
 LEEK_ES_DEFAULT_REFRESH_INTERVAL = os.environ.get("LEEK_ES_DEFAULT_REFRESH_INTERVAL", "20s")

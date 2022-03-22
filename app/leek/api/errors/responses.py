@@ -42,7 +42,7 @@ application_not_found = {
                             "error": {
                                 "code": "404001",
                                 "message": "Application does not exist",
-                                "reason": "Index not yet created"
+                                "reason": "Index not yet created, use Leek UI to create a new application"
                             }
                         }, 404
 

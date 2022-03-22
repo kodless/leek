@@ -58,7 +58,7 @@ services:
     image: kodhive/leek
     environment:
       # General
-      - LEEK_API_LOG_LEVEL=INFO
+      - LEEK_API_LOG_LEVEL=WARNING
       - LEEK_AGENT_LOG_LEVEL=INFO
       # Components
       - LEEK_ENABLE_API=true
@@ -84,7 +84,10 @@ services:
             "app_name": "leek",
             "app_env": "prod",
             "prefetch_count": 1000,
-            "concurrency_pool_size": 3
+            "concurrency_pool_size": 3,
+            "batch_max_size_in_mb": 1,
+            "batch_max_number_of_messages": 1000,
+            "batch_max_window_in_seconds": 5
           }
         ]
       - LEEK_AGENT_API_SECRET=not-secret
@@ -208,7 +211,7 @@ services:
     image: kodhive/leek
     environment:
       # General
-      - LEEK_API_LOG_LEVEL=INFO
+      - LEEK_API_LOG_LEVEL=WARNING
       - LEEK_AGENT_LOG_LEVEL=INFO
       # Components
       - LEEK_ENABLE_API=true
@@ -240,7 +243,10 @@ services:
             "app_name": "leek",
             "app_env": "prod",
             "prefetch_count": 1000,
-            "concurrency_pool_size": 3
+            "concurrency_pool_size": 3,
+            "batch_max_size_in_mb": 1,
+            "batch_max_number_of_messages": 1000,
+            "batch_max_window_in_seconds": 5
           }
         ]
       - LEEK_AGENT_API_SECRET=not-secret

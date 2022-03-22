@@ -1,16 +1,30 @@
+import sys
 import time
 from urllib.parse import urljoin
+from collections import OrderedDict
+from typing import Dict, List, Union, Iterable
 
-import gevent
-from gevent.pool import Pool
 import requests
 from requests import adapters
 from kombu.mixins import ConsumerMixin
 from kombu import Exchange, Queue, Connection
 
 from leek.agent.logger import get_logger
+from leek.agent.adapters.serializer import validate_payload
 
 logger = get_logger(__name__)
+
+
+def flatten(obj: Iterable[Union[List[Dict], Dict]]) -> Iterable[Dict]:
+    """Flatten a list using generators comprehensions.
+        Returns a flattened version of list lst.
+    """
+    for sublist in obj:
+        if isinstance(sublist, list):
+            for item in sublist:
+                yield item
+        elif isinstance(sublist, dict):
+            yield sublist
 
 
 class LeekConsumer(ConsumerMixin):
@@ -35,7 +49,10 @@ class LeekConsumer(ConsumerMixin):
             queue: str = "leek.fanout",
             routing_key: str = "#",
             prefetch_count: int = 1000,
-            concurrency_pool_size: int = 1
+            concurrency_pool_size: int = 1,
+            batch_max_size_in_mb=1,
+            batch_max_number_of_messages=1000,
+            batch_max_window_in_seconds=5,
     ):
         """
         :param api_url: The URL of the API where to fanout events
@@ -47,19 +64,29 @@ class LeekConsumer(ConsumerMixin):
         :param exchange: Exchange name, should be the same as workers event exchange
         :param queue: Queue name
         :param routing_key: Routing key
+        :param batch_max_size_in_mb: Maximum size of batch, should be less than Elasticsearch max batch size.
+        :param batch_max_number_of_messages: Maximum number of messages in a batch, should be less than prefetch count.
+        :param batch_max_window_in_seconds: Maximum wait time to send each batch, should be less than message timeout.
         """
+
+        # HTTP batch transport settings
+        self.batch = OrderedDict()
+        self.batch_max_size_in_mb = batch_max_size_in_mb
+        self.batch_max_number_of_messages = batch_max_number_of_messages
+        self.batch_max_window_in_seconds = batch_max_window_in_seconds
+        self.batch_last_sent_at = time.time()
+        self.batch_latest_delivery_tag = None
 
         # API
         self.subscription_name = subscription_name
         self.prefetch_count = prefetch_count
-        self.concurrency_pool_size = concurrency_pool_size
-        self._pool = Pool(concurrency_pool_size)
         logger.info(f"Building consumer "
                     f"[Subscription={subscription_name}, "
-                    f"Prefetch={self.prefetch_count}, "
-                    f"Pool={self.concurrency_pool_size}] ...")
+                    f"Prefetch={self.prefetch_count}, ")
 
         self.api_url = api_url
+        self.app_name = app_name
+        self.app_env = app_env
         self.headers = {
             "x-requested-with": "leek-agent",
             "x-agent-version": "1.0.0",
@@ -72,9 +99,14 @@ class LeekConsumer(ConsumerMixin):
         # BROKER
         self.broker = broker
         self.connection = Connection(self.broker)
+        # Events over redis transport are not durable because celery sends them in fanout mode
+        # Therefore, at the time leek is up and start listening to events it will not be able
+        # to process the events sent to redis when leek was down.
+        # If you want the events to be persisted, use RabbitMQ instead!
         self.event_type = "fanout" if self.connection.transport.driver_type == "redis" else "topic"
         self.exchange = Exchange(exchange, self.event_type, durable=True, auto_delete=False)
         self.queue = Queue(queue, exchange=self.exchange, routing_key=routing_key, durable=True, auto_delete=False)
+        self.channel = None
 
         # CONNECTION TO BROKER
         self.ensure_connection_to_broker()
@@ -121,6 +153,7 @@ class LeekConsumer(ConsumerMixin):
             channel.basic_qos(prefetch_size=0, prefetch_count=self.prefetch_count)
         else:
             channel.basic_qos(prefetch_size=0, prefetch_count=self.prefetch_count, a_global=False)
+        self.channel = channel
         logger.info("Channel Configured...")
 
         logger.info("Creating consumer...")
@@ -135,18 +168,54 @@ class LeekConsumer(ConsumerMixin):
         :param message: Message
         """
         if self.should_stop is not True:
-            self._pool.spawn(self.handler, body, message)
+            self.batch.update({message.delivery_tag: body})
+            self.batch_latest_delivery_tag = message.delivery_tag
+            if (sys.getsizeof(self.batch) / 1024 / 1024) >= self.batch_max_size_in_mb:
+                logger.debug("BATCH: maximum size in mb reached, send!")
+            elif len(self.batch) >= self.batch_max_number_of_messages:
+                logger.debug("BATCH: maximum number of messages reached, send!")
+            elif (time.time() - self.batch_last_sent_at) >= self.batch_max_window_in_seconds:
+                logger.debug("BATCH: maximum wait window reached, send!")
+            else:
+                logger.debug(f"BATCH: not yet fulfilled, {len(self.batch)} skip!")
+                return
+            self.send()
 
-    def handler(self, body, message):
+    def ack(self):
+        """
+        Acknowledge all processed events in the queue by acknowledging latest event.
+        All events before the acknowledged event will be auto ACK by rabbitmq server.
+        :return:
+        """
+        logger.debug(f"Latest delivery tag: {self.batch_latest_delivery_tag}")
+        if self.connection.transport.driver_type == "redis":
+            # Redis transport does not support multiple messages acknowledgment
+            for delivery_tag in self.batch.keys():
+                self.channel.basic_ack(delivery_tag)
+        else:
+            self.channel.basic_ack(self.batch_latest_delivery_tag, multiple=True)
+        self.batch = OrderedDict()
+        self.batch_last_sent_at = time.time()
+        self.batch_latest_delivery_tag = None
+
+    def send(self):
         """
         Callbacks used to send message to Leek API Webhooks endpoint
-        :param body: Message body
-        :param message: Message
         """
+        # Prepare
+        start_time = time.time()
+        payload = flatten(self.batch.values())
+        try:
+            events = validate_payload(payload, self.app_env)
+            docs = [event.to_doc() for _, event in events.items()]
+        except Exception as ex:
+            logger.error(ex)
+            return
+        # Send
         try:
             response = self.session.post(
                 url=urljoin(self.api_url, self.LEEK_WEBHOOKS_ENDPOINT),
-                json=body,
+                json=docs,
             )
             response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
@@ -166,7 +235,9 @@ class LeekConsumer(ConsumerMixin):
             if response.status_code in self.SUCCESS_STATUS_CODES:
                 # noinspection PyBroadException
                 try:
-                    message.ack()
+                    logger.debug("--- Processed by API in %s seconds ---" % (time.time() - start_time))
+                    if response.status_code == 201:
+                        self.ack()
                     return
                 except Exception as ex:
                     logger.error(f"Unhealthy connection!")

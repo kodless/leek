@@ -71,7 +71,7 @@ class LeekAgent:
 
     def stop(self, _signal_received, _frame):
         # Handle any cleanup here
-        print("SIGTERM detected. Exiting gracefully")
+        logger.info("SIGTERM detected. Exiting gracefully")
         for p in self.proc:
             p.kill()
 

@@ -1,5 +1,4 @@
 import logging
-import time
 from elasticsearch import exceptions as es_exceptions
 from elasticsearch.helpers import scan
 
@@ -11,11 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 def search_index(index_alias, query, params):
-    start_time = time.time()
     connection = es.connection
     try:
         d = connection.search(index=index_alias, body=query, **params)
-        # print("--- Search %s seconds ---" % (time.time() - start_time))
         return d, 200
     except es_exceptions.ConnectionError as e:
         logger.warning(e.info)

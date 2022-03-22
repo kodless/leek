@@ -73,7 +73,7 @@ const IndexPage = () => {
     const [seenTaskStates, setSeenTaskStates] = useState<MetricsContextData["seenStates"]>([]);
     const [seenRoutingKeys, setSeenRoutingKeys] = useState<MetricsContextData["seenRoutingKeys"]>([]);
     const [seenQueues, setSeenQueues] = useState<MetricsContextData["seenQueues"]>([]);
-    const [searchDriftLoading, setSearchDriftLoading] = useState<boolean>();
+    const [searchDriftLoading, setSearchDriftLoading] = useState<boolean>(true);
     const [searchDrift, setSearchDrift] = useState<any>(null);
 
     const [timeFilters, setTimeFilters] = useState<any>({
@@ -189,22 +189,28 @@ const IndexPage = () => {
             </Helmet>
 
             <Row justify="space-between" align="middle" style={{marginBottom: 16}}>
-                {searchDrift && <Statistic
+                <Statistic
+                    loading={searchDriftLoading}
                     title={<Tooltip title="The time of the latest event processed by leek."><span>Latest Event </span>
                         <InfoCircleOutlined/></Tooltip>}
-                    value={searchDrift.latest_event_timestamp ? moment(searchDrift.latest_event_timestamp).format("MMM D HH:mm:ss Z") : "-"}
-                    prefix={<FieldTimeOutlined/>}/>}
+                    value={searchDrift && searchDrift.latest_event_timestamp ? moment(searchDrift.latest_event_timestamp).format("MMM D HH:mm:ss Z") : ""}
+                    valueStyle={{fontSize: 17.5}}
+                    prefix={<FieldTimeOutlined/>}
+                />
 
                 <Affix style={{position: 'fixed', left: "50%", transform: "translate(-50%, 0)"}}>
                     <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
                 </Affix>
 
-                {searchDrift && <Statistic
+                <Statistic
+                    loading={searchDriftLoading}
                     title={<Tooltip
                         title="How many events in the queue waiting to be indexed."><span>Current Drift </span>
                         <InfoCircleOutlined/></Tooltip>}
-                    value={searchDrift.messages_count ? searchDrift.messages_count : "0"}
-                    prefix={<EyeInvisibleOutlined/>}/>}
+                    value={searchDrift && searchDrift.messages_count ? searchDrift.messages_count : "0"}
+                    valueStyle={{fontSize: 17.5}}
+                    prefix={<EyeInvisibleOutlined/>}
+                />
 
             </Row>
 

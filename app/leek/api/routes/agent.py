@@ -7,6 +7,7 @@ from amqp import AccessRefused
 from flask import Blueprint, request, g
 from flask_restx import Resource
 from kombu.connection import Connection
+from schema import SchemaError
 
 from leek.api.schemas.subscription import SubscriptionSchema
 from leek.api.conf import settings
@@ -109,6 +110,8 @@ class AgentSubscriptionsList(Resource):
         """
         data = request.get_json()
         subscription = SubscriptionSchema.validate(data)
+        if subscription["batch_max_number_of_messages"] > subscription["prefetch_count"]:
+            raise SchemaError("Batch max number of messages should be <= prefetch count!")
         subscription.update({
             "org_name": g.org_name,
             "app_name": g.app_name,

@@ -1,9 +1,11 @@
-import boto3
-from elasticsearch import Elasticsearch, RequestsHttpConnection
+import logging
+
+from elasticsearch import Elasticsearch
 
 from leek.api.conf import settings
-
 from leek.api.ext.base import BaseExtension
+
+logger = logging.getLogger(__name__)
 
 
 class ESExtension(BaseExtension):
@@ -12,4 +14,4 @@ class ESExtension(BaseExtension):
     def init_app(self, app):
         app.extensions["es"] = self
         self.connection = Elasticsearch(settings.LEEK_ES_URL)
-        print("Connected to elastic search")
+        logger.info("Connected to elastic search backend!")
