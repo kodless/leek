@@ -3,7 +3,6 @@ import {Row, Button, Typography, Col, Image} from 'antd'
 import {GoogleOutlined} from "@ant-design/icons";
 
 
-import Logo from "../components/Image";
 import {useAuth} from "../context/AuthProvider";
 import {getJokes} from "../data/jokes";
 
@@ -45,7 +44,7 @@ const AuthPage = () => {
                 <Row justify="center" style={{width: "100%", marginBottom: "10px"}}>
                     <Col>
                         <div style={{width: "40px"}}>
-                            <Logo alt="Logo"/>
+                            <Image alt="Logo" style={{maxHeight: "100%"}} src="/leek.png" preview={false}/>
                         </div>
                     </Col>
                     <Col><Title level={2}>LEEK</Title></Col>

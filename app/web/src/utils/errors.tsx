@@ -1,8 +1,8 @@
 import {message, Typography} from "antd";
 import React from "react";
-import getFirebase from '../utils/firebase';
 import env from "../utils/vars";
 import {navigate} from '@reach/router';
+import getAuth from '../utils/firebase';
 
 const Text = Typography.Text;
 
@@ -26,8 +26,8 @@ export function handleAPIError(error) {
         else if (error.code == "401003") {
             message.error(<><Text>{`${error.message}`}</Text> <Text type="secondary">- {error.reason}</Text></>);
             // Logout
-            const fb = getFirebase();
-            fb.auth().signOut().then(function () {
+            const auth = getAuth();
+            auth.signOut().then(function () {
             }).catch(function (error) {
                 console.log(error)
             });

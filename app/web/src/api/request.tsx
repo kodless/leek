@@ -1,6 +1,5 @@
-import getFirebase from "../utils/firebase";
 import env from "../utils/vars";
-
+import getAuth from '../utils/firebase';
 
 export function buildQueryString(obj: {}) {
     const keyValuePairs: string[] = [];
@@ -34,9 +33,9 @@ export function request(
     }
     // FIREBASE AUTH
     else {
-        let fb = getFirebase();
-        if (fb && fb.auth().currentUser) {
-            return fb.auth().currentUser.getIdToken().then(token =>
+        let auth = getAuth();
+        if (auth && auth.currentUser) {
+            return auth.currentUser.getIdToken().then(token =>
                 fetch(
                     `${env.LEEK_API_URL}${path}`,
                     {

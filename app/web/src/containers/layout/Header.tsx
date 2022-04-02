@@ -1,26 +1,34 @@
 import React from 'react'
 import {Link} from 'gatsby'
-import {Menu, Layout, Button, Dropdown, Col, Row, Switch} from 'antd'
+import {Menu, Layout, Button, Dropdown, Col, Row, Switch, Image, Space} from 'antd'
 import {Location} from '@reach/router';
 import {
     RobotFilled, UnorderedListOutlined, RadarChartOutlined, LogoutOutlined, BoxPlotOutlined,
     AppstoreOutlined, DownOutlined, MenuOutlined, BugOutlined, DeploymentUnitOutlined, ControlOutlined
 } from '@ant-design/icons';
 
-import Image from "../../components/Image";
 import {useAuth} from "../../context/AuthProvider";
 import {useApplication} from "../../context/ApplicationProvider";
 import env from "../../utils/vars";
 import {useThemeSwitcher} from "react-css-theme-switcher";
 
 const {SubMenu} = Menu;
-
+const tabs = [
+    {key: "workers", name: "Workers", icon: <RobotFilled/>},
+    {key: "tasks", name: "Tasks", icon: <UnorderedListOutlined/>},
+    {key: "control", name: "Control", icon: <ControlOutlined/>},
+    {key: "queues", name: "Queues", icon: <BoxPlotOutlined/>},
+    {key: "issues", name: "Issues", icon: <BugOutlined/>},
+    {key: "monitor", name: "Monitor", icon: <RadarChartOutlined/>},
+    {key: "agent", name: "Agent", icon: <DeploymentUnitOutlined/>},
+    {key: "applications", name: "Applications", icon: <AppstoreOutlined/>},
+]
 
 const Header = () => {
     const {logout} = useAuth();
     const {applications, selectApplication, selectEnv, currentApp, currentEnv, seenEnvs} = useApplication();
 
-    const { switcher, currentTheme, themes } = useThemeSwitcher();
+    const {switcher, currentTheme, themes} = useThemeSwitcher();
 
     function handleAppSelect(e) {
         selectApplication(e.key)
@@ -42,65 +50,19 @@ const Header = () => {
         ))}
     </Menu>;
 
-    const menuItems = [
-        <Menu.Item key="/workers">
-            <Link
-                to="/workers"
-            >
-                <RobotFilled/>
-                Workers
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/tasks">
-            <Link to="/tasks">
-                <UnorderedListOutlined/>
-                Tasks
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/control">
-            <Link to="/control">
-                <ControlOutlined />
-                Control
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/queues">
-            <Link to="/queues">
-                <BoxPlotOutlined />
-                Queues
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/issues">
-            <Link to="/issues">
-                <BugOutlined/>
-                Issues
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/monitor">
-            <Link to="/monitor">
-                <RadarChartOutlined/>
-                Monitor
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/agent">
-            <Link to="/agent">
-                <DeploymentUnitOutlined/>
-                Agent
-            </Link>
-        </Menu.Item>,
-
-        <Menu.Item key="/applications">
-            <Link to="/applications">
-                <AppstoreOutlined/>
-                Applications
-            </Link>
-        </Menu.Item>
-    ];
+    function getMenuItems(location) {
+        return tabs.map(tab => {
+            return <Menu.Item key={`/${tab.key}/`}>
+                <Link
+                    to={`/${tab.key}/${location.search}`}
+                >
+                    <Space size={4}>
+                        {tab.icon} <span>{tab.name}</span>
+                    </Space>
+                </Link>
+            </Menu.Item>
+        })
+    }
 
     const envs = <Menu
         onClick={handleEnvSelect}
@@ -119,7 +81,7 @@ const Header = () => {
             localStorage.setItem("theme", "dark")
         else
             localStorage.setItem("theme", "light")
-        switcher({ theme: isChecked ? themes.dark : themes.light });
+        switcher({theme: isChecked ? themes.dark : themes.light});
     };
 
     return (
@@ -138,8 +100,8 @@ const Header = () => {
                         margin: '5px 20px 5px 0',
                         float: 'left'
                     }}>
-                        <Link to="/">
-                            <Image alt="Logo"/>
+                        <Link to={`/${location.search}`}>
+                            <Image alt="Logo" style={{maxHeight: "100%"}} src="/leek.png" preview={false}/>
                         </Link>
                     </div>
                     <Row justify="space-between">
@@ -147,7 +109,7 @@ const Header = () => {
                             <Menu mode="horizontal"
                                   selectedKeys={[location.pathname]}
                                   style={{lineHeight: '48px', borderBottom: "0"}}>
-                                {menuItems}
+                                {getMenuItems(location)}
                             </Menu>
                         </Col>
                         <Col xxl={0} xl={0} lg={0} md={6} sm={6} xs={6}>
@@ -155,7 +117,7 @@ const Header = () => {
                                   selectedKeys={[location.pathname]}
                                   style={{lineHeight: '48px', borderBottom: "0"}}>
                                 <SubMenu key="sub2" icon={<MenuOutlined/>}>
-                                    {menuItems}
+                                    {getMenuItems(location)}
                                 </SubMenu>
                             </Menu>
                         </Col>
@@ -169,7 +131,8 @@ const Header = () => {
                                         overlay={envs}
                                         placement="bottomLeft"
                                     >
-                                        <span style={{color: "#00BFA6"}}>env:&nbsp;</span>{currentEnv ? currentEnv : "-"}
+                                        <span
+                                            style={{color: "#00BFA6"}}>env:&nbsp;</span>{currentEnv ? currentEnv : "-"}
                                     </Dropdown.Button>
                                 </Col>}
 
@@ -180,7 +143,8 @@ const Header = () => {
                                         overlay={apps}
                                         placement="bottomLeft"
                                     >
-                                        <span style={{color: "#00BFA6"}}>app:&nbsp;</span>{currentApp ? currentApp : "-"}
+                                        <span
+                                            style={{color: "#00BFA6"}}>app:&nbsp;</span>{currentApp ? currentApp : "-"}
                                     </Dropdown.Button>
                                 </Col>
 
@@ -190,7 +154,7 @@ const Header = () => {
                                         onChange={toggleTheme}
                                         checkedChildren={<span>🌙</span>}
                                         unCheckedChildren={<span>☀</span>}
-                                        style={{background:"#555"}}
+                                        style={{background: "#555"}}
                                     />
                                 </Col>
 

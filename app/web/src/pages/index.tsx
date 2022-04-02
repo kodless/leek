@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import moment from "moment";
 import {Row, Col, Statistic, Tooltip, Affix} from 'antd'
 import {FieldTimeOutlined, InfoCircleOutlined, EyeInvisibleOutlined} from "@ant-design/icons";
@@ -178,14 +178,11 @@ const IndexPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Metrics"
-                meta={[
-                    {name: 'description', content: 'Events metrics'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Metrics</title>
+                <meta name="description" content="Events metrics" />
+                <meta name="keywords" content='celery, tasks' />
             </Helmet>
 
             <Row justify="space-between" align="middle" style={{marginBottom: 16}}>

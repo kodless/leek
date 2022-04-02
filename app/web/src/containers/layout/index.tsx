@@ -1,5 +1,5 @@
 import React from 'react'
-import {Layout, Affix, Typography} from 'antd'
+import {Layout, Affix, Typography, Row, Space} from 'antd'
 
 import env from "../../utils/vars";
 import Header from './Header'
@@ -18,8 +18,20 @@ export function AppLayout({children}: any) {
                 }}
             >
                 {children}
-                <Affix style={{position:'fixed',bottom:13,right:50}}>
-                    <Text code>Leek v{env.LEEK_VERSION}</Text> - <a href="https://tryleek.com" target="_blank" rel="noopener norefferer">Docs</a>
+                <Affix style={{ position: "fixed", bottom: 13, right: 50 }}>
+                    <Row>
+                        <Space>
+                            <Text code>Leek v{env.LEEK_VERSION}</Text>
+                            <span>-</span>
+                            <a
+                                href="https://tryleek.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Docs
+                            </a>
+                        </Space>
+                    </Row>
                 </Affix>
             </Content>
         </Layout>
