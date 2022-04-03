@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:python3.8-nodejs12-slim AS compile-image
+FROM nikolaik/python-nodejs:python3.8-nodejs16-slim AS compile-image
 
 MAINTAINER Hamza Adami <me@adamihamza.com>
 ENV GATSBY_TELEMETRY_DISABLED=1
