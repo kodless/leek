@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const StickerWidgetWrapper = styled.div`
   width: 100%;

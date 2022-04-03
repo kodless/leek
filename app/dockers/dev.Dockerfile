@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:python3.8-nodejs12-slim
+FROM nikolaik/python-nodejs:python3.8-nodejs16-slim
 
 # Create app directory
 WORKDIR /opt/app
