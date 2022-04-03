@@ -7,158 +7,157 @@
  * file that was distributed with this source code.
  */
 
-
 import React from "react";
-import {STATES, STATES_COLORS} from "../../data/states";
+import { STATES, STATES_COLORS } from "../../data/states";
 
 export const themes = {
-    light: {
-        background: '#ffffff',
-        axis: {
-            domain: {
-                line: {
-                    strokeWidth: 0,
-                    stroke: '#889eae',
-                },
-            },
-            ticks: {
-                line: {
-                    strokeWidth: 1,
-                    stroke: '#889eae',
-                },
-                text: {
-                    fill: '#6a7c89',
-                    fontSize: 11,
-                },
-            },
-            legend: {
-                text: {
-                    fill: '#6f6f6f',
-                    fontSize: 13,
-                    fontWeight: 600,
-                },
-            },
+  light: {
+    background: "#ffffff",
+    axis: {
+      domain: {
+        line: {
+          strokeWidth: 0,
+          stroke: "#889eae",
         },
-        legends: {
-            text: {
-                fontSize: 12,
-            },
+      },
+      ticks: {
+        line: {
+          strokeWidth: 1,
+          stroke: "#889eae",
         },
-        tooltip: {
-            container: {
-                fontSize: '13px',
-            },
+        text: {
+          fill: "#6a7c89",
+          fontSize: 11,
         },
-        labels: {
-            text: {
-                fill: '#555555',
-                fontWeight: 600,
-            },
+      },
+      legend: {
+        text: {
+          fill: "#6f6f6f",
+          fontSize: 13,
+          fontWeight: 600,
         },
-        annotations: {
-            text: {
-                fill: '#333333',
-                outlineWidth: 3,
-                outlineColor: '#ffffff',
-            },
-            link: {
-                stroke: '#333333',
-                outlineWidth: 2,
-                outlineColor: '#ffffff',
-            },
-            outline: {
-                stroke: '#333333',
-                outlineWidth: 2,
-                outlineColor: '#ffffff',
-            },
-            symbol: {
-                fill: '#333333',
-                outlineWidth: 2,
-                outlineColor: '#ffffff',
-            },
-        },
+      },
     },
-    dark: {
-        background: '#141414',
-        axis: {
-            domain: {
-                line: {
-                    strokeWidth: 0,
-                    stroke: '#526271',
-                },
-            },
-            ticks: {
-                line: {
-                    strokeWidth: 1,
-                    stroke: '#526271',
-                },
-                text: {
-                    fill: '#8d9cab',
-                    fontSize: 11,
-                },
-            },
-            legend: {
-                text: {
-                    fill: '#ccd7e2',
-                    fontSize: 13,
-                    fontWeight: 500,
-                },
-            },
-        },
-        grid: {
-            line: {
-                stroke: '#444',
-            },
-        },
-        legends: {
-            text: {
-                fontSize: 12,
-                fill: '#8d9cab',
-            },
-        },
-        tooltip: {
-            container: {
-                fontSize: '13px',
-                background: '#000',
-                color: '#ddd',
-            },
-        },
-        labels: {
-            text: {
-                fill: '#ddd',
-                fontSize: 12,
-                fontWeight: 500,
-            },
-        },
-        dots: {
-            text: {
-                fill: '#bbb',
-                fontSize: 12,
-            },
-        },
-        annotations: {
-            text: {
-                fill: '#dddddd',
-                outlineWidth: 3,
-                outlineColor: '#0e1317',
-            },
-            link: {
-                stroke: '#ffffff',
-                outlineWidth: 2,
-                outlineColor: '#0e1317',
-            },
-            outline: {
-                stroke: '#ffffff',
-                outlineWidth: 2,
-                outlineColor: '#0e1317',
-            },
-            symbol: {
-                fill: '#ffffff',
-                outlineWidth: 2,
-                outlineColor: '#0e1317',
-            },
-        },
+    legends: {
+      text: {
+        fontSize: 12,
+      },
     },
+    tooltip: {
+      container: {
+        fontSize: "13px",
+      },
+    },
+    labels: {
+      text: {
+        fill: "#555555",
+        fontWeight: 600,
+      },
+    },
+    annotations: {
+      text: {
+        fill: "#333333",
+        outlineWidth: 3,
+        outlineColor: "#ffffff",
+      },
+      link: {
+        stroke: "#333333",
+        outlineWidth: 2,
+        outlineColor: "#ffffff",
+      },
+      outline: {
+        stroke: "#333333",
+        outlineWidth: 2,
+        outlineColor: "#ffffff",
+      },
+      symbol: {
+        fill: "#333333",
+        outlineWidth: 2,
+        outlineColor: "#ffffff",
+      },
+    },
+  },
+  dark: {
+    background: "#141414",
+    axis: {
+      domain: {
+        line: {
+          strokeWidth: 0,
+          stroke: "#526271",
+        },
+      },
+      ticks: {
+        line: {
+          strokeWidth: 1,
+          stroke: "#526271",
+        },
+        text: {
+          fill: "#8d9cab",
+          fontSize: 11,
+        },
+      },
+      legend: {
+        text: {
+          fill: "#ccd7e2",
+          fontSize: 13,
+          fontWeight: 500,
+        },
+      },
+    },
+    grid: {
+      line: {
+        stroke: "#444",
+      },
+    },
+    legends: {
+      text: {
+        fontSize: 12,
+        fill: "#8d9cab",
+      },
+    },
+    tooltip: {
+      container: {
+        fontSize: "13px",
+        background: "#000",
+        color: "#ddd",
+      },
+    },
+    labels: {
+      text: {
+        fill: "#ddd",
+        fontSize: 12,
+        fontWeight: 500,
+      },
+    },
+    dots: {
+      text: {
+        fill: "#bbb",
+        fontSize: 12,
+      },
+    },
+    annotations: {
+      text: {
+        fill: "#dddddd",
+        outlineWidth: 3,
+        outlineColor: "#0e1317",
+      },
+      link: {
+        stroke: "#ffffff",
+        outlineWidth: 2,
+        outlineColor: "#0e1317",
+      },
+      outline: {
+        stroke: "#ffffff",
+        outlineWidth: 2,
+        outlineColor: "#0e1317",
+      },
+      symbol: {
+        fill: "#ffffff",
+        outlineWidth: 2,
+        outlineColor: "#0e1317",
+      },
+    },
+  },
 };
 
-export const getColors = chart => STATES_COLORS[chart.id];
+export const getColors = (chart) => STATES_COLORS[chart.id];
