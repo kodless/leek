@@ -29,4 +29,4 @@ const getFirebase = () => {
 };
 
 
-export default getAuth;
+export default getFirebase;
