@@ -8,8 +8,8 @@ const { QueryParamProvider } = require("use-query-params");
 const { HelmetProvider } = require("react-helmet-async");
 
 const themes = {
-  dark: `/css/dark-theme.css`,
-  light: `/css/light-theme.css`,
+  dark: `/css/themes/dark.css`,
+  light: `/css/themes/light.css`,
 };
 
 function generatePath(location) {
