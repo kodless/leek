@@ -1,8 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import {Spin, message} from 'antd';
 
+import {
+    signInWithPopup,
+    GoogleAuthProvider,
+    signOut,
+    onAuthStateChanged,
+} from "firebase/auth"
+
 import env from "../utils/vars";
-import getFirebase from '../utils/firebase';
+import getAuth from '../utils/firebase';
 import Auth from '../containers/Auth'
 import {useThemeSwitcher} from "react-css-theme-switcher";
 
@@ -29,7 +36,7 @@ function AuthProvider({children}) {
     /** =======================
      *  gRPC Service Callbacks
      ---------------------- **/
-    const [firebase, setFirebase] = useState();
+    const [auth, setAuth] = useState<any>();
     const [loading, setLoading] = useState<boolean>(true);
     const [bootstrapping, setBootstrapping] = useState<boolean>(true);
     const [user, setUser] = useState<any>(null);
@@ -39,31 +46,30 @@ function AuthProvider({children}) {
      *  gRPC Service Calls
      ---------------------- **/
     function login() {
-        if (!firebase) return;
-        setLoading(true);
-        // @ts-ignore
-        let provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-        // @ts-ignore
-        firebase.auth().signInWithPopup(provider).then(function (result) {
-            setUser(result.user);
-            setLoading(false)
-        }).catch(function (error) {
-            console.log(error.message);
-            message.error("Unable to sign in");
-            setLoading(false)
-        });
+        if (!auth) return;
+        setLoading(true)
+        const provider = new GoogleAuthProvider()
+        signInWithPopup(auth, provider)
+            .then(function (result) {
+                setUser(result.user)
+                setLoading(false)
+            })
+            .catch(function (error: any) {
+                console.log(error.message)
+                message.error("Unable to sign in")
+                setLoading(false)
+            })
     }
 
     function logout() {
-        if (firebase === undefined) return;
-
-        // @ts-ignore
-        firebase.auth().signOut().then(function () {
-
-        }).catch(function (error) {
-            console.log(error)
-        });
+        if (auth === undefined) return;
+        signOut(auth)
+            .then(function () {
+                // Sign-out successful.
+            })
+            .catch(function (error: any) {
+                console.log(error)
+            })
     }
 
     /** ======================
@@ -77,13 +83,13 @@ function AuthProvider({children}) {
         else {
             setBootstrapping(true);
             setLoading(true);
-            const fb = getFirebase();
-            setFirebase(fb);
-            fb.auth().onAuthStateChanged((user) => {
-                setUser(user);
-                setBootstrapping(false);
-                setLoading(false);
-            });
+            const authentication = getAuth();
+            setAuth(authentication);
+            onAuthStateChanged(authentication, (user: any) => {
+                setUser(user)
+                setBootstrapping(false)
+                setLoading(false)
+            })
         }
     }, []);
 

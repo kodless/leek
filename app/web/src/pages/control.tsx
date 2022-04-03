@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {Steps, Row, Button, Card, Select, Typography, Checkbox, Modal, Divider, Spin} from 'antd';
 import {CheckCircleOutlined} from "@ant-design/icons";
 
@@ -103,14 +103,11 @@ const ControlPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Control"
-                meta={[
-                    {name: 'description', content: 'Control commands'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Control</title>
+                <meta name="description" content="Control commands" />
+                <meta name="keywords" content='celery, commands' />
             </Helmet>
 
             {/* Steps */}

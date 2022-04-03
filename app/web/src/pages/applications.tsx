@@ -1,5 +1,5 @@
 import React from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 
 import Applications from "../containers/apps/Applications";
 
@@ -7,15 +7,13 @@ const ApplicationsPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Applications"
-                meta={[
-                    {name: 'description', content: 'Events metrics'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Applications</title>
+                <meta name="description" content="Leek applications" />
+                <meta name="keywords" content='leek, applications' />
             </Helmet>
+
             <Applications/>
         </>
     )

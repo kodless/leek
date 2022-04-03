@@ -25,7 +25,7 @@ import {adaptTime} from "../../utils/date";
 import {ApplicationService} from "../../api/application";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import Indices from "./Indices";
-import getFirebase from "../../utils/firebase";
+import getAuth from '../../utils/firebase';
 
 const Text = Typography.Text;
 const {confirm} = Modal;
@@ -33,9 +33,9 @@ const Option = Select.Option;
 const FormItem = Form.Item;
 
 const inferOrgName = () => {
-    let fb = getFirebase();
-    if (fb && fb.auth().currentUser) {
-        let owner_email = fb.auth().currentUser.email;
+    let auth = getAuth();
+    if (auth && auth.currentUser) {
+        let owner_email = auth.currentUser.email;
         let parts = owner_email.split('@');
         if (parts[1] === "gmail.com")
             return parts[0];

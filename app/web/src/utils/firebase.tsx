@@ -1,6 +1,8 @@
-import firebase from "firebase/app";
-import "firebase/auth";
 import env from "./vars";
+import { initializeApp } from "firebase/app"
+import {
+    getAuth,
+} from "firebase/auth";
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -10,21 +12,21 @@ const firebaseConfig = {
     appId: env.LEEK_FIREBASE_APP_ID,
 };
 
-let firebaseCache;
+let auth;
 
 const getFirebase = () => {
     if (env.LEEK_API_ENABLE_AUTH === "false")
         return
 
-    if (firebaseCache) {
-        return firebaseCache
+    if (auth) {
+        return auth
     }
 
-    firebase.initializeApp(firebaseConfig);
-    firebaseCache = firebase;
+    initializeApp(firebaseConfig);
+    auth = getAuth();
 
-    return firebaseCache;
+    return auth;
 };
 
 
-export default getFirebase;
+export default getAuth;

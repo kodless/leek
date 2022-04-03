@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {Card, Col, Row, Empty, Table, Button, Alert} from 'antd'
 import {SyncOutlined} from '@ant-design/icons'
 
@@ -82,14 +82,11 @@ const QueuesPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Queues"
-                meta={[
-                    {name: 'description', content: 'Tasks queues'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Queues</title>
+                <meta name="description" content="Broker queues" />
+                <meta name="keywords" content='celery, queues' />
             </Helmet>
             <Row justify="center" style={{width: "100%", marginTop: 13}}>
                 <Alert

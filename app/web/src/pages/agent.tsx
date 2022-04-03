@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
-import {Card, Row, Button, Space, Typography, Col} from "antd";
-import {DeploymentUnitOutlined, FileWordOutlined} from "@ant-design/icons";
+import { Helmet } from 'react-helmet-async';
+import {Card, Row, Button, Space, Typography} from "antd";
+import {DeploymentUnitOutlined} from "@ant-design/icons";
 
 import {adaptTime} from "../utils/date";
 import {AgentState} from '../components/tags/AgentState'
@@ -60,14 +60,11 @@ const AgentPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Agent"
-                meta={[
-                    {name: 'description', content: 'Agent configuration'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Agent</title>
+                <meta name="description" content="Leek agent" />
+                <meta name="keywords" content='leek, agent' />
             </Helmet>
 
             {agent && agent.type === "local" &&

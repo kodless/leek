@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {Row, Col, Table, Button, Switch, Card, Empty, message, Space, Typography, Modal, List} from 'antd'
 import {
     SyncOutlined,
@@ -89,7 +89,7 @@ const TasksPage: React.FC = () => {
     }
 
     function handleShowTaskDetails(record) {
-        window.open(`/task?app=${currentApp}&uuid=${record.uuid}`, "_blank")
+        window.open(`/task?app=${currentApp}&env=${currentEnv}&uuid=${record.uuid}`, "_blank")
     }
 
     function handleRefresh() {
@@ -190,14 +190,11 @@ const TasksPage: React.FC = () => {
 
     return (
         <>
-            <Helmet
-                title="Tasks"
-                meta={[
-                    {name: 'description', content: 'List of tasks'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Tasks</title>
+                <meta name="description" content="List of tasks" />
+                <meta name="keywords" content='celery, tasks' />
             </Helmet>
 
             <Row style={{marginBottom: "16px"}} gutter={[12, 12]}>

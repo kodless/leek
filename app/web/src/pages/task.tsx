@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {useQueryParam, StringParam} from "use-query-params";
 import {Row, Empty, Typography} from 'antd'
 
@@ -56,14 +56,11 @@ const TaskPage: React.FC = () => {
 
     return (
         <>
-            <Helmet
-                title="Task detail"
-                meta={[
-                    {name: 'description', content: 'Task details'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Task detail</title>
+                <meta name="description" content="Task details" />
+                <meta name="keywords" content='celery, task' />
             </Helmet>
 
             <Row justify="center" style={{marginTop: "20px", width: "100%"}} gutter={[12, 12]}>

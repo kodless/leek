@@ -2,6 +2,7 @@ module.exports = {
     siteMetadata: {
         title: 'Real time celery tasks monitoring',
     },
+    trailingSlash: "always",
     plugins: [
         {
             resolve: `gatsby-plugin-typescript`,
@@ -9,7 +10,6 @@ module.exports = {
                 allowNamespaces: true, // defaults to false
             },
         },
-        `gatsby-plugin-react-helmet`,
         {
             resolve: `gatsby-source-filesystem`,
             options: {
@@ -40,11 +40,11 @@ module.exports = {
         {
             resolve: "gatsby-plugin-less",
             options: {
-                javascriptEnabled: true,
+                lessOptions: {
+                    javascriptEnabled: true
+                }
             }
         },
-        `gatsby-plugin-remove-trailing-slashes`,
-        "gatsby-plugin-use-query-params",
         `gatsby-plugin-styled-components`,
     ]
 };

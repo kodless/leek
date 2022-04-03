@@ -49,15 +49,16 @@ const ApplicationContext = React.createContext<ApplicationContextData>(initial a
 function ApplicationProvider({children}) {
     // Application
     const applicationService = new ApplicationService();
-    const [qpApp, setQPApp] = useQueryParam("app", StringParam);
     const [loading, setLoading] = useState<boolean>(true);
     const [applications, setApplications] = useState<any[]>([]);
-    const [currentApp, setCurrentApp] = useState<string | undefined>(undefined);
-    const [currentEnv, setCurrentEnv] = useState<string | undefined>(undefined);
+    // Query parameters
+    const [currentApp, setCurrentApp] = useQueryParam("app", StringParam);
+    const [currentEnv, setCurrentEnv] = useQueryParam("env", StringParam);
 
     // Metadata
     const metricsService = new MetricsService();
     const [seenEnvs, setSeenEnvs] = useState<ApplicationContextData["seenEnvs"]>([]);
+
 
     function listApplications() {
         setLoading(true);
@@ -65,18 +66,31 @@ function ApplicationProvider({children}) {
             .then(handleAPIResponse)
             .then((apps: any) => {
                 setApplications(apps);
-                if (apps.length !== 0 && !currentApp) {
-                    if (qpApp)
-                        setCurrentApp(qpApp);
-                    else
-                        setCurrentApp(apps[0]["app_name"]);
-                }
                 setLoading(false);
             }, handleAPIError)
             .catch(handleAPIError)
             // .finally(() => {
             //     setLoading(false);
             // });
+    }
+
+    function deleteApplication(app_name) {
+        let newApps = applications.filter(app => {
+            return app.app_name !== app_name;
+        });
+        setApplications(newApps);
+        if (currentApp === app_name)
+            if (newApps.length !== 0)
+                setCurrentApp(newApps[0].app_name);
+            else
+                setCurrentApp(undefined);
+    }
+
+    function updateApplication(app) {
+        let appIndex = applications.findIndex((obj => obj.app_name == app.app_name));
+        let newApplications = [...applications];
+        newApplications[appIndex] = app;
+        setApplications(newApplications)
     }
 
     function getMetadata() {
@@ -97,23 +111,24 @@ function ApplicationProvider({children}) {
         setCurrentEnv(appEnv);
     }
 
-    useEffect(() => {
-        listApplications();
-        return () => {
-            clearInterval(metadataInterval);
+    function select(){
+        if (seenEnvs.length !== 0 && !currentEnv) {
+            setCurrentEnv(seenEnvs[0].key);
         }
-    }, []);
+        if (applications.length !== 0 && !currentApp) {
+            setCurrentApp(applications[0]["app_name"]);
+        }
+    }
 
-
+    // App & Env change handler
     useEffect(() => {
         // Stop refreshing metadata
         if (metadataInterval) clearInterval(metadataInterval);
+
         // If no application specified, return
         if (!currentApp){
-            setQPApp(undefined);
             return;
         }
-        setQPApp(currentApp);
 
         // Else, get metadata every 10 seconds
         getMetadata();
@@ -123,39 +138,17 @@ function ApplicationProvider({children}) {
 
     }, [currentApp, currentEnv]);
 
-
+    // Envs list change handler
+    useEffect(() => {
+        select()
+    }, [seenEnvs, applications]);
 
     useEffect(() => {
-        if (qpApp && qpApp !== currentApp)
-            setCurrentApp(qpApp);
-        else if (currentApp && !qpApp)
-            setQPApp(currentApp);
-    }, [qpApp]);
-
-    useEffect(() => {
-        if (seenEnvs.length !== 0 && !currentEnv) {
-            setCurrentEnv(seenEnvs[0].key);
+        listApplications();
+        return () => {
+            clearInterval(metadataInterval);
         }
-    }, [seenEnvs]);
-
-    function deleteApplication(app_name) {
-        let newApps = applications.filter(app => {
-            return app.app_name !== app_name;
-        });
-        setApplications(newApps);
-        if (currentApp === app_name)
-            if (newApps.length !== 0)
-                setCurrentApp(newApps[0].app_name);
-            else
-                setCurrentApp(undefined);
-    }
-
-    function updateApplication(app) {
-        let appIndex = applications.findIndex((obj => obj.app_name == app.app_name));
-        let newApplications = [...applications];
-        newApplications[appIndex] = app;
-        setApplications(newApplications)
-    }
+    }, []);
 
     function setCreateAppModalVisible(visible) {
 
