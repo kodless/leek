@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {Card, Col, Row, Select, Statistic} from 'antd'
 import {FilterOutlined} from "@ant-design/icons";
 import {LeekPie} from "../components/charts/Pie"
@@ -125,14 +125,11 @@ const MonitorPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Monitor"
-                meta={[
-                    {name: 'description', content: 'Tasks monitor'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Monitor</title>
+                <meta name="description" content="Tasks monitor" />
+                <meta name="keywords" content='celery, monitor' />
             </Helmet>
 
             <Row style={{marginBottom: "16px"}} gutter={[12, 12]}>

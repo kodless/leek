@@ -89,7 +89,7 @@ const TasksPage: React.FC = () => {
     }
 
     function handleShowTaskDetails(record) {
-        window.open(`/task?app=${currentApp}&uuid=${record.uuid}`, "_blank")
+        window.open(`/task?app=${currentApp}&env=${currentEnv}&uuid=${record.uuid}`, "_blank")
     }
 
     function handleRefresh() {

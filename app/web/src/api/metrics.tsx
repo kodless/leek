@@ -15,7 +15,6 @@ export interface Metrics {
 export class MetricsService implements Metrics {
 
     getBasicMetrics(app_name, app_env, filters) {
-        console.log(filters)
         let query = [getTimeFilterQuery(filters),];
         if (app_env)
             query.push({"match": {"app_env": app_env}});

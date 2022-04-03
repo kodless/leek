@@ -196,7 +196,9 @@ const IndexPage = () => {
                 />
 
                 <Affix style={{position: 'fixed', left: "50%", transform: "translate(-50%, 0)"}}>
-                    <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
+                    <Row>
+                        <TimeFilter timeFilter={timeFilters} onTimeFilterChange={setTimeFilters}/>
+                    </Row>
                 </Affix>
 
                 <Statistic

@@ -1,4 +1,3 @@
-require('antd/dist/antd.css');
 const React = require("react");
 const {navigate} = require('gatsby');
 const {AppLayout} = require("./src/containers/layout");

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {Card, Col, Row, Empty, Table, Button} from 'antd'
 import {SyncOutlined} from '@ant-design/icons'
 
@@ -82,14 +82,11 @@ const IssuesPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Issues"
-                meta={[
-                    {name: 'description', content: 'Tasks issues'},
-                    {name: 'keywords', content: 'celery, tasks'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Issues</title>
+                <meta name="description" content="Tasks issues" />
+                <meta name="keywords" content='celery, issues' />
             </Helmet>
 
             <Row justify="center" style={{width: "100%", marginTop: 13}}>

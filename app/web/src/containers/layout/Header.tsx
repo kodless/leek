@@ -101,7 +101,7 @@ const Header = () => {
                         float: 'left'
                     }}>
                         <Link to={`/${location.search}`}>
-                            <Image alt="Logo" style={{maxHeight: "100%"}} src="/leek.png" preview={false}/>
+                            <Image alt="Logo" width={40} height={40} style={{margin: 0}} src="/leek.png" preview={false}/>
                         </Link>
                     </div>
                     <Row justify="space-between">

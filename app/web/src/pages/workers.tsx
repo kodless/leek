@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet-async';
 import {StringParam, useQueryParam} from "use-query-params";
 import {Row, Drawer, Button, Col, Table, Radio, message, Empty, Card} from 'antd';
 import {SyncOutlined} from '@ant-design/icons';
@@ -121,14 +121,11 @@ const WorkersPage = () => {
 
     return (
         <>
-            <Helmet
-                title="Workers"
-                meta={[
-                    {name: 'description', content: 'List of workers'},
-                    {name: 'keywords', content: 'celery, workers'},
-                ]}
-            >
+            <Helmet>
                 <html lang="en"/>
+                <title>Workers</title>
+                <meta name="description" content="List of workers" />
+                <meta name="keywords" content='celery, workers' />
             </Helmet>
             <Row>
                 <Card

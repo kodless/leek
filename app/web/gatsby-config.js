@@ -10,7 +10,6 @@ module.exports = {
                 allowNamespaces: true, // defaults to false
             },
         },
-        `gatsby-plugin-react-helmet`,
         {
             resolve: `gatsby-source-filesystem`,
             options: {

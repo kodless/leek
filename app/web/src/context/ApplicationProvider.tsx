@@ -122,7 +122,6 @@ function ApplicationProvider({children}) {
 
     // App & Env change handler
     useEffect(() => {
-        console.log("current app change")
         // Stop refreshing metadata
         if (metadataInterval) clearInterval(metadataInterval);
 
@@ -141,7 +140,6 @@ function ApplicationProvider({children}) {
 
     // Envs list change handler
     useEffect(() => {
-        console.log("Envs list handler")
         select()
     }, [seenEnvs, applications]);
 
