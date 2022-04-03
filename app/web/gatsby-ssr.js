@@ -13,7 +13,6 @@ const themes = {
 };
 
 function generatePath(location) {
-    console.log(location)
     return location.pathname + location.search;
 }
 
