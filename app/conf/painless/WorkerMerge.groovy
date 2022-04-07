@@ -11,6 +11,7 @@ Map WorkerStateFields = [
 ];
 
 int events_count = ctx._source.events_count;
+int new_events_count = params.events_count;
 boolean in_order = ctx._source.exact_timestamp < params.exact_timestamp;
 List attrs_to_upsert = [];
 
@@ -37,4 +38,4 @@ if (in_order) {
     }
 }
 
-ctx._source.events_count = events_count + 1;
+ctx._source.events_count = events_count + new_events_count;
