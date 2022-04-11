@@ -39,8 +39,8 @@ exports.onPostBuild = async () => {
     console.log(file)
     let content = await fs.readFile(file, "utf8");
     let result = content
-        .replace(/page-data.json/g, `page-data.json/?${hash}`)
-        .replace(/app-data.json/g, `app-data.json/?${hash}`);
+        .replace(/page-data.json/g, `page-data.json?${hash}`)
+        .replace(/app-data.json/g, `app-data.json?${hash}`);
     await fs.writeFile(file, result, "utf8")
   }
 }
