@@ -86,7 +86,7 @@ const AppsList = (props) => {
               onClick={() => switchApp(app)}
             >
               <List.Item.Meta
-                title={<a href="https://ant.design"> {app["app_name"]}</a>}
+                title={<a href="#APP"> {app["app_name"]}</a>}
                 description={app["app_description"]}
               />
             </List.Item>

@@ -29,8 +29,8 @@ const history = {
 exports.wrapPageElement = ({ element, props }) => {
   return (
     <React.StrictMode>
-      <HelmetProvider {...props}>
-        <QueryParamProvider history={history} {...props}>
+      <QueryParamProvider history={history} {...props}>
+        <HelmetProvider {...props}>
           <ThemeSwitcherProvider
             themeMap={themes}
             defaultTheme={localStorage.getItem("theme") || "dark"}
@@ -43,8 +43,8 @@ exports.wrapPageElement = ({ element, props }) => {
               </ApplicationProvider>
             </AuthProvider>
           </ThemeSwitcherProvider>
-        </QueryParamProvider>
-      </HelmetProvider>
+        </HelmetProvider>
+      </QueryParamProvider>
     </React.StrictMode>
   );
 };
