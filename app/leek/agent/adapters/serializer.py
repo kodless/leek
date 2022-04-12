@@ -1,6 +1,7 @@
 from typing import Tuple, Union, Dict, Iterable
 
 from ciso8601 import parse_datetime
+from fastjsonschema import JsonSchemaException
 from schema import SchemaError
 
 from leek.agent.logger import get_logger
@@ -31,13 +32,14 @@ EVENT_TYPE_STATE_MAPPING = {
 logger = get_logger(__name__)
 
 
-def get_validator(event_type: str) -> Tuple[str, callable]:
-    if event_type in TASK_EVENT_TYPES:
-        return "task", CompiledTaskEventSchema
-    elif event_type in WORKER_EVENT_TYPES:
-        return "worker", CompiledWorkerEventSchema
+def validate_event(ev) -> Tuple[str, dict]:
+    ev_type = ev.get("type")
+    if ev_type in TASK_EVENT_TYPES:
+        return "task", CompiledTaskEventSchema(ev)
+    elif ev_type in WORKER_EVENT_TYPES:
+        return "worker", CompiledWorkerEventSchema(ev)
     else:
-        raise SchemaError(f"{event_type} is not a valid celery event type!")
+        raise SchemaError(f"{ev_type} is not a valid celery event type!")
 
 
 def get_custom_fields(kind, ev_type, event):
@@ -50,40 +52,6 @@ def get_custom_fields(kind, ev_type, event):
         "exact_timestamp": exact_timestamp,
         HISTORICAL_TS_NAMES.get(ev_type): timestamp,
     }
-
-
-def validate_payload(payload: Iterable[Dict], app_env) -> Dict[str, Union[Task, Worker]]:
-    # Validate
-    validated_payload = []
-    for event in payload:
-        try:
-            validated_payload.append(validate_event(event))
-        except SchemaError as e:
-            logger.warning(f"Validation error [{e}] with event {event}")
-
-    # Add custom attributes
-    addition_payload = []
-    for kind, event in validated_payload:
-        addition_payload.append(add_custom_attributes(kind, event, app_env))
-
-    # Merge
-    merged_payload = {}
-    for event_id, validated_event in addition_payload:
-        if event_id in merged_payload:
-            # Upsert
-            merged_payload[event_id].merge(validated_event)
-        else:
-            # Add
-            merged_payload[event_id] = validated_event
-
-    return merged_payload
-
-
-def validate_event(ev) -> Tuple[str, dict]:
-    ev_type = ev.get("type")
-    kind, validate = get_validator(ev_type)
-    event = validate(ev)
-    return kind, event
 
 
 def add_custom_attributes(kind, event, app_env) -> Tuple[str, Union[Task, Worker]]:
@@ -106,3 +74,23 @@ def add_custom_attributes(kind, event, app_env) -> Tuple[str, Union[Task, Worker
     else:
         event_obj = Worker(id=event["hostname"], **event)
     return event_obj.id, event_obj
+
+
+def validate_payload(payload: Iterable[Dict], app_env) -> Dict[str, Union[Task, Worker]]:
+    validated_payload = {}
+    for event in payload:
+        try:
+            # Validate
+            kind, validated_event = validate_event(event)
+            # Add custom attributes
+            event_obj_id, event_obj = add_custom_attributes(kind, validated_event, app_env)
+            # Merge
+            if event_obj_id in validated_payload:
+                # Upsert
+                validated_payload[event_obj_id].merge(event_obj)
+            else:
+                # Add
+                validated_payload[event_obj_id] = event_obj
+        except (SchemaError, JsonSchemaException) as e:
+            logger.warning(f"Validation error [{e}] with event {event}")
+    return validated_payload
