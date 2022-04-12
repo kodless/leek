@@ -3,6 +3,7 @@ from typing import Tuple, Union, Dict, Iterable
 from ciso8601 import parse_datetime
 from schema import SchemaError
 
+from leek.agent.logger import get_logger
 from leek.agent.models.task import Task
 from leek.agent.models.worker import Worker
 from leek.agent.adapters.task import TASK_EVENT_TYPES, TASK_STATE_MAPPING, CompiledTaskEventSchema
@@ -26,6 +27,8 @@ EVENT_TYPE_STATE_MAPPING = {
     **TASK_STATE_MAPPING,
     **WORKER_STATE_MAPPING,
 }
+
+logger = get_logger(__name__)
 
 
 def get_validator(event_type: str) -> Tuple[str, callable]:
@@ -53,7 +56,10 @@ def validate_payload(payload: Iterable[Dict], app_env) -> Dict[str, Union[Task, 
     # Validate
     validated_payload = []
     for event in payload:
-        validated_payload.append(validate_event(event))
+        try:
+            validated_payload.append(validate_event(event))
+        except SchemaError as e:
+            logger.warning(f"Validation error [{e}] with event {event}")
 
     # Add custom attributes
     addition_payload = []
