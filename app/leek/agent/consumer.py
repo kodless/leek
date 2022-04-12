@@ -181,6 +181,11 @@ class LeekConsumer(ConsumerMixin):
                 return
             self.send()
 
+    def init_batch(self):
+        self.batch = OrderedDict()
+        self.batch_last_sent_at = time.time()
+        self.batch_latest_delivery_tag = None
+
     def ack(self):
         """
         Acknowledge all processed events in the queue by acknowledging latest event.
@@ -194,9 +199,7 @@ class LeekConsumer(ConsumerMixin):
                 self.channel.basic_ack(delivery_tag)
         else:
             self.channel.basic_ack(self.batch_latest_delivery_tag, multiple=True)
-        self.batch = OrderedDict()
-        self.batch_last_sent_at = time.time()
-        self.batch_latest_delivery_tag = None
+        self.init_batch()
 
     def send(self):
         """
@@ -246,6 +249,7 @@ class LeekConsumer(ConsumerMixin):
 
     def backoff(self):
         self.should_stop = True
+        self.init_batch()
 
     def run(self, _tokens=1, **kwargs):
         while True:
