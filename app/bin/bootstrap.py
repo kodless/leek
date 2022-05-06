@@ -9,6 +9,7 @@ import requests
 import time
 from printy import printy
 from elasticsearch import Elasticsearch
+from ism_policy import get_ism_policy, get_ilm_policy
 
 """
 PRINT APPLICATION HEADER
@@ -40,6 +41,11 @@ ENABLE_API = get_bool("LEEK_ENABLE_API")
 ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
+LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="true")
+LEEK_ES_IM_SLACK_WEBHOOK_URL = os.environ.get("LEEK_ES_IM_SLACK_WEBHOOK_URL")
+LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE", "20gb")
+LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT", 10000)
+LEEK_ES_IM_DELETE_MIN_INDEX_AGE = os.environ.get("LEEK_ES_IM_DELETE_MIN_INDEX_AGE", "1h")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
@@ -282,6 +288,69 @@ def create_painless_scripts(connection):
     abort(f"Could not create painless scripts!")
 
 
+def check_im_eligibility(conn: Elasticsearch):
+    es_ver_info = conn.info()["version"]
+    version_number = es_ver_info["number"]
+
+    dist = None
+    distribution = None
+    im_endpoint = None
+    if "build_flavor" in es_ver_info:
+        if es_ver_info["build_flavor"] == "oss":
+            dist = "OpenDistro"
+            if version_number == "7.10.2":
+                distribution = "OpenDistro>=1.13.0"
+                im_endpoint = "/_opendistro/_ism/policies"
+            else:
+                distribution = "OpenDistro<1.13.0"
+                abort(f"Leek does not support ISM with {distribution}")
+        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
+            dist = "ElasticSearch"
+            distribution = f"ElasticSearch={version_number}"
+        else:
+            distribution = "broken"
+            abort(f"Leek does not support ISM with broken Elasticsearch distributions!")
+    elif "distribution" in es_ver_info:
+        if es_ver_info["distribution"] == "opensearch":
+            dist = "OpenSearch"
+            distribution = f"OpenSearch={version_number}"
+            im_endpoint = "/_plugins/_ism/policies"
+        else:
+            abort(f"Leek does not support ISM with {es_ver_info['distribution']}")
+    else:
+        abort(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
+    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
+    return dist, im_endpoint
+
+
+def create_es_policy(conn: Elasticsearch):
+    if not LEEK_ES_IM_ENABLE:
+        return
+    dist, im_endpoint = check_im_eligibility(conn)
+    policy_name = "leek-rollover-policy"
+
+    if dist in ["OpenDistro", "OpenSearch"]:
+        policy = get_ism_policy(
+            ["*"],
+            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
+            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
+            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
+            slack_webhook_url=LEEK_ES_IM_SLACK_WEBHOOK_URL
+        )
+        conn.transport.perform_request(
+            "PUT",
+            f"{im_endpoint}/{policy_name}",
+            body=policy
+        )
+    elif dist == "ElasticSearch":
+        policy = get_ilm_policy(
+            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
+            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
+            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
+        )
+        conn.ilm.put_lifecycle(policy_name, body=policy)
+
+
 def ensure_connection(target):
     for i in range(10):
         try:
@@ -309,6 +378,7 @@ if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
     # Create painless scripts used for merges
+    create_es_policy(connection)
     create_painless_scripts(connection)
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])

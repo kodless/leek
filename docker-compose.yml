@@ -111,3 +111,53 @@ services:
         hard: 65535
     ports:
       - 9200:9200
+
+# Uncomment to test Leek with OpenDistro Elasticsearch Distribution
+#  es01:
+#    build:
+#      context: app
+#      dockerfile: dockers/opendistro.Dockerfile
+#    container_name: es01
+#    environment:
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    command: ["elasticsearch", "-Elogger.level=ERROR"]
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+#      interval: 30s
+#      timeout: 30s
+#      retries: 3
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#      nofile:
+#        soft: 65535
+#        hard: 65535
+#    ports:
+#      - 9200:9200
+
+# Uncomment to test Leek with OpenSearch Elasticsearch Distribution
+#  es01:
+#    build:
+#      context: app
+#      dockerfile: dockers/opensearch.Dockerfile
+#    container_name: es01
+#    environment:
+#      - bootstrap.memory_lock=true
+#      - discovery.type=single-node
+#      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+#      interval: 30s
+#      timeout: 30s
+#      retries: 3
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#      nofile:
+#        soft: 65535
+#        hard: 65535
+#    ports:
+#      - 9200:9200

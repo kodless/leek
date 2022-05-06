@@ -41,7 +41,7 @@ class Applications(Resource):
 
         return apps.create_index_template(
             index_alias=template_name,
-            lifecycle_policy_name="default",
+            lifecycle_policy_name="leek-rollover-policy",
             meta=app
         )
 
