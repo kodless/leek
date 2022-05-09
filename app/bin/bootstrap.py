@@ -8,7 +8,7 @@ import sys
 import requests
 import time
 from printy import printy
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, exceptions as es_exceptions
 from ism_policy import get_ism_policy, get_ilm_policy
 
 """
@@ -41,7 +41,7 @@ ENABLE_API = get_bool("LEEK_ENABLE_API")
 ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
-LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="true")
+LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="false")
 LEEK_ES_IM_SLACK_WEBHOOK_URL = os.environ.get("LEEK_ES_IM_SLACK_WEBHOOK_URL")
 LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE", "20gb")
 LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT", 10000)
@@ -260,7 +260,7 @@ START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM
 """
 
 
-def create_painless_scripts(connection):
+def create_painless_scripts(conn: Elasticsearch):
     with open('/opt/app/conf/painless/TaskMerge.groovy', 'r') as script:
         task_merge_source = script.read()
 
@@ -268,20 +268,19 @@ def create_painless_scripts(connection):
         worker_merge_source = script.read()
 
     try:
-        t = connection.put_script(id="task-merge", body={
+        t = conn.put_script(id="task-merge", body={
             "script": {
                 "lang": "painless",
                 "source": task_merge_source
             }
         })
-        w = connection.put_script(id="worker-merge", body={
+        w = conn.put_script(id="worker-merge", body={
             "script": {
                 "lang": "painless",
                 "source": worker_merge_source
             }
         })
         if t["acknowledged"] is True and w["acknowledged"] is True:
-            connection.close()
             return
     except Exception:
         pass
@@ -323,11 +322,24 @@ def check_im_eligibility(conn: Elasticsearch):
     return dist, im_endpoint
 
 
-def create_es_policy(conn: Elasticsearch):
-    if not LEEK_ES_IM_ENABLE:
-        return
-    dist, im_endpoint = check_im_eligibility(conn)
+def create_im_policy(conn: Elasticsearch):
     policy_name = "leek-rollover-policy"
+    dist, im_endpoint = check_im_eligibility(conn)
+
+    if not LEEK_ES_IM_ENABLE:
+        # Cleanup ISM/ILM policies
+        try:
+            if dist in ["OpenDistro", "OpenSearch"]:
+                conn.transport.perform_request(
+                    "DELETE",
+                    f"{im_endpoint}/{policy_name}",
+                )
+            elif dist == "ElasticSearch":
+                conn.ilm.remove_policy("*")
+                conn.ilm.delete_lifecycle(policy_name)
+        except es_exceptions.NotFoundError:
+            pass
+        return
 
     if dist in ["OpenDistro", "OpenSearch"]:
         policy = get_ism_policy(
@@ -362,13 +374,13 @@ def ensure_connection(target):
     abort(f"Could not connect to target {target}")
 
 
-def ensure_es_connection():
+def ensure_es_connection() -> Elasticsearch:
     logging.getLogger("elasticsearch").setLevel(logging.ERROR)
-    connection = Elasticsearch(LEEK_ES_URL)
+    conn = Elasticsearch(LEEK_ES_URL)
     for i in range(10):
-        if connection.ping():
+        if conn.ping():
             logging.getLogger("elasticsearch").setLevel(logging.INFO)
-            return connection
+            return conn
         time.sleep(5)
     else:
         abort(f"Could not connect to target {LEEK_ES_URL}")
@@ -377,9 +389,12 @@ def ensure_es_connection():
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
-    # Create painless scripts used for merges
-    create_es_policy(connection)
+    # Creates index management policy for automatic rollover
+    create_im_policy(connection)
+    # Creates painless scripts used for merges
     create_painless_scripts(connection)
+    # Close es connection
+    connection.close()
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])
     # Make sure the API is up before starting the agent
