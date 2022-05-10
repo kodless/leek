@@ -15,6 +15,7 @@ LEEK_API_LOG_LEVEL = os.environ.get("LEEK_API_LOG_LEVEL", "INFO")
 # ES
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL")
 LEEK_ES_DEFAULT_REFRESH_INTERVAL = os.environ.get("LEEK_ES_DEFAULT_REFRESH_INTERVAL", "20s")
+LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="false")
 
 # Authentication/Authorization
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", "true")

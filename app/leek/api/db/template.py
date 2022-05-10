@@ -12,6 +12,64 @@ from leek.api.db.properties import properties
 logger = logging.getLogger(__name__)
 
 
+def check_im_eligibility():
+    connection = es.connection
+    es_ver_info = connection.info()["version"]
+    version_number = es_ver_info["number"]
+
+    dist = None
+    distribution = None
+    if "build_flavor" in es_ver_info:
+        if es_ver_info["build_flavor"] == "oss":
+            dist = "OpenDistro"
+            if version_number == "7.10.2":
+                distribution = "OpenDistro>=1.13.0"
+            else:
+                distribution = "OpenDistro<1.13.0"
+                logger.warning(f"Leek does not support ISM with {distribution}")
+        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
+            dist = "ElasticSearch"
+            distribution = f"ElasticSearch={version_number}"
+        else:
+            distribution = "broken"
+            logger.warning(f"Leek does not support ISM with broken Elasticsearch distributions!")
+    elif "distribution" in es_ver_info:
+        if es_ver_info["distribution"] == "opensearch":
+            dist = "OpenSearch"
+            distribution = f"OpenSearch={version_number}"
+        else:
+            logger.warning(f"Leek does not support ISM with {es_ver_info['distribution']}")
+    else:
+        logger.warning(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
+    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
+    return dist
+
+
+def get_im_settings(index_alias, lifecycle_policy_name):
+    if not settings.LEEK_ES_IM_ENABLE:
+        return {}
+
+    dist = check_im_eligibility()
+    if dist == "OpenDistro":
+        return {
+            "opendistro": {
+                "index_state_management": {
+                    "policy_id": lifecycle_policy_name,
+                    "rollover_alias": index_alias
+                }
+            }
+        }
+    elif dist == "OpenSearch":
+        return {
+            "index.plugins.index_state_management.rollover_alias": index_alias
+        }
+    elif dist == "ElasticSearch":
+        return {
+            "index.lifecycle.name": lifecycle_policy_name,
+            "index.lifecycle.rollover_alias": index_alias
+        }
+
+
 def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=None):
     return {
         "index_patterns": [
@@ -24,12 +82,7 @@ def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=Non
                     "number_of_replicas": "0",
                     "refresh_interval": settings.LEEK_ES_DEFAULT_REFRESH_INTERVAL
                 },
-                # TODO: uncomment when ILM is supported by leek
-                # "index.lifecycle.name": lifecycle_policy_name,
-                # "index.lifecycle.rollover_alias": f"{index_alias}-rolled"
-            },
-            "aliases": {
-                index_alias: {}
+                **get_im_settings(index_alias, lifecycle_policy_name),
             },
             "mappings": {
                 "_source": {
@@ -58,8 +111,14 @@ def create_index_template(index_alias, lifecycle_policy_name="default", meta=Non
     body = prepare_template_body(index_alias, lifecycle_policy_name=lifecycle_policy_name, meta=meta)
     try:
         connection.indices.put_index_template(name=index_alias, body=body, create=True)
-        # Create first index
-        connection.indices.create(f"{index_alias}-000001")
+        # Bootstrap first index
+        connection.indices.create(f"{index_alias}-000001", body={
+            "aliases": {
+                index_alias: {
+                    "is_write_index": True
+                }
+            }
+        })
         return meta, 201
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
@@ -166,7 +225,13 @@ def purge_application(index_alias):
     connection = es.connection
     try:
         connection.indices.delete(f"{index_alias}*")
-        connection.indices.create(f"{index_alias}-000001")
+        connection.indices.create(f"{index_alias}-000001", body={
+            "aliases": {
+                index_alias: {
+                    "is_write_index": True
+                }
+            }
+        })
         return "Done", 200
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable

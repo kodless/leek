@@ -8,7 +8,8 @@ import sys
 import requests
 import time
 from printy import printy
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, exceptions as es_exceptions
+from ism_policy import get_ism_policy, get_ilm_policy
 
 """
 PRINT APPLICATION HEADER
@@ -40,6 +41,11 @@ ENABLE_API = get_bool("LEEK_ENABLE_API")
 ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
+LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="false")
+LEEK_ES_IM_SLACK_WEBHOOK_URL = os.environ.get("LEEK_ES_IM_SLACK_WEBHOOK_URL")
+LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE", "20gb")
+LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT", 10000)
+LEEK_ES_IM_DELETE_MIN_INDEX_AGE = os.environ.get("LEEK_ES_IM_DELETE_MIN_INDEX_AGE", "1h")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
@@ -254,7 +260,7 @@ START SERVICES AND ENSURE CONNECTIONS BETWEEN THEM
 """
 
 
-def create_painless_scripts(connection):
+def create_painless_scripts(conn: Elasticsearch):
     with open('/opt/app/conf/painless/TaskMerge.groovy', 'r') as script:
         task_merge_source = script.read()
 
@@ -262,24 +268,99 @@ def create_painless_scripts(connection):
         worker_merge_source = script.read()
 
     try:
-        t = connection.put_script(id="task-merge", body={
+        t = conn.put_script(id="task-merge", body={
             "script": {
                 "lang": "painless",
                 "source": task_merge_source
             }
         })
-        w = connection.put_script(id="worker-merge", body={
+        w = conn.put_script(id="worker-merge", body={
             "script": {
                 "lang": "painless",
                 "source": worker_merge_source
             }
         })
         if t["acknowledged"] is True and w["acknowledged"] is True:
-            connection.close()
             return
     except Exception:
         pass
     abort(f"Could not create painless scripts!")
+
+
+def check_im_eligibility(conn: Elasticsearch):
+    es_ver_info = conn.info()["version"]
+    version_number = es_ver_info["number"]
+
+    dist = None
+    distribution = None
+    im_endpoint = None
+    if "build_flavor" in es_ver_info:
+        if es_ver_info["build_flavor"] == "oss":
+            dist = "OpenDistro"
+            if version_number == "7.10.2":
+                distribution = "OpenDistro>=1.13.0"
+                im_endpoint = "/_opendistro/_ism/policies"
+            else:
+                distribution = "OpenDistro<1.13.0"
+                abort(f"Leek does not support ISM with {distribution}")
+        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
+            dist = "ElasticSearch"
+            distribution = f"ElasticSearch={version_number}"
+        else:
+            distribution = "broken"
+            abort(f"Leek does not support ISM with broken Elasticsearch distributions!")
+    elif "distribution" in es_ver_info:
+        if es_ver_info["distribution"] == "opensearch":
+            dist = "OpenSearch"
+            distribution = f"OpenSearch={version_number}"
+            im_endpoint = "/_plugins/_ism/policies"
+        else:
+            abort(f"Leek does not support ISM with {es_ver_info['distribution']}")
+    else:
+        abort(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
+    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
+    return dist, im_endpoint
+
+
+def create_im_policy(conn: Elasticsearch):
+    policy_name = "leek-rollover-policy"
+    dist, im_endpoint = check_im_eligibility(conn)
+
+    if not LEEK_ES_IM_ENABLE:
+        # Cleanup ISM/ILM policies
+        try:
+            if dist in ["OpenDistro", "OpenSearch"]:
+                conn.transport.perform_request(
+                    "DELETE",
+                    f"{im_endpoint}/{policy_name}",
+                )
+            elif dist == "ElasticSearch":
+                conn.ilm.remove_policy("*")
+                conn.ilm.delete_lifecycle(policy_name)
+        except es_exceptions.NotFoundError:
+            pass
+        return
+
+    if dist in ["OpenDistro", "OpenSearch"]:
+        policy = get_ism_policy(
+            ["*"],
+            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
+            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
+            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
+            slack_webhook_url=LEEK_ES_IM_SLACK_WEBHOOK_URL
+        )
+        conn.transport.perform_request(
+            "PUT",
+            f"{im_endpoint}/{policy_name}",
+            body=policy
+        )
+    elif dist == "ElasticSearch":
+        policy = get_ilm_policy(
+            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
+            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
+            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
+        )
+        conn.ilm.put_lifecycle(policy_name, body=policy)
 
 
 def ensure_connection(target):
@@ -293,13 +374,13 @@ def ensure_connection(target):
     abort(f"Could not connect to target {target}")
 
 
-def ensure_es_connection():
+def ensure_es_connection() -> Elasticsearch:
     logging.getLogger("elasticsearch").setLevel(logging.ERROR)
-    connection = Elasticsearch(LEEK_ES_URL)
+    conn = Elasticsearch(LEEK_ES_URL)
     for i in range(10):
-        if connection.ping():
+        if conn.ping():
             logging.getLogger("elasticsearch").setLevel(logging.INFO)
-            return connection
+            return conn
         time.sleep(5)
     else:
         abort(f"Could not connect to target {LEEK_ES_URL}")
@@ -308,8 +389,12 @@ def ensure_es_connection():
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
-    # Create painless scripts used for merges
+    # Creates index management policy for automatic rollover
+    create_im_policy(connection)
+    # Creates painless scripts used for merges
     create_painless_scripts(connection)
+    # Close es connection
+    connection.close()
     # Start API process
     subprocess.run(["supervisorctl", "start", "api"])
     # Make sure the API is up before starting the agent
