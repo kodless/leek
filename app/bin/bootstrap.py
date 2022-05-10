@@ -43,9 +43,9 @@ ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
 LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="false")
 LEEK_ES_IM_SLACK_WEBHOOK_URL = os.environ.get("LEEK_ES_IM_SLACK_WEBHOOK_URL")
-LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE", "20gb")
-LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT", 10000)
-LEEK_ES_IM_DELETE_MIN_INDEX_AGE = os.environ.get("LEEK_ES_IM_DELETE_MIN_INDEX_AGE", "1h")
+LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE")
+LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT = int(os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT", 0))
+LEEK_ES_IM_DELETE_MIN_INDEX_AGE = os.environ.get("LEEK_ES_IM_DELETE_MIN_INDEX_AGE", "7d")
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
@@ -340,6 +340,9 @@ def create_im_policy(conn: Elasticsearch):
         except es_exceptions.NotFoundError:
             pass
         return
+
+    if not LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and not LEEK_ES_IM_ROLLOVER_MIN_SIZE:
+        abort("One of or both LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and LEEK_ES_IM_ROLLOVER_MIN_SIZE env var should be set!")
 
     if dist in ["OpenDistro", "OpenSearch"]:
         policy = get_ism_policy(

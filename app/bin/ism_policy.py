@@ -3,9 +3,9 @@ from typing import List
 
 def get_ism_policy(
         index_patterns: List,
-        rollover_min_size: str = "10gb",
-        rollover_min_doc_count: str = 10000,
-        delete_min_index_age: str = "15d",
+        rollover_min_size: str = "32gb",
+        rollover_min_doc_count: int = 50000000,
+        delete_min_index_age: str = "14d",
         slack_webhook_url: str = None,
 ):
     error_notification = {
@@ -18,6 +18,11 @@ def get_ism_policy(
             "source": "The index {{ctx.index}} failed during policy execution."
         }
     } if slack_webhook_url else None
+    rollover = {}
+    if rollover_min_size:
+        rollover["min_size"] = rollover_min_size
+    if rollover_min_doc_count:
+        rollover["min_doc_count"] = rollover_min_doc_count
     return {
         "policy": {
             "description": "Rollover indices to prevent growth and search/index latency",
@@ -32,10 +37,7 @@ def get_ism_policy(
                     "name": "ingest",
                     "actions": [
                         {
-                            "rollover": {
-                                "min_size": rollover_min_size,
-                                "min_doc_count": rollover_min_doc_count
-                            }
+                            "rollover": rollover
                         }
                     ],
                     "transitions": [
@@ -71,19 +73,21 @@ def get_ism_policy(
 
 
 def get_ilm_policy(
-        rollover_min_size: str = "10gb",
-        rollover_min_doc_count: str = 10000,
-        delete_min_index_age: str = "15d",
+        rollover_min_size: str = "32gb",
+        rollover_min_doc_count: int = 50000000,
+        delete_min_index_age: str = "14d",
 ):
+    rollover = {}
+    if rollover_min_size:
+        rollover["max_size"] = rollover_min_size
+    if rollover_min_doc_count:
+        rollover["max_docs"] = rollover_min_doc_count
     return {
         "policy": {
             "phases": {
                 "hot": {
                     "actions": {
-                        "rollover": {
-                            "max_size": rollover_min_size,
-                            "max_docs": rollover_min_doc_count
-                        }
+                        "rollover": rollover
                     }
                 },
                 "delete": {
