@@ -54,7 +54,6 @@ def get_im_settings(index_alias, lifecycle_policy_name):
         return {
             "opendistro": {
                 "index_state_management": {
-                    "policy_id": lifecycle_policy_name,
                     "rollover_alias": index_alias
                 }
             }
