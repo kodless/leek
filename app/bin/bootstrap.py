@@ -1,28 +1,18 @@
 import json
 import logging
 import os
-import signal
 import subprocess
-import sys
 
 import requests
 import time
 from printy import printy
-from elasticsearch import Elasticsearch, exceptions as es_exceptions
-from ism_policy import get_ism_policy, get_ilm_policy
+from elasticsearch import Elasticsearch
+from ism_policy import setup_im_policy
+from utils import abort, logger
 
 """
 PRINT APPLICATION HEADER
 """
-
-logging.basicConfig(level="INFO", format="%(levelname)s:%(name)s:%(message)s")
-logger = logging.getLogger(__name__)
-
-
-def abort(msg):
-    logger.error(msg)
-    os.kill(1, signal.SIGTERM)
-    sys.exit(1)
 
 
 def get_bool(env_name, default="false"):
@@ -287,85 +277,6 @@ def create_painless_scripts(conn: Elasticsearch):
     abort(f"Could not create painless scripts!")
 
 
-def check_im_eligibility(conn: Elasticsearch):
-    es_ver_info = conn.info()["version"]
-    version_number = es_ver_info["number"]
-
-    dist = None
-    distribution = None
-    im_endpoint = None
-    if "build_flavor" in es_ver_info:
-        if es_ver_info["build_flavor"] == "oss":
-            dist = "OpenDistro"
-            if version_number == "7.10.2":
-                distribution = "OpenDistro>=1.13.0"
-                im_endpoint = "/_opendistro/_ism/policies"
-            else:
-                distribution = "OpenDistro<1.13.0"
-                abort(f"Leek does not support ISM with {distribution}")
-        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
-            dist = "ElasticSearch"
-            distribution = f"ElasticSearch={version_number}"
-        else:
-            distribution = "broken"
-            abort(f"Leek does not support ISM with broken Elasticsearch distributions!")
-    elif "distribution" in es_ver_info:
-        if es_ver_info["distribution"] == "opensearch":
-            dist = "OpenSearch"
-            distribution = f"OpenSearch={version_number}"
-            im_endpoint = "/_plugins/_ism/policies"
-        else:
-            abort(f"Leek does not support ISM with {es_ver_info['distribution']}")
-    else:
-        abort(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
-    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
-    return dist, im_endpoint
-
-
-def create_im_policy(conn: Elasticsearch):
-    policy_name = "leek-rollover-policy"
-    dist, im_endpoint = check_im_eligibility(conn)
-
-    if not LEEK_ES_IM_ENABLE:
-        # Cleanup ISM/ILM policies
-        try:
-            if dist in ["OpenDistro", "OpenSearch"]:
-                conn.transport.perform_request(
-                    "DELETE",
-                    f"{im_endpoint}/{policy_name}",
-                )
-            elif dist == "ElasticSearch":
-                conn.ilm.remove_policy("*")
-                conn.ilm.delete_lifecycle(policy_name)
-        except es_exceptions.NotFoundError:
-            pass
-        return
-
-    if not LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and not LEEK_ES_IM_ROLLOVER_MIN_SIZE:
-        abort("One of or both LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and LEEK_ES_IM_ROLLOVER_MIN_SIZE env var should be set!")
-
-    if dist in ["OpenDistro", "OpenSearch"]:
-        policy = get_ism_policy(
-            ["*"],
-            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
-            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
-            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
-            slack_webhook_url=LEEK_ES_IM_SLACK_WEBHOOK_URL
-        )
-        conn.transport.perform_request(
-            "PUT",
-            f"{im_endpoint}/{policy_name}",
-            body=policy
-        )
-    elif dist == "ElasticSearch":
-        policy = get_ilm_policy(
-            rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
-            rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
-            delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
-        )
-        conn.ilm.put_lifecycle(policy_name, body=policy)
-
-
 def ensure_connection(target):
     for i in range(10):
         try:
@@ -393,7 +304,14 @@ if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
     # Creates index management policy for automatic rollover
-    create_im_policy(connection)
+    setup_im_policy(
+        connection,
+        enable_im=LEEK_ES_IM_ENABLE,
+        rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
+        rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,
+        delete_min_index_age=LEEK_ES_IM_DELETE_MIN_INDEX_AGE,
+        slack_webhook_url=LEEK_ES_IM_SLACK_WEBHOOK_URL
+    )
     # Creates painless scripts used for merges
     create_painless_scripts(connection)
     # Close es connection
