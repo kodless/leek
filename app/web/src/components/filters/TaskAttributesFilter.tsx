@@ -30,6 +30,11 @@ const loadingIndicator = (
   </Row>
 );
 
+const leadingWildcardNegateValidator = {
+  pattern: /^(?!\*).*$/g,
+  message: "Leading wildcard is not allowed on a keyword field!",
+}
+
 const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
   props: TasksFilterContextData
 ) => {
@@ -294,22 +299,38 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
           </FormItem>
         </Row>
         <Row>
-          <FormItem name="traceback" style={{ width: "100%" }}>
-            <Input placeholder="Traceback (wildcard, ex: *cel*y*)" allowClear />
+          <FormItem
+              name="traceback"
+              style={{ width: "100%" }}
+              rules={[leadingWildcardNegateValidator]}
+          >
+            <Input placeholder="Traceback (wildcard, ex: cel*y*)" allowClear />
           </FormItem>
         </Row>
         <Row>
-          <FormItem name="args" style={{ width: "100%" }}>
+          <FormItem
+              name="args"
+              style={{ width: "100%" }}
+              rules={[leadingWildcardNegateValidator]}
+          >
             <Input placeholder="args (wildcard)" allowClear />
           </FormItem>
         </Row>
         <Row>
-          <FormItem name="kwargs" style={{ width: "100%" }}>
+          <FormItem
+              name="kwargs"
+              style={{ width: "100%" }}
+              rules={[leadingWildcardNegateValidator]}
+          >
             <Input placeholder="kwargs (wildcard)" allowClear />
           </FormItem>
         </Row>
         <Row>
-          <FormItem name="result" style={{ width: "100%" }}>
+          <FormItem
+              name="result"
+              style={{ width: "100%" }}
+              rules={[leadingWildcardNegateValidator]}
+          >
             <Input placeholder="Result (wildcard)" allowClear />
           </FormItem>
         </Row>
