@@ -164,7 +164,7 @@ def validate_subscriptions(subs):
         ]
         keys = subscription.keys()
         if not all(required_key in keys for required_key in required_keys):
-            missed_keys = (key for key in required_keys if key not in keys)
+            missed_keys = ", ".join((key for key in required_keys if key not in keys))
             abort(f"Agent subscription configuration is invalid. Required keys are missed: {missed_keys}")
 
         if not (subscription["app_name"].isalpha() and subscription["app_name"].islower()):
