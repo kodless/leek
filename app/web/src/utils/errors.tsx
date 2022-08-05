@@ -16,6 +16,7 @@ export function handleAPIResponse(response) {
 }
 
 export function handleAPIError(error) {
+  console.log(error);
   if (error && error.message) {
     // Network error (API DOWN / OFFLINE)
     if (error.name == "TypeError") {

@@ -29,6 +29,7 @@ import TimeFilter from "../components/filters/TaskTimeFilter";
 import { useApplication } from "../context/ApplicationProvider";
 import { TaskService } from "../api/task";
 import { ControlService } from "../api/control";
+import {BackupService} from "../api/backup";
 import { handleAPIError, handleAPIResponse } from "../utils/errors";
 import { fixPagination } from "../utils/pagination";
 
@@ -47,6 +48,7 @@ const TasksPage: React.FC = () => {
   // STATE
   const service = new TaskService();
   const controlService = new ControlService();
+  const backupService = new BackupService();
   const { currentApp, currentEnv } = useApplication();
 
   // Filters
@@ -66,6 +68,7 @@ const TasksPage: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>();
   const [tasksRetrying, setTasksRetrying] = useState<boolean>();
+  const [tasksExporting, setTasksExporting] = useState<boolean>();
   const [tasks, setTasks] = useState<any[]>([]);
 
   // API Calls
@@ -233,6 +236,34 @@ const TasksPage: React.FC = () => {
     retryFiltered(true);
   }
 
+  function exportByQuery() {
+    if (!currentApp || !currentEnv) return;
+    setTasksExporting(true);
+    let allFilters = { ...filters, ...timeFilters };
+    return backupService
+        .exportByQuery(currentApp, currentEnv, allFilters)
+        .then((response: any) => {
+          if (response.ok) {
+            return response.blob().then(function(blob) {
+              const header = response.headers.get("Content-Disposition");
+              const parts = header!.split(";");
+              const filename = parts[1].split('=')[1];
+              let elm = document.createElement("a");
+              elm.href = URL.createObjectURL(blob);
+              elm.setAttribute("download", filename);
+              elm.click();
+              elm.remove();
+            });
+          }
+          return Promise.resolve(response.json()).then((responseInJson) => {
+            return Promise.reject(responseInJson.error);
+          });
+        }
+        , handleAPIError)
+        .catch(handleAPIError)
+        .finally(() => setTasksExporting(false));
+  }
+
   return (
     <>
       <Helmet>
@@ -280,8 +311,9 @@ const TasksPage: React.FC = () => {
                   <Col span={3}>
                     <Space style={{ float: "right" }}>
                       {filters &&
+                        tasks.length > 0 &&
                         filters.state &&
-                        filters.state.length &&
+                        filters.state.length > 0 &&
                         filters.state.every((s) =>
                           TerminalStates.includes(s)
                         ) && (
@@ -295,6 +327,17 @@ const TasksPage: React.FC = () => {
                             Retry Filtered
                           </Button>
                         )}
+                      {tasks.length > 0 &&
+                        <Button
+                            ghost
+                            type="default"
+                            size="small"
+                            onClick={exportByQuery}
+                            loading={tasksExporting}
+                        >
+                          Export Filtered
+                        </Button>
+                      }
                       <Button
                         size="small"
                         onClick={handleRefresh}
