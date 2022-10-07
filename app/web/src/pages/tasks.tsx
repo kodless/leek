@@ -177,6 +177,18 @@ const TasksPage: React.FC = () => {
           </Typography.Paragraph>
           {result.ineligible_tasks_count > 0 &&
             prepareList(result.ineligible_tasks_ids)}
+          {result.ineligible_tasks_count > 0 &&
+            <Typography.Paragraph>
+              <blockquote>
+                Task is considered ineligible if:
+                <ul>
+                  <li>It's not in a terminal state (FAILED, CRITICAL, SUCCEEDED, RECOVERED).</li>
+                  <li>It's not routable, does not have a routing key and exchange.</li>
+                  <li>Its args and kwargs are truncated, workers <a href="https://docs.celeryq.dev/en/latest/reference/celery.app.task.html#celery.app.task.Task.resultrepr_maxsize" target="_blank">truncate large args and kwargs</a> before sending them to Leek (Most probable)</li>
+                </ul>
+              </blockquote>
+            </Typography.Paragraph>
+          }
         </>
       ),
       onOk() {
