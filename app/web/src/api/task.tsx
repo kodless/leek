@@ -1,4 +1,5 @@
 import { getTimeFilterQuery, search } from "./search";
+import {request, buildQueryString} from "./request";
 
 export function getFilterQuery(
   app_env: string | undefined,
@@ -104,6 +105,12 @@ export interface Task {
     filters: TaskFilters
   ): any;
 
+  getCeleryTree(
+      app_name: string,
+      app_env: string,
+      root_id: string,
+  )
+
   getById(app_name: string, uuid: string): any;
 }
 
@@ -148,5 +155,22 @@ export class TaskService implements Task {
         from_: 0,
       }
     );
+  }
+
+  getCeleryTree(
+      app_name: string,
+      app_env: string | undefined,
+      root_id: string,
+  ){
+    return request({
+      method: "GET",
+      path: `/v1/search/workflow${buildQueryString({
+        root_id: root_id,
+      })}`,
+      headers: {
+        "x-leek-app-name": app_name,
+        "x-leek-app-env": app_env,
+      },
+    });
   }
 }
