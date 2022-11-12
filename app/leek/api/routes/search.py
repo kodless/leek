@@ -7,6 +7,7 @@ from leek.api.control.stats import get_fanout_queue_drift
 from leek.api.decorators import auth
 from leek.api.schemas.search_params import SearchParamsSchema
 from leek.api.db.search import search_index
+from leek.api.db.workflow import get_celery_workflow_tree
 from leek.api.routes.api_v1 import api_v1
 
 search_bp = Blueprint('search', __name__, url_prefix='/v1/search')
@@ -37,3 +38,15 @@ class Drift(Resource):
         Get search drift
         """
         return get_fanout_queue_drift(g.index_alias, g.app_name, g.app_env)
+
+
+@search_ns.route('/workflow')
+class CeleryWorkflow(Resource):
+
+    @auth
+    def get(self):
+        """
+        Ge celery workflow
+        """
+        params = request.args.to_dict()
+        return get_celery_workflow_tree(g.index_alias, g.app_env, params["root_id"])

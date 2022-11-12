@@ -14,6 +14,7 @@ import {
   Input,
   Checkbox,
   Divider,
+  Tree, Card
 } from "antd";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierCaveDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -22,6 +23,7 @@ import { adaptTime } from "../../utils/date";
 import TaskDetails from "./TaskDetails.style";
 import { buildTag } from "../../components/data/TaskData";
 import { ControlService } from "../../api/control";
+import { TaskService } from "../../api/task";
 import { handleAPIError, handleAPIResponse } from "../../utils/errors";
 import { useApplication } from "../../context/ApplicationProvider";
 import {
@@ -29,7 +31,13 @@ import {
   ExclamationCircleOutlined,
   LoadingOutlined,
   SyncOutlined,
+  ApartmentOutlined,
+  NodeIndexOutlined,
+  PlayCircleOutlined,
+  FieldTimeOutlined
 } from "@ant-design/icons";
+import {LeekPie} from "../../components/charts/Pie";
+import {useThemeSwitcher} from "react-css-theme-switcher";
 
 const Text = Typography.Text;
 const { TabPane } = Tabs;
@@ -47,10 +55,14 @@ const TerminalStates = [
 ];
 
 export default (props) => {
-  const { currentApp } = useApplication();
+  const { currentApp, currentEnv } = useApplication();
   const service = new ControlService();
+  const task = new TaskService();
+  const { currentTheme } = useThemeSwitcher();
   const [retrying, setRetrying] = useState<boolean>();
   const [revoking, setRevoking] = useState<boolean>();
+  const [buildingTree, setBuildingTree] = useState<boolean>();
+  const [workflow, setWorkflow] = useState<any>(null);
   const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
 
   function retry() {
@@ -141,6 +153,20 @@ export default (props) => {
       okText: "Ok",
       cancelButtonProps: { style: { display: "none" } },
     });
+  }
+
+  function buildCeleryTree() {
+    if (!currentApp) return;
+    setBuildingTree(true);
+    let root_id = props.task.root_id ? props.task.root_id : props.task.uuid;
+    return task
+        .getCeleryTree(currentApp, currentEnv, root_id)
+        .then(handleAPIResponse)
+        .then((result: any) => {
+          setWorkflow(result)
+        }, handleAPIError)
+        .catch(handleAPIError)
+        .finally(() => setBuildingTree(false));
   }
 
   return (
@@ -477,6 +503,51 @@ export default (props) => {
               />
             </List.Item>
           </List>
+          <Card
+              style={{marginTop: 16}}
+              loading={buildingTree}
+              bodyStyle={{height: 400}}
+              title={<Space><ApartmentOutlined/> <span>Celery Workflow</span> </Space>}
+              size={"small"}
+              extra={[
+                <Button size={"small"}
+                        ghost
+                        type="primary"
+                        onClick={buildCeleryTree}>
+                  {workflow ? "Refresh": "Build"}
+                </Button>
+              ]}
+              actions={workflow ? [
+                <Space><NodeIndexOutlined key="executions" /><span>{workflow.total} Tasks</span></Space>,
+                <Space><PlayCircleOutlined key="start_time" /><span>{adaptTime(workflow.start_time)}</span></Space>,
+                <Space><FieldTimeOutlined key="duration" /><span>{(workflow.duration/60000).toPrecision(1)}min</span></Space>,
+              ]: []}
+          >
+            <Row>
+              <Col span={12}>
+                <Tree
+                    treeData={workflow ? workflow.workflow : null}
+                    height={350}
+                    defaultExpandAll={false}
+                    showLine={true}
+                    defaultExpandedKeys={[props.task.uuid]}
+                    defaultSelectedKeys={[props.task.uuid]}
+                    onSelect={(selectedKeys,info)=>{
+                      window.open(
+                          `/task?app=${currentApp}&env=${currentEnv}&uuid=${info.node.key}`,
+                          "_blank"
+                      );
+                    }}
+                />
+              </Col>
+              <Col span={12}>
+                <Row style={{ height: "350px", width:"100%" }}>
+                  <LeekPie data={workflow ? workflow.stats: []} theme={currentTheme} />
+                </Row>
+              </Col>
+            </Row>
+          </Card>
+
         </TabPane>
         {/* Trace */}
         <TabPane tab="Trace" key="trace" disabled={!props.task.exception}>
