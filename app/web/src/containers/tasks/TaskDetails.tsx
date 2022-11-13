@@ -510,7 +510,9 @@ export default (props) => {
               title={<Space><ApartmentOutlined/> <span>Celery Workflow</span> </Space>}
               size={"small"}
               extra={[
-                <Button size={"small"}
+                <Button disabled={buildingTree}
+                        loading={buildingTree}
+                        size={"small"}
                         ghost
                         type="primary"
                         onClick={buildCeleryTree}>
@@ -520,7 +522,7 @@ export default (props) => {
               actions={workflow ? [
                 <Space><NodeIndexOutlined key="executions" /><span>{workflow.total} Tasks</span></Space>,
                 <Space><PlayCircleOutlined key="start_time" /><span>{adaptTime(workflow.start_time)}</span></Space>,
-                <Space><FieldTimeOutlined key="duration" /><span>{(workflow.duration/60000).toPrecision(1)}min</span></Space>,
+                <Space><FieldTimeOutlined key="duration" /><span>{Math.ceil(workflow.duration/60000)} min</span></Space>,
               ]: []}
           >
             <Row>
