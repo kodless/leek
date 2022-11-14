@@ -68,8 +68,8 @@ backlog = 2048
 workers = 2
 worker_class = 'gevent'
 worker_connections = 1000
-timeout = 120
-keepalive = 60
+timeout = 240
+keepalive = 120
 
 #
 #   Logging

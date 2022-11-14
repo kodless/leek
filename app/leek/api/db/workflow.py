@@ -126,8 +126,12 @@ def get_workflow_duration(
         index=index_alias,
         body=body,
     )
-    latest_update = response["hits"]["hits"][0]["_source"]["timestamp"]
-    return latest_update-start_time
+    hits = response["hits"]["hits"]
+    if len(hits):
+        latest_update = hits[0]["_source"]["timestamp"]
+        return latest_update-start_time
+    else:
+        return None
 
 
 def get_workflow_info(
@@ -139,6 +143,8 @@ def get_workflow_info(
     root_task = connection.get(index=index_alias, id=root_id)["_source"]
     wf_start_time = root_task["queued_at"]
     wf_duration = get_workflow_duration(index_alias, app_env, root_id, wf_start_time)
+    if wf_duration is None:
+        return None
     stats = get_workflow_buckets(index_alias, app_env, root_id)
     return {
         "start_time": wf_start_time,
@@ -175,6 +181,10 @@ def get_celery_workflow_tree(
     docs = []
     connection = es.connection
     wf_info = get_workflow_info(index_alias, app_env, root_id)
+    if wf_info is None:
+        return {
+            "workflow": None
+        }
     body = {
         "size": scroll_size,
         "query": {
@@ -207,7 +217,7 @@ def get_celery_workflow_tree(
 
     workflow_tree = build_workflow_tree(docs, wf_info["root"])
     wf_info.update({
-        "total": len(docs),
+        "total": len(docs)+1,
         "workflow": workflow_tree
     })
     return wf_info

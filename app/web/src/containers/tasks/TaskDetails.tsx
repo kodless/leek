@@ -14,7 +14,7 @@ import {
   Input,
   Checkbox,
   Divider,
-  Tree, Card
+  Tree, Card, message
 } from "antd";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierCaveDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -178,7 +178,10 @@ export default (props) => {
         .getCeleryTree(currentApp, currentEnv, root_id)
         .then(handleAPIResponse)
         .then((result: any) => {
-          setWorkflow(result)
+          if (!result.workflow)
+            message.warning("Task is not part of a workflow!");
+          else
+            setWorkflow(result)
         }, handleAPIError)
         .catch(handleAPIError)
         .finally(() => setBuildingTree(false));
