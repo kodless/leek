@@ -5,9 +5,10 @@ from leek.api.ext import es
 
 
 class Node(object):
-    def __init__(self, uuid, parent_id, name):
+    def __init__(self, uuid, parent_id, name, state):
         self.uuid = uuid
         self.name = name
+        self.state = state
         self.parent_id = parent_id
         self.children = []
 
@@ -26,7 +27,12 @@ class NodeDict(UserDict):
 class NodeJSONEncoder(json.JSONEncoder):
     def default(self, node):
         if type(node) == Node:
-            item = {"key": node.uuid, "title": node.name, "children": node.children}
+            item = {
+                "key": node.uuid,
+                "title": node.name,
+                "state": node.state,
+                "children": node.children
+            }
             return item
         raise TypeError("{} is not an instance of Node".format(node))
 
@@ -37,7 +43,8 @@ def build_workflow_tree(data, root_task):
         Node(
             root_task["uuid"],
             None,
-            root_task["name"]
+            root_task["name"],
+            root_task["state"]
         )
     )
     for task in data:
@@ -45,7 +52,8 @@ def build_workflow_tree(data, root_task):
             Node(
                 task.get("uuid"),
                 task.get("parent_id"),
-                task.get("name")
+                task.get("name"),
+                task.get("state")
             )
         )
 
@@ -137,7 +145,8 @@ def get_workflow_info(
         "duration": wf_duration,
         "root": {
             "uuid": root_task["uuid"],
-            "name": root_task["name"]
+            "name": root_task["name"],
+            "state": root_task["state"]
         },
         "stats": stats
     }
