@@ -165,7 +165,7 @@ def get_node_data(response):
         data.append({
             "uuid": source["uuid"],
             "name": source["name"],
-            "parent_id": source["parent_id"],
+            "parent_id": source.get("parent_id"),
             "state": source["state"],
         })
     return data, response["_scroll_id"]
