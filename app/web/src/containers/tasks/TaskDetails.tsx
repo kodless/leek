@@ -34,7 +34,9 @@ import {
   ApartmentOutlined,
   NodeIndexOutlined,
   PlayCircleOutlined,
-  FieldTimeOutlined
+  FieldTimeOutlined,
+  CheckOutlined,
+  CloseOutlined
 } from "@ant-design/icons";
 import {LeekPie} from "../../components/charts/Pie";
 import {useThemeSwitcher} from "react-css-theme-switcher";
@@ -53,6 +55,19 @@ const TerminalStates = [
   "RECOVERED",
   "CRITICAL",
 ];
+
+const STATES_ICONS_MAP = {
+  "QUEUED": <LoadingOutlined style={{color: '#08c', fontSize: 10}} />,
+  "RECEIVED": <LoadingOutlined style={{color: '#08c', fontSize: 10}} />,
+  "STARTED": <LoadingOutlined style={{color: '#08c', fontSize: 10}} />,
+  "RETRY": <LoadingOutlined style={{color: '#08c', fontSize: 10}} />,
+  "SUCCEEDED": <CheckOutlined style={{color: '#33ccb8', fontSize: 10}} />,
+  "RECOVERED": <CheckOutlined style={{color: '#33ccb8', fontSize: 10}} />,
+  "FAILED": <CloseOutlined style={{color: '#E0144C', fontSize: 10}} />,
+  "CRITICAL": <CloseOutlined style={{color: '#E0144C', fontSize: 10}} />,
+  "REJECTED": <CloseOutlined style={{color: '#E0144C', fontSize: 10}} />,
+  "REVOKED": <CloseOutlined style={{color: '#E0144C', fontSize: 10}} />,
+}
 
 export default (props) => {
   const { currentApp, currentEnv } = useApplication();
@@ -539,6 +554,9 @@ export default (props) => {
                           `/task?app=${currentApp}&env=${currentEnv}&uuid=${info.node.key}`,
                           "_blank"
                       );
+                    }}
+                    titleRender={(nodeData) => {
+                      return <>{STATES_ICONS_MAP[nodeData['state']]} <span>{nodeData.title}</span></>
                     }}
                 />
               </Col>
