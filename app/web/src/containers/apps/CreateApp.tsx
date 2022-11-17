@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, Form, Modal, Select } from "antd";
+import {Button, Input, Form, Modal, Select, InputNumber, Typography} from "antd";
 import { DeploymentUnitOutlined, ContainerOutlined } from "@ant-design/icons";
 
 import { useApplication } from "../../context/ApplicationProvider";
@@ -103,6 +103,49 @@ const CreateApp = (props) => {
             placeholder="Short description"
           />
         </FormItem>
+
+        <FormItem
+            name="number_of_shards"
+            rules={[
+                {
+                    type: "number",
+                    max: 10,
+                    message: 'The input is not a number, max = 10'
+                }
+            ]}
+        >
+          <InputNumber
+            prefix={<ContainerOutlined style={{ fontSize: 13 }} />}
+            style={{ width: "100%" }}
+            min={1}
+            max={10}
+            step={1}
+            placeholder="Number of shards (DEFAULT: 1)"/>
+        </FormItem>
+
+        <Typography.Paragraph type={"secondary"}>
+            <blockquote>
+                <Typography.Text type="warning" italic strong>Be sure that the shards are distributed evenly across the data nodes.</Typography.Text>
+            </blockquote>
+            <Typography.Text code type="success">
+                Number of shards for index = k * (number of data nodes), where k is the number of shards per node.
+            </Typography.Text>
+            <br/><br/>
+            <ul>
+                <li>
+                    For instance, if you have 3 data nodes (3 ES instances), you should have 3, 6 or 9 shards.
+                </li>
+            </ul>
+            <blockquote>
+                <Typography.Text type="warning" italic strong>A shard size of 50GB is often quoted as a limit that has been seen to work for a variety of use-cases.</Typography.Text>
+            </blockquote>
+            <ul>
+                <li>
+                    if you have 3 data nodes (3 ES instances), and your index size will grow t a maximum of 150GB, you should have 3 shards.
+                </li>
+            </ul>
+        </Typography.Paragraph>
+
       </Form>
     </Modal>
   );

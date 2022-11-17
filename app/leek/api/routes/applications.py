@@ -41,6 +41,8 @@ class Applications(Resource):
 
         return apps.create_index_template(
             index_alias=template_name,
+            number_of_shards=app.pop("number_of_shards"),
+            number_of_replicas=app.pop("number_of_replicas"),
             lifecycle_policy_name="leek-rollover-policy",
             meta=app
         )
