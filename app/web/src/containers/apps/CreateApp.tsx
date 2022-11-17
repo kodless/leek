@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {Button, Input, Form, Modal, Select, InputNumber, Typography} from "antd";
-import { DeploymentUnitOutlined, ContainerOutlined } from "@ant-design/icons";
+import { DeploymentUnitOutlined, ContainerOutlined, NodeIndexOutlined } from "@ant-design/icons";
 
 import { useApplication } from "../../context/ApplicationProvider";
 import { ApplicationService } from "../../api/application";
@@ -8,6 +8,7 @@ import { handleAPIError, handleAPIResponse } from "../../utils/errors";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const {Paragraph, Text} = Typography;
 
 const CreateApp = (props) => {
   const [form] = Form.useForm();
@@ -115,7 +116,7 @@ const CreateApp = (props) => {
             ]}
         >
           <InputNumber
-            prefix={<ContainerOutlined style={{ fontSize: 13 }} />}
+            prefix={<NodeIndexOutlined style={{ fontSize: 13 }} />}
             style={{ width: "100%" }}
             min={1}
             max={10}
@@ -123,13 +124,13 @@ const CreateApp = (props) => {
             placeholder="Number of shards (DEFAULT: 1)"/>
         </FormItem>
 
-        <Typography.Paragraph type={"secondary"}>
+        <Paragraph type={"secondary"}>
             <blockquote>
-                <Typography.Text type="warning" italic strong>Be sure that the shards are distributed evenly across the data nodes.</Typography.Text>
+                <Text type="warning" italic strong>Be sure that the shards are distributed evenly across the data nodes.</Text>
             </blockquote>
-            <Typography.Text code type="success">
+            <Text code type="success">
                 Number of shards for index = k * (number of data nodes), where k is the number of shards per node.
-            </Typography.Text>
+            </Text>
             <br/><br/>
             <ul>
                 <li>
@@ -137,14 +138,14 @@ const CreateApp = (props) => {
                 </li>
             </ul>
             <blockquote>
-                <Typography.Text type="warning" italic strong>A shard size of 50GB is often quoted as a limit that has been seen to work for a variety of use-cases.</Typography.Text>
+                <Text type="warning" italic strong>A shard size of 50GB is often quoted as a limit that has been seen to work for a variety of use-cases.</Text>
             </blockquote>
             <ul>
                 <li>
-                    if you have 3 data nodes (3 ES instances), and your index size will grow t a maximum of 150GB, you should have 3 shards.
+                    if you have 3 data nodes (3 ES instances), and your index size will grow to a maximum of 150GB, you should have 3 shards.
                 </li>
             </ul>
-        </Typography.Paragraph>
+        </Paragraph>
 
       </Form>
     </Modal>
