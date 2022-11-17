@@ -69,7 +69,13 @@ def get_im_settings(index_alias, lifecycle_policy_name):
         }
 
 
-def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=None):
+def prepare_template_body(
+        index_alias,
+        number_of_shards=1,
+        number_of_replicas=0,
+        lifecycle_policy_name="default",
+        meta=None,
+):
     return {
         "index_patterns": [
             f"{index_alias}*"
@@ -77,8 +83,8 @@ def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=Non
         "template": {
             "settings": {
                 "index": {
-                    "number_of_shards": "1",
-                    "number_of_replicas": "0",
+                    "number_of_shards": number_of_shards,
+                    "number_of_replicas": number_of_replicas,
                     "refresh_interval": settings.LEEK_ES_DEFAULT_REFRESH_INTERVAL
                 },
                 **get_im_settings(index_alias, lifecycle_policy_name),
@@ -95,19 +101,33 @@ def prepare_template_body(index_alias, lifecycle_policy_name="default", meta=Non
     }
 
 
-def create_index_template(index_alias, lifecycle_policy_name="default", meta=None):
+def create_index_template(
+        index_alias,
+        number_of_shards=1,
+        number_of_replicas=0,
+        lifecycle_policy_name="default",
+        meta=None
+):
     """
     This is considered as an organization project
     An organization can have multiple applications(templates)
     Each day events will be sent to a new index orgName-appName-2020-08-24
     The newly created index will be assigned the template if index name matches index_patterns
     Each day indexes older than 14 days will be deleted using curator
+    :param number_of_shards: number of shards
+    :param number_of_replicas: number of replicas
     :param lifecycle_policy_name: Index Lifecycle Policy Name
     :param meta: application level settings
     :param index_alias: index alias in the form of orgName-appName
     """
     connection = es.connection
-    body = prepare_template_body(index_alias, lifecycle_policy_name=lifecycle_policy_name, meta=meta)
+    body = prepare_template_body(
+        index_alias,
+        number_of_shards=number_of_shards,
+        number_of_replicas=number_of_replicas,
+        lifecycle_policy_name=lifecycle_policy_name,
+        meta=meta,
+    )
     try:
         connection.indices.put_index_template(name=index_alias, body=body, create=True)
         # Bootstrap first index
