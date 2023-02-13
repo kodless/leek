@@ -51,16 +51,22 @@ def merge_events(index_alias, events: List[Dict]):
         actions = build_actions(events)
         updated, errors = [], []
         success, failed = 0, 0
-        for ok, item in streaming_bulk(connection, actions, index=index_alias, _source=True):
-            if not ok:
-                errors.append(item)
-                failed += 1
-            else:
-                updated.append(item["update"]["get"]["_source"])
-                success += 1
-        index_spent = time.time() - index_start_time
-        logger.debug(f"--- Indexed {payload_length} in {index_spent} seconds, "
-                     f"Index latency: {(index_spent / payload_length) * 1000}ms ---")
+        try:
+            for ok, item in streaming_bulk(connection, actions, index=index_alias, _source=True):
+                if not ok:
+                    errors.append(item)
+                    failed += 1
+                else:
+                    updated.append(item["update"]["get"]["_source"])
+                    success += 1
+            index_spent = time.time() - index_start_time
+            logger.debug(f"--- Indexed {payload_length} in {index_spent} seconds, "
+                         f"Index latency: {(index_spent / payload_length) * 1000}ms ---")
+        # Temporary fix for malformed events
+        except UnicodeEncodeError as e:
+            logger.error(str(e))
+            logger.error(f"Failed to index events on index {index_alias}, events: {actions}")
+            return {"success": success}, 201
         # Finalize
         if not failed:
             fanout(updated)
