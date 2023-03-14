@@ -161,6 +161,7 @@ const TasksPage: React.FC = () => {
     confirm({
       title: "Retry Filtered Tasks",
       icon: <ExclamationCircleOutlined />,
+      width: 800,
       content: (
         <>
           <Typography.Paragraph>
@@ -174,6 +175,7 @@ const TasksPage: React.FC = () => {
                 retried.
               </li>
             </ul>
+            {(filters?.state?.length || -1) < 0 && <Text type="warning" italic strong>Note: you didn't filter by state. thus, will retry all filtered tasks in a failure terminal state (FAILED, CRITICAL, REVOKED, REJECTED).</Text>}
           </Typography.Paragraph>
           {result.ineligible_tasks_count > 0 &&
             prepareList(result.ineligible_tasks_ids)}
@@ -182,11 +184,13 @@ const TasksPage: React.FC = () => {
               <blockquote>
                 Task is considered ineligible if:
                 <ul>
-                  <li>It's not in a terminal state (FAILED, CRITICAL, SUCCEEDED, RECOVERED).</li>
+                  <li>It's not in a failure terminal state (FAILED, CRITICAL, REVOKED, REJECTED).</li>
                   <li>It's not routable, does not have a routing key and exchange.</li>
                   <li>Its args and kwargs are truncated, workers <a href="https://docs.celeryq.dev/en/latest/reference/celery.app.task.html#celery.app.task.Task.resultrepr_maxsize" target="_blank">truncate large args and kwargs</a> before sending them to Leek (Most probable)</li>
                 </ul>
+                <Text type="warning" italic strong>Note: Tasks in SUCCEEDED, RECOVERED state do not support bulk retries. However, you can retry single task on task details page.</Text>
               </blockquote>
+
             </Typography.Paragraph>
           }
         </>
@@ -322,23 +326,17 @@ const TasksPage: React.FC = () => {
                   </Col>
                   <Col span={3}>
                     <Space style={{ float: "right" }}>
-                      {filters &&
-                        tasks.length > 0 &&
-                        filters.state &&
-                        filters.state.length > 0 &&
-                        filters.state.every((s) =>
-                          TerminalStates.includes(s)
-                        ) && (
-                          <Button
-                            ghost
-                            type="primary"
-                            size="small"
-                            onClick={handleRetryFiltered}
-                            loading={tasksRetrying}
-                          >
-                            Retry Filtered
-                          </Button>
-                        )}
+                      {tasks.length > 0 &&
+                        <Button
+                          ghost
+                          type="primary"
+                          size="small"
+                          onClick={handleRetryFiltered}
+                          loading={tasksRetrying}
+                        >
+                          Retry Filtered
+                        </Button>
+                      }
                       {tasks.length > 0 &&
                         <Button
                             ghost

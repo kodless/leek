@@ -9,7 +9,7 @@ from kombu import Connection, Exchange
 from amqp import AccessRefused
 
 from leek.api.conf import settings
-from leek.api.db.store import STATES_TERMINAL
+from leek.api.db.store import STATES_TERMINAL, STATES_RETRY_ALLOWED
 from leek.api.errors import responses
 from leek.api.utils import lookup_subscription
 
@@ -203,7 +203,7 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
     for task_doc in tasks_docs:
         task = task_doc["_source"]
         # Check if task is in terminal state
-        if task.get("state") not in STATES_TERMINAL:
+        if task.get("state") not in STATES_RETRY_ALLOWED:
             # Task state precondition failed
             ineligible_tasks_ids.append(task["uuid"])
 
