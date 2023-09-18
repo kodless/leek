@@ -3,6 +3,7 @@ from datetime import timedelta
 import time
 
 from elasticsearch import exceptions as es_exceptions
+from elasticsearch import client as es_client
 
 from leek.api.conf import settings
 from leek.api.ext import es
@@ -298,6 +299,24 @@ def get_application_indices(index_alias):
     connection = es.connection
     try:
         return connection.indices.stats(f"{index_alias}*"), 200
+    except es_exceptions.ConnectionError:
+        return responses.search_backend_unavailable
+    except es_exceptions.RequestError:
+        return responses.application_already_exist
+
+
+def get_application_cleanup_tasks(index_alias):
+    """
+    List application cleanup tasks
+    :param index_alias: index_alias: application indices prefix AKA Application name
+    :return:
+    """
+    connection = es.connection
+    try:
+        tasks_client = es_client.tasks.TasksClient(connection)
+        tasks = tasks_client.list(group_by="none", actions="*/delete/byquery", detailed=True)["tasks"]
+        tasks = [task for task in tasks if task["description"] == f"delete-by-query [{index_alias}]"]
+        return tasks, 200
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
     except es_exceptions.RequestError:

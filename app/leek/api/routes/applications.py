@@ -103,6 +103,18 @@ class ApplicationIndices(Resource):
         return apps.get_application_indices(g.index_alias)
 
 
+@applications_ns.route('/tasks/cleanup')
+class ApplicationCleanupTasks(Resource):
+
+    @auth
+    def get(self):
+        """
+        List application cleanup tasks
+        """
+
+        return apps.get_application_cleanup_tasks(g.index_alias)
+
+
 @applications_ns.route('/fo-triggers')
 class AddFanoutTriggers(Resource):
 

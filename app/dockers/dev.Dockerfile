@@ -13,7 +13,7 @@ RUN apt-get update \
     procps \
     build-essential \
     supervisor \
-    netcat \
+    netcat-traditional \
     && rm -rf /var/lib/apt/lists/* \
     && python3 -m pip install --upgrade pip
 

@@ -49,7 +49,7 @@ RUN apt-get update \
     nginx \
     supervisor \
     procps \
-    netcat
+    netcat-traditional
 COPY --from=compile-image /opt /opt
 
 ARG LEEK_VERSION="-.-.-"

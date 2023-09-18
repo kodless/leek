@@ -28,6 +28,7 @@ import { adaptTime } from "../../utils/date";
 import { ApplicationService } from "../../api/application";
 import { handleAPIError, handleAPIResponse } from "../../utils/errors";
 import Indices from "./Indices";
+import CleanupTasks from "./CleanupTasks";
 import getAuth from "../../utils/firebase";
 
 const Text = Typography.Text;
@@ -346,6 +347,8 @@ const Applications = () => {
               />
 
               <Indices selectedApp={selectedApp} />
+
+              <CleanupTasks selectedApp={selectedApp} />
             </PageHeader>
           )}
         </Col>
