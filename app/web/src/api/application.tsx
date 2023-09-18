@@ -121,4 +121,14 @@ export class ApplicationService implements Application {
       },
     });
   }
+
+  listCleanupTasks(app_name) {
+    return request({
+      method: "GET",
+      path: `/v1/applications/tasks/cleanup`,
+      headers: {
+        "x-leek-app-name": app_name,
+      },
+    });
+  }
 }

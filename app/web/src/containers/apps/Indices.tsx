@@ -63,7 +63,7 @@ const Indices = (props) => {
   }, [indicesDetails]);
 
   return (
-    <Row style={{ width: "100%" }}>
+    <Row style={{ width: "100%", marginBottom: "16px" }}>
       <Card
         size="small"
         style={{ width: "100%" }}
