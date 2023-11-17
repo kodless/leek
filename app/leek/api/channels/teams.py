@@ -1,6 +1,5 @@
 import logging
 from typing import Union
-import pymsteams
 
 import requests
 
@@ -22,21 +21,53 @@ def get_color(state):
 
 
 def send_teams(app_name: str, event: Union[Task, Worker], wh_url: str, extra: dict):
-    teams_message = pymsteams.connectorcard(wh_url)
 
-    teams_message.title(f"Task: {event.name}")
-    teams_message.color(get_color(event.state))
-    teams_message.addLinkButton("View task", f"{settings.LEEK_WEB_URL}/task?app={app_name}&uuid={event.uuid}")
-
-    section = pymsteams.cardsection()
-    section.addFact("Application", app_name)
-    section.addFact("Environment", event.app_env)
-    section.addFact("Task worker", event.worker)
-    section.addFact("Task state", event.state)
-    section.addFact("Task uuid", event.uuid)
+    body = {
+        "@type": "MessageCard",
+        "@context": "http://schema.org/extensions",
+        "themeColor": get_color(event.state),
+        "summary": f"Task: {event.name}",
+        "sections": [{
+            "activityTitle": f"Task: {event.name}",
+            "activitySubtitle": f"Application: {app_name}",
+            "activityImage": "https://adaptivecards.io/content/cats/3.png",
+            "facts": [{
+                "name": "Environment",
+                "value": event.app_env
+            }, {
+                "name": "Task worker",
+                "value": event.worker
+            }, {
+                "name": "Task state",
+                "value": event.state
+            }, {
+                "name": "Task uuid",
+                "value": event.uuid
+            }],
+            "markdown": True
+        }],
+        "potentialAction": [{
+            "@type": "OpenUri",
+            "name": "View task",
+            "targets": [{
+                "os": "default",
+                "uri": f"{settings.LEEK_WEB_URL}/task?app={app_name}&uuid={event.uuid}"
+            }]
+        }]
+    }
 
     if extra.get("note"):
-        section.addFact("Note", extra.get("note"))
+        body["sections"][0]["facts"].append({
+            "name": "Note",
+            "value": extra.get("note")
+        })
 
-    teams_message.addSection(section)
-    teams_message.send()
+    try:
+        requests.post(
+            wh_url,
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+            json=body
+        ).raise_for_status()
+    except Exception as e:
+        logger.error(f"Request to teams returned an error: {e}")
+
