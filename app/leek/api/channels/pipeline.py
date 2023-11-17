@@ -3,10 +3,12 @@ import re
 
 from leek.api.db.store import Task, Worker, Application, STATES_SUCCESS, EventKind
 from .slack import send_slack
+from .teams import send_teams
 
 
 class Channels:
     SLACK = "slack"
+    TEAMS = "teams"
 
 
 def notify(app: Application, env, events: List[Union[Task, Worker]]):
@@ -51,3 +53,5 @@ def notify(app: Application, env, events: List[Union[Task, Worker]]):
             # Finally: notify
             if trigger.type == Channels.SLACK:
                 send_slack(app.app_name, event, trigger.slack_wh_url, extra={"note": note})
+            elif trigger.type == Channels.TEAMS:
+                send_teams(app.app_name, event, trigger.teams_wh_url, extra={"note": note})

@@ -2,6 +2,7 @@ import json
 import logging
 import random
 import string
+import pymsteams
 
 import requests
 
@@ -18,14 +19,14 @@ def generate_app_key(length=48):
 
 def init_trigger(tr, app_name):
     trigger = FanoutTrigger(**tr)
+    text = f"Leek trigger configured for application `{app_name}`:\n" \
+           f"- *enabled*: {trigger.enabled}\n" \
+           f"- *envs*: {trigger.envs}\n" \
+           f"- *states*: {trigger.states}\n" \
+           f"- *exclude*: {trigger.exclude}\n" \
+           f"- *include*: {trigger.include}\n" \
+           f"- *runtime upper bound*: {trigger.runtime_upper_bound} seconds"
     if trigger.slack_wh_url:
-        text = f"Leek trigger configured for application `{app_name}`:\n" \
-               f"- *enabled*: {trigger.enabled}\n" \
-               f"- *envs*: {trigger.envs}\n" \
-               f"- *states*: {trigger.states}\n" \
-               f"- *exclude*: {trigger.exclude}\n" \
-               f"- *include*: {trigger.include}\n" \
-               f"- *runtime upper bound*: {trigger.runtime_upper_bound} seconds"
         try:
             response = requests.post(
                 url=trigger.slack_wh_url,
@@ -37,6 +38,15 @@ def init_trigger(tr, app_name):
             return False
         except requests.exceptions.HTTPError as e:
             return False
+    if trigger.teams_wh_url:
+        try:
+            my_teams_message = pymsteams.connectorcard(trigger.teams_wh_url)
+            my_teams_message.text(text)
+            my_teams_message.send()
+        except Exception as e:
+            logger.error(f"Request to teams returned an error: {e}")
+            return False
+
     return True
 
 

@@ -62,6 +62,8 @@ const Triggers = (props) => {
   const [patternType, setPatternType] = useState<string>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [triggerId, setTriggerId] = useState();
+  const [selectValue, setSelectValue] = useState("slack");
+
 
   useEffect(() => {}, []);
 
@@ -80,6 +82,10 @@ const Triggers = (props) => {
       .finally(() => {
         setLoading(false);
       });
+  }
+
+  function onSelectChange(event) {
+    setSelectValue(event.target.value);
   }
 
   function doEditTrigger(trigger) {
@@ -136,15 +142,19 @@ const Triggers = (props) => {
   const formItems = (
     <>
       <FormItem name="type">
-        <Select>
+        <Select onChange={ onSelectChange }>
           <Option value="slack">
             <SlackOutlined />
             Slack
           </Option>
+          <Option value="teams">
+            <SlackOutlined />
+            Teams
+          </Option>
         </Select>
       </FormItem>
 
-      <FormItem
+      { selectValue === 'slack' && (<FormItem
         name="slack_wh_url"
         rules={[
           { required: true, message: "Please input slack webhook url!" },
@@ -158,7 +168,23 @@ const Triggers = (props) => {
           prefix={<DeploymentUnitOutlined style={{ fontSize: 13 }} />}
           placeholder="Webhook URL"
         />
-      </FormItem>
+      </FormItem>)}
+
+      { selectValue === 'teams' && (<FormItem
+        name="teams_wh_url"
+        rules={[
+          { required: true, message: "Please input teams webhook url!" },
+          {
+            type: "url",
+            message: "This field must be a valid url.",
+          },
+        ]}
+      >
+        <Input
+          prefix={<DeploymentUnitOutlined style={{ fontSize: 13 }} />}
+          placeholder="Webhook URL"
+        />
+      </FormItem>)}
 
       <FormItem name="states">
         <Select
