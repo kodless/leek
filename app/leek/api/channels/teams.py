@@ -30,7 +30,7 @@ def send_teams(app_name: str, event: Union[Task, Worker], wh_url: str, extra: di
         "sections": [{
             "activityTitle": f"Task: {event.name}",
             "activitySubtitle": f"Application: {app_name}",
-            "activityImage": "https://adaptivecards.io/content/cats/3.png",
+            "activityImage": "https://raw.githubusercontent.com/kodless/leek/master/doc/static/img/logo.png",
             "facts": [{
                 "name": "Environment",
                 "value": event.app_env
