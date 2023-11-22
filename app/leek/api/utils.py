@@ -2,7 +2,6 @@ import json
 import logging
 import random
 import string
-import pymsteams
 
 import requests
 
@@ -26,25 +25,20 @@ def init_trigger(tr, app_name):
            f"- *exclude*: {trigger.exclude}\n" \
            f"- *include*: {trigger.include}\n" \
            f"- *runtime upper bound*: {trigger.runtime_upper_bound} seconds"
-    if trigger.slack_wh_url:
+
+    if trigger.wh_url:
         try:
             response = requests.post(
-                url=trigger.slack_wh_url,
+                url=trigger.wh_url,
                 json={"text": text},
                 headers={"Content-Type": "application/json"}
             )
             response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            print(e)
             return False
         except requests.exceptions.HTTPError as e:
-            return False
-    if trigger.teams_wh_url:
-        try:
-            my_teams_message = pymsteams.connectorcard(trigger.teams_wh_url)
-            my_teams_message.text(text)
-            my_teams_message.send()
-        except Exception as e:
-            logger.error(f"Request to teams returned an error: {e}")
+            print(e)
             return False
 
     return True

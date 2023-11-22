@@ -52,6 +52,6 @@ def notify(app: Application, env, events: List[Union[Task, Worker]]):
                     note = f"Runtime upper bound exceeded: `{runtime} seconds`"
             # Finally: notify
             if trigger.type == Channels.SLACK:
-                send_slack(app.app_name, event, trigger.slack_wh_url, extra={"note": note})
+                send_slack(app.app_name, event, trigger.wh_url, extra={"note": note})
             elif trigger.type == Channels.TEAMS:
-                send_teams(app.app_name, event, trigger.teams_wh_url, extra={"note": note})
+                send_teams(app.app_name, event, trigger.wh_url, extra={"note": note})

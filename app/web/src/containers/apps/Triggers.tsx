@@ -24,6 +24,7 @@ import {
   DeploymentUnitOutlined,
   SlackOutlined,
   BellOutlined,
+  WindowsOutlined
 } from "@ant-design/icons";
 
 import TriggerDataColumns from "../../components/data/TriggerData";
@@ -62,7 +63,6 @@ const Triggers = (props) => {
   const [patternType, setPatternType] = useState<string>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [triggerId, setTriggerId] = useState();
-  const [selectValue, setSelectValue] = useState("slack");
 
 
   useEffect(() => {}, []);
@@ -82,10 +82,6 @@ const Triggers = (props) => {
       .finally(() => {
         setLoading(false);
       });
-  }
-
-  function onSelectChange(event) {
-    setSelectValue(event.target.value);
   }
 
   function doEditTrigger(trigger) {
@@ -142,49 +138,29 @@ const Triggers = (props) => {
   const formItems = (
     <>
       <FormItem name="type">
-        <Select onChange={ onSelectChange }>
+        <Select>
           <Option value="slack">
             <SlackOutlined />
             Slack
           </Option>
           <Option value="teams">
-            <SlackOutlined />
+            <WindowsOutlined />
             Teams
           </Option>
         </Select>
       </FormItem>
 
-      { selectValue === 'slack' && (<FormItem
-        name="slack_wh_url"
+      <FormItem
+        name="wh_url"
         rules={[
-          { required: true, message: "Please input slack webhook url!" },
-          {
-            type: "url",
-            message: "This field must be a valid url.",
-          },
+          { required: true, message: "Please input webhook url!" },
         ]}
       >
         <Input
           prefix={<DeploymentUnitOutlined style={{ fontSize: 13 }} />}
           placeholder="Webhook URL"
         />
-      </FormItem>)}
-
-      { selectValue === 'teams' && (<FormItem
-        name="teams_wh_url"
-        rules={[
-          { required: true, message: "Please input teams webhook url!" },
-          {
-            type: "url",
-            message: "This field must be a valid url.",
-          },
-        ]}
-      >
-        <Input
-          prefix={<DeploymentUnitOutlined style={{ fontSize: 13 }} />}
-          placeholder="Webhook URL"
-        />
-      </FormItem>)}
+      </FormItem>
 
       <FormItem name="states">
         <Select
@@ -385,7 +361,7 @@ const Triggers = (props) => {
                     <List.Item.Meta
                       style={{ marginBottom: 16 }}
                       title={"Webhook URL"}
-                      description={<Tag>{record.slack_wh_url}</Tag>}
+                      description={<Tag>{record.wh_url}</Tag>}
                     />
                   </Col>
                   <Col span={12}>
