@@ -27,7 +27,8 @@ class ProcessEvents(Resource):
         """
         payload = request.get_json()
         if not len(payload):
-            return "Empty payload, nothing to be processed", 400
+            logger.warning("Empty payload, nothing to be processed!")
+            return {"success": 0}, 201
         result, status = merge_events(g.context["index_alias"], payload)
         return result, status
 
