@@ -50,7 +50,7 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     # noinspection PyBroadException
     try:
         connection = Connection(subscription["broker"])
-        client = connection.get_manager(port=subscription["broker_management_port"])
+        client = connection.get_manager(port=subscription.get("broker_management_port"))
         client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
@@ -101,7 +101,7 @@ def get_subscription_queues(app_name, app_env):
     # noinspection PyBroadException
     try:
         connection = Connection(subscription["broker"])
-        client = connection.get_manager(port=subscription["broker_management_port"])
+        client = connection.get_manager(port=subscription.get("broker_management_port"))
         client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
