@@ -1,12 +1,9 @@
 import { getTimeFilterQuery, search, TimeFilters } from "./search";
-import { request } from "./request";
 
 export interface Metrics {
   getBasicMetrics(app_name: string, app_env: string, filters: TimeFilters): any;
 
   getMetadata(app_name: string): any;
-
-  getSearchDrift(app_name: string, app_env: string): any;
 }
 
 export class MetricsService implements Metrics {
@@ -123,16 +120,5 @@ export class MetricsService implements Metrics {
         from_: 0,
       }
     );
-  }
-
-  getSearchDrift(app_name: string, app_env: string) {
-    return request({
-      method: "GET",
-      path: `/v1/search/drift`,
-      headers: {
-        "x-leek-app-name": app_name,
-        "x-leek-app-env": app_env,
-      },
-    });
   }
 }

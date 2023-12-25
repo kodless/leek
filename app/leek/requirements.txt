@@ -19,3 +19,4 @@ werkzeug==2.1.2
 # Additional for agent
 kombu==5.2.4
 redis==4.1.4
+pyrabbit==1.1.0

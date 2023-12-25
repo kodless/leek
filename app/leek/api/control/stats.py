@@ -2,7 +2,7 @@ from amqp import AccessRefused
 from kombu import Connection
 
 import logging
-from amqp.exceptions import NotFound
+from pyrabbit.http import HTTPError
 from elasticsearch import exceptions as es_exceptions
 
 from leek.api.ext import es
@@ -44,7 +44,7 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     # Retrieve subscription
     found, subscription = lookup_subscription(app_name, app_env)
     if not found:
-        return responses.task_retry_subscription_not_found
+        return responses.subscription_not_found
 
     # Prepare connection/producer
     # noinspection PyBroadException
@@ -56,26 +56,83 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     except Exception:
         return responses.broker_not_reachable
 
+    result = {
+        "queue_name": subscription["queue"],
+        "latest_event_timestamp": latest_event_timestamp,
+        "messages": {
+            "total": -1,
+            "unacked": -1
+        },
+        "consumers_count": -1,
+    }
+
     try:
-        name, messages, consumers = 0, 0, 0
-        if connection.transport.driver_type == "redis":
-            # Events over redis transport are not durable because celery sends them in fanout mode.
-            # Therefore, if we try to get events queue depth, the client will raise 404 error.
-            # If you want the events to be persisted, use RabbitMQ instead!
+        if connection.transport.driver_type == "amqp":
+            client = connection.get_manager()
+            q = client.get_queue(name=subscription["queue"], vhost=connection.virtual_host)
+            result.update({
+                "messages": {
+                    "total": q["messages"],
+                    "unacked": q["messages_unacknowledged"]
+                },
+                "consumers_count": q["consumers"],
+            })
+        # Events over redis transport are not durable because celery sends them in fanout mode.
+        # Therefore, if we try to get events queue depth, the client will raise 404 error.
+        # If you want the events to be persisted, use RabbitMQ instead!
+        elif connection.transport.driver_type == "redis":
+            # TODO: find a way to inspect a redis queue
             pass
-        else:
-            name, messages, consumers = connection.channel().queue_declare(
-                queue=subscription["queue"],
-                passive=True
-            )
-        result = {
-            "queue_name": name,
-            "messages_count": messages,
-            "consumers_count": consumers,
-            "latest_event_timestamp": latest_event_timestamp
-        }
-    except NotFound as ex:
+    except HTTPError as ex:
         logger.error(ex)
-    else:
-        connection.release()
-        return result, 200
+
+    # Release and return
+    connection.release()
+    return result, 200
+
+
+def get_subscription_queues(app_name, app_env):
+    # Retrieve subscription
+    found, subscription = lookup_subscription(app_name, app_env)
+    if not found:
+        return responses.subscription_not_found
+
+    # Prepare connection/producer
+    # noinspection PyBroadException
+    try:
+        connection = Connection(subscription["broker"])
+        connection.ensure_connection(max_retries=2)
+    except AccessRefused:
+        return responses.wrong_access_refused
+    except Exception:
+        return responses.broker_not_reachable
+
+    # Queues statistics is only supported when using RabbitMQ
+    if connection.transport.driver_type != "amqp":
+        return []
+
+    client = connection.get_manager()
+    queues_response = client.get_queues()
+
+    queues = []
+    for q in queues_response:
+        queue = {
+            "name": q["name"],
+            "state": q["state"],
+            "memory": q["memory"],
+            "consumers": q["consumers"],
+            "durable": q["durable"],
+            "messages": {
+                "ready": q["messages_ready"],
+                "unacknowledged": q["messages_unacknowledged"],
+                "total": q["messages"]
+            },
+            "rates": {
+                "incoming": q["message_stats"]["publish_details"]["rate"],
+                "deliver_get": q["message_stats"]["deliver_get_details"]["rate"],
+                "ack": q["message_stats"]["ack_details"]["rate"],
+            }
+        }
+        queues.append(queue)
+
+    return queues
