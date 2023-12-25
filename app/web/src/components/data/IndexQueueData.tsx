@@ -1,9 +1,10 @@
 import React from "react";
 import { Typography, Tag } from "antd";
+import {formatNumber} from "../../utils/size";
 
 const Text = Typography.Text;
 
-function QueueData() {
+function IndexQueueData() {
   return [
     {
       title: "Queue",
@@ -22,7 +23,7 @@ function QueueData() {
       dataIndex: "doc_count",
       key: "doc_count",
       render: (doc_count) => {
-        return <Tag>{doc_count}</Tag>;
+        return <Tag>{formatNumber(doc_count, 0)}</Tag>;
       },
     },
     {
@@ -30,7 +31,7 @@ function QueueData() {
       dataIndex: "QUEUED",
       key: "QUEUED",
       render: (QUEUED) => {
-        return <Tag color="blue">{QUEUED}</Tag>;
+        return <Tag color="blue">{formatNumber(QUEUED, 0)}</Tag>;
       },
     },
     {
@@ -38,7 +39,7 @@ function QueueData() {
       dataIndex: "RECEIVED",
       key: "RECEIVED",
       render: (RECEIVED) => {
-        return <Tag color="blue">{RECEIVED}</Tag>;
+        return <Tag color="blue">{formatNumber(RECEIVED, 0)}</Tag>;
       },
     },
     {
@@ -46,7 +47,7 @@ function QueueData() {
       dataIndex: "STARTED",
       key: "STARTED",
       render: (STARTED) => {
-        return <Tag color="blue">{STARTED}</Tag>;
+        return <Tag color="blue">{formatNumber(STARTED, 0)}</Tag>;
       },
     },
     {
@@ -54,7 +55,7 @@ function QueueData() {
       dataIndex: "SUCCEEDED",
       key: "SUCCEEDED",
       render: (SUCCEEDED) => {
-        return <Tag color="green">{SUCCEEDED}</Tag>;
+        return <Tag color="green">{formatNumber(SUCCEEDED, 0)}</Tag>;
       },
     },
     {
@@ -62,7 +63,7 @@ function QueueData() {
       dataIndex: "RECOVERED",
       key: "RECOVERED",
       render: (RECOVERED) => {
-        return <Tag color="green">{RECOVERED}</Tag>;
+        return <Tag color="green">{formatNumber(RECOVERED, 0)}</Tag>;
       },
     },
     {
@@ -70,7 +71,7 @@ function QueueData() {
       dataIndex: "RETRY",
       key: "RETRY",
       render: (RETRY) => {
-        return <Tag color="orange">{RETRY}</Tag>;
+        return <Tag color="orange">{formatNumber(RETRY, 0)}</Tag>;
       },
     },
     {
@@ -78,7 +79,7 @@ function QueueData() {
       dataIndex: "FAILED",
       key: "FAILED",
       render: (FAILED) => {
-        return <Tag color="red">{FAILED}</Tag>;
+        return <Tag color="red">{formatNumber(FAILED, 0)}</Tag>;
       },
     },
     {
@@ -86,7 +87,7 @@ function QueueData() {
       dataIndex: "CRITICAL",
       key: "CRITICAL",
       render: (CRITICAL) => {
-        return <Tag color="red">{CRITICAL}</Tag>;
+        return <Tag color="red">{formatNumber(CRITICAL, 0)}</Tag>;
       },
     },
     {
@@ -94,10 +95,10 @@ function QueueData() {
       dataIndex: "REVOKED",
       key: "REVOKED",
       render: (REVOKED) => {
-        return <Tag color="purple">{REVOKED}</Tag>;
+        return <Tag color="purple">{formatNumber(REVOKED, 0)}</Tag>;
       },
     },
   ];
 }
 
-export default QueueData;
+export default IndexQueueData;

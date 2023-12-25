@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Card, Col, Row, Empty, Table, Button, Alert } from "antd";
+import {Card, Col, Row, Empty, Table, Button, Alert, Radio} from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 
-import QueueDataColumns from "../components/data/QueueData";
+import IndexQueueDataColumns from "../components/data/IndexQueueData";
+import BrokerQueueDataColumns from "../components/data/BrokerQueueData";
 import TimeFilter from "../components/filters/TaskTimeFilter";
 import { useApplication } from "../context/ApplicationProvider";
 import { QueueService } from "../api/queue";
+import { BrokerService } from "../api/broker";
 import { handleAPIError, handleAPIResponse } from "../utils/errors";
 
 const QueuesPage = () => {
-  const columns = QueueDataColumns();
-  const service = new QueueService();
+  const indexQueuesColumns = IndexQueueDataColumns();
+  const brokerQueuesColumns = BrokerQueueDataColumns();
+  const queueService = new QueueService();
+  const brokerService = new BrokerService();
   const [loading, setLoading] = useState<boolean>();
-  const [queues, setQueues] = useState<any>([]);
+  const [indexQueues, setIndexQueues] = useState<any>([]);
+  const [brokerQueues, setBrokerQueues] = useState<any>([]);
 
   const { currentApp, currentEnv } = useApplication();
   const [pagination, setPagination] = useState<any>({
@@ -26,14 +31,16 @@ const QueuesPage = () => {
     offset: 900000,
   });
 
-  function filterQueues(pager = { current: 1, pageSize: 10 }) {
+  const [statsSource, setStatsSource] = useState<string | null>("INDEX");
+
+  function filterIndexQueues(pager = { current: 1, pageSize: 10 }) {
     if (!currentApp) return;
     setLoading(true);
-    service
+    queueService
       .filter(currentApp, currentEnv, timeFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
-        setQueues(
+        setIndexQueues(
           result.aggregations.queues.buckets.map(
             ({ key, doc_count, state }) => {
               let tasksStatesSeries = {
@@ -65,13 +72,31 @@ const QueuesPage = () => {
       .finally(() => setLoading(false));
   }
 
+  function filterBrokerQueues(pager = { current: 1, pageSize: 10 }) {
+    if (!currentApp || !currentEnv) return;
+    setLoading(true);
+    brokerService
+      .getBrokerQueues(currentApp, currentEnv)
+      .then(handleAPIResponse)
+      .then((result: any) => {
+        setBrokerQueues(result);
+      }, handleAPIError)
+      .catch(handleAPIError)
+      .finally(() => setLoading(false));
+  }
+
   useEffect(() => {
     refresh(pagination);
-  }, [currentApp, currentEnv, timeFilters]);
+  }, [currentApp, currentEnv, timeFilters, statsSource]);
 
   // UI Callbacks
   function refresh(pager = { current: 1, pageSize: 10 }) {
-    filterQueues(pager);
+    if (statsSource == "INDEX") {
+      filterIndexQueues(pager);
+    }
+    else if (statsSource == "BROKER") {
+      filterBrokerQueues(pager);
+    }
   }
 
   function handleShowTotal(total) {
@@ -82,6 +107,10 @@ const QueuesPage = () => {
     refresh(pagination);
   }
 
+  function handleStatsSourceChange(e) {
+    setStatsSource(e.target.value);
+  }
+
   return (
     <>
       <Helmet>
@@ -90,7 +119,7 @@ const QueuesPage = () => {
         <meta name="description" content="Broker queues" />
         <meta name="keywords" content="celery, queues" />
       </Helmet>
-      <Row justify="center" style={{ width: "100%", marginTop: 13 }}>
+      {statsSource === "INDEX" && <Row justify="center" style={{ width: "100%", marginTop: 13 }}>
         <Alert
           type="warning"
           showIcon
@@ -108,7 +137,7 @@ const QueuesPage = () => {
             </a>
           }
         />
-      </Row>
+      </Row>}
       <Row justify="center" style={{ width: "100%", marginTop: 13 }}>
         <Card
           bodyStyle={{ paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }}
@@ -116,12 +145,25 @@ const QueuesPage = () => {
           style={{ width: "100%" }}
           title={
             <Row align="middle">
-              <Col span={3}></Col>
+              <Col span={3}>
+                <Radio.Group
+                  onChange={handleStatsSourceChange}
+                  defaultValue="INDEX"
+                  size="small"
+                  style={{fontWeight: 400}}
+                >
+                  <Radio.Button value="INDEX" style={{fontStyle: "normal"}}>INDEX</Radio.Button>
+                  <Radio.Button value="BROKER">BROKER</Radio.Button>
+                </Radio.Group>
+              </Col>
               <Col span={18} style={{ textAlign: "center" }}>
-                <TimeFilter
-                  timeFilter={timeFilters}
-                  onTimeFilterChange={setTimeFilters}
-                />
+                {
+                    statsSource === "INDEX" &&
+                    <TimeFilter
+                      timeFilter={timeFilters}
+                      onTimeFilterChange={setTimeFilters}
+                    />
+                }
               </Col>
               <Col span={3}>
                 <Button
@@ -135,12 +177,12 @@ const QueuesPage = () => {
           }
         >
           <Table
-            dataSource={queues}
-            columns={columns}
+            dataSource={statsSource === "INDEX" ? indexQueues : brokerQueues}
+            columns={statsSource === "INDEX" ? indexQueuesColumns : brokerQueuesColumns}
             loading={loading}
             pagination={{ ...pagination, showTotal: handleShowTotal }}
             size="small"
-            rowKey="queue"
+            rowKey="name"
             style={{ width: "100%" }}
             scroll={{ x: "100%" }}
             locale={{

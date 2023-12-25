@@ -54,6 +54,15 @@ task_retry_subscription_not_found = {
                                         }
                                     }, 404
 
+
+subscription_not_found = {
+                             "error": {
+                                 "code": "404003",
+                                 "message": "Failed to lookup broker subscription",
+                                 "reason": "Subscription not found, subscription names should be in the form of `app_name-env_name`"
+                             }
+                         }, 404
+
 wrong_application_app_key = {
                                 "error": {
                                     "code": "401001",

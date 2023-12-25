@@ -13,7 +13,9 @@ import StatsWidgets from "../components/stats/Stats";
 import { useApplication } from "../context/ApplicationProvider";
 import TimeFilter from "../components/filters/TaskTimeFilter";
 import { MetricsService } from "../api/metrics";
+import { BrokerService } from "../api/broker";
 import { handleAPIError, handleAPIResponse } from "../utils/errors";
+import {formatNumber} from "../utils/size";
 
 let metricsInterval;
 const workerStates = ["HEARTBEAT", "ONLINE", "OFFLINE"];
@@ -67,6 +69,7 @@ const IndexPage = () => {
 
   // Metadata
   const metricsService = new MetricsService();
+  const brokerService = new BrokerService();
   const [seenWorkers, setSeenWorkers] = useState<
     MetricsContextData["seenWorkers"]
   >([]);
@@ -89,8 +92,8 @@ const IndexPage = () => {
   const [seenQueues, setSeenQueues] = useState<
     MetricsContextData["seenQueues"]
   >([]);
-  const [searchDriftLoading, setSearchDriftLoading] = useState<boolean>(true);
-  const [searchDrift, setSearchDrift] = useState<any>(null);
+  const [brokerDriftLoading, setBrokerDriftLoading] = useState<boolean>(true);
+  const [brokerDrift, setBrokerDrift] = useState<any>(null);
 
   const [timeFilters, setTimeFilters] = useState<any>({
     timestamp_type: "timestamp",
@@ -98,17 +101,17 @@ const IndexPage = () => {
     offset: 900000,
   });
 
-  function getSearchDrift() {
+  function getBrokerDrift() {
     if (!currentApp || !currentEnv) return;
-    setSearchDriftLoading(true);
-    metricsService
-      .getSearchDrift(currentApp, currentEnv)
+    setBrokerDriftLoading(true);
+    brokerService
+      .getBrokerDrift(currentApp, currentEnv)
       .then(handleAPIResponse)
       .then((result: any) => {
-        setSearchDrift(result);
+        setBrokerDrift(result);
       }, handleAPIError)
       .catch(handleAPIError)
-      .finally(() => setSearchDriftLoading(false));
+      .finally(() => setBrokerDriftLoading(false));
   }
 
   function getMetrics() {
@@ -178,7 +181,7 @@ const IndexPage = () => {
 
   useEffect(() => {
     getMetrics();
-    getSearchDrift();
+    getBrokerDrift();
     return () => {
       clearInterval(metricsInterval);
     };
@@ -192,10 +195,10 @@ const IndexPage = () => {
 
     // Else, get metrics every 10 seconds
     getMetrics();
-    getSearchDrift();
+    getBrokerDrift();
     metricsInterval = setInterval(() => {
       getMetrics();
-      getSearchDrift();
+      getBrokerDrift();
     }, 10000);
   }, [currentApp, currentEnv, timeFilters]);
 
@@ -210,7 +213,7 @@ const IndexPage = () => {
 
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Statistic
-          loading={searchDriftLoading}
+          loading={brokerDriftLoading}
           title={
             <Tooltip title="The time of the latest event processed by leek.">
               <span>Latest Event </span>
@@ -218,8 +221,8 @@ const IndexPage = () => {
             </Tooltip>
           }
           value={
-            searchDrift && searchDrift.latest_event_timestamp
-              ? moment(searchDrift.latest_event_timestamp).format(
+            brokerDrift && brokerDrift.latest_event_timestamp
+              ? moment(brokerDrift.latest_event_timestamp).format(
                   "MMM D HH:mm:ss Z"
                 )
               : ""
@@ -244,17 +247,22 @@ const IndexPage = () => {
         </Affix>
 
         <Statistic
-          loading={searchDriftLoading}
+          loading={brokerDriftLoading}
           title={
-            <Tooltip title="How many events in the queue waiting to be indexed.">
-              <span>Current Drift </span>
+            <Tooltip title="Unacknowledged fanout queue events being processed by Leek agents / total fanout queue events.">
+              <span>Current Drift (processing/total) </span>
               <InfoCircleOutlined />
             </Tooltip>
           }
           value={
-            searchDrift && searchDrift.messages_count
-              ? searchDrift.messages_count
-              : "0"
+            brokerDrift && brokerDrift.messages
+              ? brokerDrift.messages.unacked
+              : 0
+          }
+          suffix={
+            brokerDrift && brokerDrift.messages
+                ? <><span>/ </span>{formatNumber(brokerDrift.messages.total, 1)}</>
+                : "/ 0"
           }
           valueStyle={{ fontSize: 17.5 }}
           prefix={<EyeInvisibleOutlined />}

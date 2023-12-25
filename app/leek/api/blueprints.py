@@ -7,6 +7,7 @@ from leek.api.routes.search import search_bp
 from leek.api.routes.agent import agent_bp
 from leek.api.routes.control import control_bp
 from leek.api.routes.backup import backup_bp
+from leek.api.routes.broker import broker_bp
 
 
 def register_blueprints(app):
@@ -20,3 +21,4 @@ def register_blueprints(app):
     app.register_blueprint(agent_bp)
     app.register_blueprint(control_bp)
     app.register_blueprint(backup_bp)
+    app.register_blueprint(broker_bp)
