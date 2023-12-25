@@ -17,10 +17,10 @@ function SubscriptionData(props) {
     },
     {
       title: "BROKER",
-      dataIndex: "broker",
+      dataIndex: ["broker", "broker_management_port"],
       key: "broker",
-      render: (broker) => {
-        return <Tag>{broker}</Tag>;
+      render: (text, record) => {
+        return <Tag>{record.broker} (mgmt port:{record.broker_management_port})</Tag>;
       },
     },
     {

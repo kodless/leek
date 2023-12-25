@@ -89,6 +89,7 @@ illustrate how you can subscribe to multiple brokers:
 [
   {
     "broker": "amqp://admin:admin@mq-QA//",
+    "broker_management_port": 15672,
     "backend": null,
     "exchange": "celeryev",
     "queue": "leek.fanout",
@@ -106,6 +107,7 @@ illustrate how you can subscribe to multiple brokers:
   },
   {
     "broker": "amqp://admin:admin@mq-prod//",
+    "broker_management_port": 15672,
     "backend": null,
     "exchange": "celeryev",
     "queue": "leek.fanout",

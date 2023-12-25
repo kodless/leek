@@ -196,6 +196,7 @@ def validate_subscriptions(subs):
 
     # Optional settings
     for subscription in subs:
+        subscription.setdefault("broker_management_port", 15672)
         subscription.setdefault("concurrency_pool_size", 1)
         subscription.setdefault("prefetch_count", 1000)
         subscription.setdefault("batch_max_size_in_mb", 1)

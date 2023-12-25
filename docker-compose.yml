@@ -27,6 +27,7 @@ services:
         [
           {
             "broker": "amqp://admin:admin@mq//",
+            "broker_management_port": 15672,
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",
@@ -119,6 +120,9 @@ services:
 #      dockerfile: dockers/opendistro.Dockerfile
 #    container_name: es01
 #    environment:
+#      - node.name=es01
+#      - cluster.name=es-docker-cluster
+#      - cluster.initial_master_nodes=es01
 #      - bootstrap.memory_lock=true
 #      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
 #    command: ["elasticsearch", "-Elogger.level=ERROR"]

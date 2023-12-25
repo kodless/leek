@@ -2,7 +2,7 @@ from amqp import AccessRefused
 from kombu import Connection
 
 import logging
-from pyrabbit.http import HTTPError
+from pyrabbit.http import HTTPError, NetworkError
 from elasticsearch import exceptions as es_exceptions
 
 from leek.api.ext import es
@@ -50,8 +50,9 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     # noinspection PyBroadException
     try:
         connection = Connection(subscription["broker"])
-        connection.ensure_connection(max_retries=2)
-    except AccessRefused:
+        client = connection.get_manager(port=subscription["broker_management_port"])
+        client.is_alive()
+    except NetworkError:
         return responses.wrong_access_refused
     except Exception:
         return responses.broker_not_reachable
@@ -68,7 +69,6 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
 
     try:
         if connection.transport.driver_type == "amqp":
-            client = connection.get_manager()
             q = client.get_queue(name=subscription["queue"], vhost=connection.virtual_host)
             result.update({
                 "messages": {
@@ -101,8 +101,9 @@ def get_subscription_queues(app_name, app_env):
     # noinspection PyBroadException
     try:
         connection = Connection(subscription["broker"])
-        connection.ensure_connection(max_retries=2)
-    except AccessRefused:
+        client = connection.get_manager(port=subscription["broker_management_port"])
+        client.is_alive()
+    except NetworkError:
         return responses.wrong_access_refused
     except Exception:
         return responses.broker_not_reachable
@@ -111,7 +112,6 @@ def get_subscription_queues(app_name, app_env):
     if connection.transport.driver_type != "amqp":
         return []
 
-    client = connection.get_manager()
     queues_response = client.get_queues()
 
     queues = []

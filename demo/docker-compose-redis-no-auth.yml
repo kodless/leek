@@ -22,6 +22,7 @@ services:
         [
           {
             "broker": "redis://:admin@mq:6379/0",
+            "broker_management_port": 6379,
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",

@@ -2,6 +2,7 @@ from schema import Schema, And, Optional, Use
 
 SubscriptionSchema = Schema({
     "broker": And(str, len),
+    Optional("broker_management_port", default=15672): And(Use(int), lambda n: 1 <= n <= 65536),
     Optional("backend"): And(str, len),
     "app_env": And(str, lambda e: e.isalpha() and e.islower()),
     # --

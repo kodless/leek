@@ -67,6 +67,30 @@ const AddSubscription = (props) => {
           />
         </FormItem>
 
+        <FormItem
+            name="broker_management_port"
+            rules={[
+              ({ __ }) => ({
+                validator(_, value) {
+                  if (value && (value < 1 || value > 65536)) {
+                    return Promise.reject(
+                        new Error("Should be between 1 and 65536")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+        >
+          <InputNumber
+              min={1}
+              max={65536}
+              step={1}
+              placeholder="Broker management port - default: RabbitMQ(15672) Redis(6379)"
+              style={{ width: "100%" }}
+          />
+        </FormItem>
+
         <FormItem name="backend" rules={[]}>
           <Input
             prefix={<DeploymentUnitOutlined style={{ fontSize: 13 }} />}
