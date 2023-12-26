@@ -8,7 +8,7 @@ WORKDIR /opt/app
 
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y build-essential \
+    && apt-get install --no-install-recommends -y build-essential git \
     && rm -rf /var/lib/apt/lists/* \
     && python3 -m venv $VIRTUAL_ENV \
     && python3 -m pip install --upgrade pip
@@ -49,8 +49,7 @@ RUN apt-get update \
     nginx \
     supervisor \
     procps \
-    netcat-traditional \
-    git
+    netcat-traditional
 COPY --from=compile-image /opt /opt
 
 ARG LEEK_VERSION="-.-.-"
