@@ -112,7 +112,7 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     return result, 200
 
 
-def get_subscription_queues(app_name, app_env):
+def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
     # Retrieve subscription
     found, subscription = lookup_subscription(app_name, app_env)
     if not found:
@@ -136,6 +136,8 @@ def get_subscription_queues(app_name, app_env):
 
     queues = []
     for q in queues_response:
+        if hide_pid_boxes and q["name"].endswith("celery.pidbox"):
+            continue
         queue = {
             "name": q["name"],
             "state": q.get("state", "unknown"),

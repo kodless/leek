@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, g
+from flask import Blueprint, g, request
 from flask_restx import Resource
 
 from leek.api.control.stats import get_fanout_queue_drift, get_subscription_queues
@@ -32,4 +32,9 @@ class Queues(Resource):
         """
         List subscription queues
         """
-        return get_subscription_queues(g.app_name, g.app_env)
+        params = request.args.to_dict()
+        return get_subscription_queues(
+            g.app_name,
+            g.app_env,
+            hide_pid_boxes=params["hide_pid_boxes"]
+        )

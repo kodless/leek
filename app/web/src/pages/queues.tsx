@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import {Card, Col, Row, Empty, Table, Button, Alert, Radio} from "antd";
+import {Card, Col, Row, Empty, Table, Button, Alert, Radio, Checkbox} from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 
 import IndexQueueDataColumns from "../components/data/IndexQueueData";
@@ -32,6 +32,7 @@ const QueuesPage = () => {
   });
 
   const [statsSource, setStatsSource] = useState<string | null>("INDEX");
+  const [hidePIDBoxes, setHidePIDBoxes] = useState<boolean>(true);
 
   function filterIndexQueues(pager = { current: 1, pageSize: 10 }) {
     if (!currentApp) return;
@@ -76,7 +77,7 @@ const QueuesPage = () => {
     if (!currentApp || !currentEnv) return;
     setLoading(true);
     brokerService
-      .getBrokerQueues(currentApp, currentEnv)
+      .getBrokerQueues(currentApp, currentEnv, hidePIDBoxes)
       .then(handleAPIResponse)
       .then((result: any) => {
         setBrokerQueues(result);
@@ -87,7 +88,7 @@ const QueuesPage = () => {
 
   useEffect(() => {
     refresh(pagination);
-  }, [currentApp, currentEnv, timeFilters, statsSource]);
+  }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes]);
 
   // UI Callbacks
   function refresh(pager = { current: 1, pageSize: 10 }) {
@@ -165,12 +166,17 @@ const QueuesPage = () => {
                     />
                 }
               </Col>
-              <Col span={3}>
+              <Col span={3} style={{textAlign: "right"}}>
+                {
+                  statsSource === "BROKER" &&
+                  <Checkbox checked={hidePIDBoxes} onChange={(e) => setHidePIDBoxes(e.target.checked)}>
+                    Hide pid boxes
+                  </Checkbox>
+                }
                 <Button
-                  size="small"
-                  onClick={handleRefresh}
-                  icon={<SyncOutlined />}
-                  style={{ float: "right" }}
+                    size="small"
+                    onClick={handleRefresh}
+                    icon={<SyncOutlined />}
                 />
               </Col>
             </Row>
