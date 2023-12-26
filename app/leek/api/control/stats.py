@@ -138,7 +138,7 @@ def get_subscription_queues(app_name, app_env):
     for q in queues_response:
         queue = {
             "name": q["name"],
-            "state": q["state"],
+            "state": q.get("state", "unknown"),
             "memory": q["memory"],
             "consumers": q["consumers"],
             "durable": q["durable"],

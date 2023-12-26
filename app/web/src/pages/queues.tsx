@@ -72,7 +72,7 @@ const QueuesPage = () => {
       .finally(() => setLoading(false));
   }
 
-  function filterBrokerQueues(pager = { current: 1, pageSize: 10 }) {
+  function filterBrokerQueues() {
     if (!currentApp || !currentEnv) return;
     setLoading(true);
     brokerService
@@ -95,7 +95,7 @@ const QueuesPage = () => {
       filterIndexQueues(pager);
     }
     else if (statsSource == "BROKER") {
-      filterBrokerQueues(pager);
+      filterBrokerQueues();
     }
   }
 
@@ -180,7 +180,12 @@ const QueuesPage = () => {
             dataSource={statsSource === "INDEX" ? indexQueues : brokerQueues}
             columns={statsSource === "INDEX" ? indexQueuesColumns : brokerQueuesColumns}
             loading={loading}
-            pagination={{ ...pagination, showTotal: handleShowTotal }}
+            pagination={
+              statsSource === "INDEX" ?
+                  {...pagination, showTotal: handleShowTotal}
+                  :
+                  {pageSize: 20, showTotal: handleShowTotal}
+            }
             size="small"
             rowKey="name"
             style={{ width: "100%" }}
