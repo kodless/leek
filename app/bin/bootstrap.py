@@ -159,7 +159,7 @@ def validate_subscriptions(subs):
     # Validate required fields
     for subscription in subs:
         required_keys = [
-            "broker", "exchange", "queue", "routing_key", "org_name",
+            "broker", "broker_management_url", "exchange", "queue", "routing_key", "org_name",
             "app_name", "app_env",  # "app_key", "api_url"
         ]
         keys = subscription.keys()
@@ -196,7 +196,6 @@ def validate_subscriptions(subs):
 
     # Optional settings
     for subscription in subs:
-        subscription.setdefault("broker_management_port", 15672)
         subscription.setdefault("concurrency_pool_size", 1)
         subscription.setdefault("prefetch_count", 1000)
         subscription.setdefault("batch_max_size_in_mb", 1)

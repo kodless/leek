@@ -44,7 +44,7 @@ class LeekConsumer(ConsumerMixin):
             app_env: str = "qa",
             # BROKER
             broker: str = "amqp://guest:guest@localhost//",
-            broker_management_port: int = 15672,
+            broker_management_url: str = "http://localhost:15672",
             backend: str = None,
             exchange: str = "celeryev",
             queue: str = "leek.fanout",
@@ -62,7 +62,7 @@ class LeekConsumer(ConsumerMixin):
         :param app_key: Leek app key, provided after the application has been created
         :param app_env: Leek app env, broker messages env name
         :param broker: Broker url
-        :param broker_management_port: Broker management port
+        :param broker_management_url: Broker management url
         :param exchange: Exchange name, should be the same as workers event exchange
         :param queue: Queue name
         :param routing_key: Routing key

@@ -1,8 +1,8 @@
-from amqp import AccessRefused
 from kombu import Connection
 
 import logging
-from pyrabbit.http import HTTPError, NetworkError
+from pyrabbit2 import Client as AMQPClient
+from pyrabbit2.http import HTTPError, NetworkError
 from elasticsearch import exceptions as es_exceptions
 
 from leek.api.ext import es
@@ -11,6 +11,29 @@ from leek.api.errors import responses
 from leek.api.utils import lookup_subscription
 
 logger = logging.getLogger(__name__)
+
+
+def get_manager_client(subscription):
+    connection = Connection(subscription["broker"])
+    driver_type = connection.transport.driver_type
+
+    # Events over redis transport are not durable because celery sends them in fanout mode.
+    # Therefore, if we try to get events queue depth, the client will raise 404 error.
+    # If you want the events to be persisted, use RabbitMQ instead!
+    if driver_type != "amqp":
+        # TODO: work on redis manager
+        return None
+
+    opt = connection.transport_options.get
+
+    def get(name, default):
+        return opt('manager_%s' % name) or getattr(connection, name, None) or default
+
+    userid = get("userid", "guest")
+    password = get("password", "guest")
+
+    scheme, host_port = subscription.get("broker_management_url").split("://")
+    return connection, AMQPClient(host_port, userid, password, scheme=scheme)
 
 
 def get_fanout_queue_drift(index_alias, app_name, app_env):
@@ -49,8 +72,7 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     # Prepare connection/producer
     # noinspection PyBroadException
     try:
-        connection = Connection(subscription["broker"])
-        client = connection.get_manager(port=subscription.get("broker_management_port"))
+        connection, client = get_manager_client(subscription)
         client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
@@ -85,9 +107,6 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
             pass
     except HTTPError as ex:
         logger.error(ex)
-
-    # Release and return
-    connection.release()
     return result, 200
 
 
@@ -100,8 +119,7 @@ def get_subscription_queues(app_name, app_env):
     # Prepare connection/producer
     # noinspection PyBroadException
     try:
-        connection = Connection(subscription["broker"])
-        client = connection.get_manager(port=subscription.get("broker_management_port"))
+        connection, client = get_manager_client(subscription)
         client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused

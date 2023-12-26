@@ -14,6 +14,7 @@ RUN apt-get update \
     build-essential \
     supervisor \
     netcat-traditional \
+    git \
     && rm -rf /var/lib/apt/lists/* \
     && python3 -m pip install --upgrade pip
 

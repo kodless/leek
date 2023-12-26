@@ -19,4 +19,4 @@ werkzeug==2.1.2
 # Additional for agent
 kombu==5.2.4
 redis==4.1.4
-pyrabbit==1.1.0
+pyrabbit2 @ git+https://github.com/deslum/pyrabbit2.git@master

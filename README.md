@@ -144,7 +144,7 @@ services:
         [
           {
             "broker": "amqp://admin:admin@mq//",
-            "broker_management_port": 15672,
+            "broker_management_url": "http://mq:15672",
             "backend": null,
             "exchange": "celeryev",
             "queue": "leek.fanout",
