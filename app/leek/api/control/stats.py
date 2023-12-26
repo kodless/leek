@@ -33,7 +33,7 @@ def get_manager_client(subscription):
     password = get("password", "guest")
 
     scheme, host_port = subscription.get("broker_management_url").split("://")
-    return connection, AMQPClient(host_port, userid, password, scheme=scheme)
+    return connection, AMQPClient(host_port, userid, password, scheme=scheme, verify=False)
 
 
 def get_fanout_queue_drift(index_alias, app_name, app_env):
