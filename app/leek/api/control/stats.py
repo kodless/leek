@@ -1,9 +1,9 @@
-from kombu import Connection
-
 import logging
 from pyrabbit2 import Client as AMQPClient
 from pyrabbit2.http import HTTPError, NetworkError
 from elasticsearch import exceptions as es_exceptions
+from kombu import Connection
+import urllib3
 
 from leek.api.ext import es
 from leek.api.conf import settings
@@ -11,6 +11,7 @@ from leek.api.errors import responses
 from leek.api.utils import lookup_subscription
 
 logger = logging.getLogger(__name__)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def get_manager_client(subscription):
@@ -22,7 +23,7 @@ def get_manager_client(subscription):
     # If you want the events to be persisted, use RabbitMQ instead!
     if driver_type != "amqp":
         # TODO: work on redis manager
-        return None
+        return connection, None
 
     opt = connection.transport_options.get
 
@@ -73,7 +74,8 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     # noinspection PyBroadException
     try:
         connection, client = get_manager_client(subscription)
-        client.is_alive()
+        if connection.transport.driver_type == "amqp":
+            client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
     except Exception:
