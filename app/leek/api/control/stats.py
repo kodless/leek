@@ -147,12 +147,23 @@ def get_subscription_queues(app_name, app_env):
                 "unacknowledged": q["messages_unacknowledged"],
                 "total": q["messages"]
             },
-            "rates": {
-                "incoming": q["message_stats"]["publish_details"]["rate"],
-                "deliver_get": q["message_stats"]["deliver_get_details"]["rate"],
-                "ack": q["message_stats"]["ack_details"]["rate"],
-            }
         }
+        if "message_stats" in q:
+            queue.update({
+                "rates": {
+                    "incoming": q["message_stats"]["publish_details"]["rate"],
+                    "deliver_get": q["message_stats"]["deliver_get_details"]["rate"],
+                    "ack": q["message_stats"]["ack_details"]["rate"],
+                }
+            })
+        else:
+            queue.update({
+                "rates": {
+                    "incoming": None,
+                    "deliver_get": None,
+                    "ack": None,
+                }
+            })
         queues.append(queue)
 
     return queues

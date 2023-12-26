@@ -84,7 +84,7 @@ function BrokerQueueData() {
           dataIndex: "rates",
           key: "incoming",
           render: (rates) => {
-            return <Tag color="red">{rates.incoming}/s</Tag>;
+            return rates.incoming === null ? "-" : <Tag color="red">{rates.incoming}/s</Tag>;
           },
         },
         {
@@ -92,7 +92,7 @@ function BrokerQueueData() {
           dataIndex: "rates",
           key: "deliver_get",
           render: (rates) => {
-            return <Tag color="yellow">{rates.deliver_get}/s</Tag>;
+            return rates.deliver_get === null ? "-" : <Tag color="yellow">{rates.deliver_get}/s</Tag>;
           },
         },
         {
@@ -100,7 +100,7 @@ function BrokerQueueData() {
           dataIndex: "rates",
           key: "ack",
           render: (rates) => {
-            return <Tag color="green">{rates.ack}/s</Tag>;
+            return rates.ack === null ? "-" : <Tag color="green">{rates.ack}/s</Tag>;
           },
         },
       ]
