@@ -13,7 +13,6 @@ import { handleAPIError, handleAPIResponse } from "../utils/errors";
 
 const QueuesPage = () => {
   const indexQueuesColumns = IndexQueueDataColumns();
-  const brokerQueuesColumns = BrokerQueueDataColumns();
   const queueService = new QueueService();
   const brokerService = new BrokerService();
   const [loading, setLoading] = useState<boolean>();
@@ -182,35 +181,57 @@ const QueuesPage = () => {
             </Row>
           }
         >
-          <Table
-            dataSource={statsSource === "INDEX" ? indexQueues : brokerQueues}
-            columns={statsSource === "INDEX" ? indexQueuesColumns : brokerQueuesColumns}
-            loading={loading}
-            pagination={
-              statsSource === "INDEX" ?
-                  {...pagination, showTotal: handleShowTotal}
-                  :
-                  {pageSize: 20, showTotal: handleShowTotal}
-            }
-            size="small"
-            rowKey="name"
-            style={{ width: "100%" }}
-            scroll={{ x: "100%" }}
-            locale={{
-              emptyText: (
-                <div style={{ textAlign: "center" }}>
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      <span>
+          {statsSource === "INDEX" ?
+              <Table
+                  dataSource={indexQueues}
+                  columns={indexQueuesColumns}
+                  loading={loading}
+                  pagination={{...pagination, showTotal: handleShowTotal}}
+                  size="small"
+                  rowKey="queue"
+                  style={{width: "100%"}}
+                  scroll={{x: "100%"}}
+                  locale={{
+                    emptyText: (
+                        <div style={{textAlign: "center"}}>
+                          <Empty
+                              image={Empty.PRESENTED_IMAGE_SIMPLE}
+                              description={
+                                <span>
                         No <a href="#API">queues</a> found
                       </span>
-                    }
-                  />
-                </div>
-              ),
-            }}
-          />
+                              }
+                          />
+                        </div>
+                    ),
+                  }}
+              />
+              :
+              <Table
+                  dataSource={brokerQueues}
+                  columns={BrokerQueueDataColumns(brokerQueues)}
+                  loading={loading}
+                  pagination={{pageSize: 20, showTotal: handleShowTotal}}
+                  size="small"
+                  rowKey="name"
+                  style={{width: "100%"}}
+                  scroll={{x: "100%"}}
+                  locale={{
+                    emptyText: (
+                        <div style={{textAlign: "center"}}>
+                          <Empty
+                              image={Empty.PRESENTED_IMAGE_SIMPLE}
+                              description={
+                                <span>
+                        No <a href="#API">queues</a> found
+                      </span>
+                              }
+                          />
+                        </div>
+                    ),
+                  }}
+              />
+          }
         </Card>
       </Row>
     </>

@@ -4,7 +4,12 @@ import {formatBytes, formatNumber} from "../../utils/size";
 
 const Text = Typography.Text;
 
-function BrokerQueueData() {
+const filterData = data => formatter => data.map( item => ({
+  text: formatter(item),
+  value: formatter(item)
+}));
+
+function BrokerQueueData(data) {
   return [
     {
       title: "Overview",
@@ -20,6 +25,9 @@ function BrokerQueueData() {
                 </Text>
             );
           },
+          filters: filterData(data)(i => i.name),
+          filterSearch: true,
+          onFilter: (value: string, record) => record.name && record.name.includes(value),
         },
         {
           title: "State",
