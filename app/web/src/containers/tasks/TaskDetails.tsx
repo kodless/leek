@@ -36,7 +36,8 @@ import {
   PlayCircleOutlined,
   FieldTimeOutlined,
   CheckOutlined,
-  CloseOutlined
+  CloseOutlined,
+  FundFilled
 } from "@ant-design/icons";
 import {LeekPie} from "../../components/charts/Pie";
 import {useThemeSwitcher} from "react-css-theme-switcher";
@@ -187,6 +188,11 @@ export default (props) => {
         .finally(() => setBuildingTree(false));
   }
 
+
+  function twoWeeksFromNow() {
+    return Date.now() - 14 * 24 * 60 * 60 * 1000;
+  }
+
   return (
     <TaskDetails>
       <Modal
@@ -301,6 +307,14 @@ export default (props) => {
             <Text copyable={{ text: window.location.href }} strong>
               LINK
             </Text>
+            <a
+                href={`https://app.datadoghq.com/apm/traces?query=%40celery.correlation_id%3A${props.task.uuid}%20&start=${twoWeeksFromNow()}&end=${Date.now()}&paused=false`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{color: "orchid"}}
+            >
+              Datadog <FundFilled />
+            </a>
           </Space>
         </Col>
       </Row>
