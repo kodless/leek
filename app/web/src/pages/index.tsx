@@ -76,8 +76,10 @@ const IndexPage = () => {
   const [seenTasks, setSeenTasks] = useState<MetricsContextData["seenTasks"]>(
     []
   );
-  const [processedEvents, setProcessedEvents] =
-    useState<MetricsContextData["processedEvents"]>(0);
+  const [processedTasksEvents, setProcessedTasksEvents] =
+    useState<MetricsContextData["processedTasksEvents"]>(0);
+  const [processedWorkersEvents, setProcessedWorkersEvents] =
+      useState<MetricsContextData["processedWorkersEvents"]>(0);
   const [processedTasks, setProcessedTasks] =
     useState<MetricsContextData["processedTasks"]>(0);
   const [seenStates, setSeenStates] = useState<
@@ -120,7 +122,11 @@ const IndexPage = () => {
       .getBasicMetrics(currentApp, currentEnv, timeFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
-        setProcessedEvents(result.aggregations.processed_events.value);
+        result.aggregations.events.buckets.map((item) => {
+          if (item.key=="task") return setProcessedTasksEvents(item.processed.value);
+          if (item.key=="worker") return setProcessedWorkersEvents(item.processed.value);
+        })
+        ;
         const processed = result.aggregations.seen_states.buckets.reduce(
           (result, item) => {
             if (!workerStates.includes(item.key)) {
@@ -154,8 +160,10 @@ const IndexPage = () => {
     let adapted = {
       SEEN_TASKS: seenTasks.length,
       SEEN_WORKERS: seenWorkers.length,
-      PROCESSED_EVENTS: processedEvents,
+      PROCESSED_TASKS_EVENTS: processedTasksEvents,
+      PROCESSED_WORKERS_EVENTS: processedWorkersEvents,
       PROCESSED_TASKS: processedTasks,
+      SEEN_QUEUES: seenQueues.length,
       TASKS: 0,
       EVENTS: 0,
       // Tasks
@@ -211,42 +219,56 @@ const IndexPage = () => {
         <meta name="keywords" content="celery, tasks" />
       </Helmet>
 
-      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Statistic
-          loading={brokerDriftLoading}
-          title={
-            <Tooltip title="The time of the latest event processed by leek.">
-              <span>Latest Event </span>
-              <InfoCircleOutlined />
-            </Tooltip>
-          }
-          value={
-            brokerDrift && brokerDrift.latest_event_timestamp
-              ? moment(brokerDrift.latest_event_timestamp).format(
-                  "MMM D HH:mm:ss Z"
-                )
-              : ""
-          }
-          valueStyle={{ fontSize: 17.5 }}
-          prefix={<FieldTimeOutlined />}
-        />
-
-        <Affix
-          style={{
-            position: "fixed",
-            left: "50%",
-            transform: "translate(-50%, 0)",
-          }}
+      <Row justify="space-between" align="middle">
+        <Col
+            lg={{span: 8, order:1}}
+            md={{span: 12, order:2}}
+            sm={{span: 12, order:2}}
+            xs={{span: 12, order:2}}
+            style={{ marginBottom: 16 }}
         >
-          <Row>
-            <TimeFilter
+          <Statistic
+            loading={brokerDriftLoading}
+            title={
+              <Tooltip title="The time of the latest event processed by leek.">
+                <span>Latest Event </span>
+                <InfoCircleOutlined />
+              </Tooltip>
+            }
+            value={
+              brokerDrift && brokerDrift.latest_event_timestamp
+                ? moment(brokerDrift.latest_event_timestamp).format(
+                    "MMM D HH:mm:ss Z"
+                  )
+                : ""
+            }
+            valueStyle={{ fontSize: 17.5 }}
+            prefix={<FieldTimeOutlined />}
+          />
+        </Col>
+
+        <Col
+            lg={{span: 8, order:2}}
+            md={{span: 24, order:1}}
+            sm={{span: 24, order:1}}
+            xs={{span: 24, order:1}}
+            style={{ marginBottom: 16, textAlign: "center" }}
+        >
+          <TimeFilter
               timeFilter={timeFilters}
               onTimeFilterChange={setTimeFilters}
-            />
-          </Row>
-        </Affix>
+          />
+        </Col>
 
+        <Col
+            lg={{span: 8, order:3}}
+            md={{span: 12, order:3}}
+            sm={{span: 12, order:3}}
+            xs={{span: 12, order:3}}
+            style={{ marginBottom: 16 }}
+        >
         <Statistic
+          style={{ float: "right" }}
           loading={brokerDriftLoading}
           title={
             <Tooltip title="Unacknowledged fanout queue events being processed by Leek agents / total fanout queue events.">
@@ -266,7 +288,7 @@ const IndexPage = () => {
           }
           valueStyle={{ fontSize: 17.5 }}
           prefix={<EyeInvisibleOutlined />}
-        />
+        /></Col>
       </Row>
 
       <Row gutter={16} justify="center" align="middle">
@@ -284,6 +306,7 @@ const IndexPage = () => {
               text={widget.text}
               icon={widget.icon}
               tooltip={widget.tooltip}
+
             />
           </Col>
         ))}

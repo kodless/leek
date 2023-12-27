@@ -12,33 +12,17 @@ const StickerWidgetWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;
+    width: 70px;
     flex-shrink: 0;
-    font-size: 30px;
+    font-size: 25px;
     border-right: 1px solid gray;
   }
 
   .leekContentWrapper {
     width: 100%;
-    padding: 10px 15px 10px 10px;
+    padding: 7px 11px 7px 7px;
     display: flex;
     flex-direction: column;
-
-    .leekStatNumber {
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.1;
-      margin: 0 0 5px;
-      color: #5e5e5e;
-    }
-
-    .leekLabel {
-      font-size: 16px;
-      font-weight: 400;
-      margin: 0;
-      line-height: 1.2;
-      color: #333;
-    }
   }
 `;
 
