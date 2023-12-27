@@ -22,7 +22,7 @@ export class QueueService implements Queue {
         },
         aggs: {
           queues: {
-            terms: { field: "queue" },
+            terms: { field: "queue", size: 100 }, // List up to 100 queues
             aggs: {
               state: {
                 terms: { field: "state" },

@@ -12,7 +12,6 @@ import { BrokerService } from "../api/broker";
 import { handleAPIError, handleAPIResponse } from "../utils/errors";
 
 const QueuesPage = () => {
-  const indexQueuesColumns = IndexQueueDataColumns();
   const queueService = new QueueService();
   const brokerService = new BrokerService();
   const [loading, setLoading] = useState<boolean>();
@@ -20,10 +19,7 @@ const QueuesPage = () => {
   const [brokerQueues, setBrokerQueues] = useState<any>([]);
 
   const { currentApp, currentEnv } = useApplication();
-  const [pagination, setPagination] = useState<any>({
-    pageSize: 10,
-    current: 1,
-  });
+
   const [timeFilters, setTimeFilters] = useState<any>({
     timestamp_type: "timestamp",
     interval_type: "past",
@@ -33,7 +29,7 @@ const QueuesPage = () => {
   const [statsSource, setStatsSource] = useState<string | null>("INDEX");
   const [hidePIDBoxes, setHidePIDBoxes] = useState<boolean>(true);
 
-  function filterIndexQueues(pager = { current: 1, pageSize: 10 }) {
+  function filterIndexQueues() {
     if (!currentApp) return;
     setLoading(true);
     queueService
@@ -86,13 +82,13 @@ const QueuesPage = () => {
   }
 
   useEffect(() => {
-    refresh(pagination);
+    refresh();
   }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes]);
 
   // UI Callbacks
-  function refresh(pager = { current: 1, pageSize: 10 }) {
+  function refresh() {
     if (statsSource == "INDEX") {
-      filterIndexQueues(pager);
+      filterIndexQueues();
     }
     else if (statsSource == "BROKER") {
       filterBrokerQueues();
@@ -104,7 +100,7 @@ const QueuesPage = () => {
   }
 
   function handleRefresh() {
-    refresh(pagination);
+    refresh();
   }
 
   function handleStatsSourceChange(e) {
@@ -181,12 +177,12 @@ const QueuesPage = () => {
             </Row>
           }
         >
-          {statsSource === "INDEX" ?
+          {statsSource === "INDEX" &&
               <Table
                   dataSource={indexQueues}
-                  columns={indexQueuesColumns}
+                  columns={IndexQueueDataColumns(indexQueues)}
                   loading={loading}
-                  pagination={{...pagination, showTotal: handleShowTotal}}
+                  pagination={{pageSize: 20, showTotal: handleShowTotal}}
                   size="small"
                   rowKey="queue"
                   style={{width: "100%"}}
@@ -206,7 +202,8 @@ const QueuesPage = () => {
                     ),
                   }}
               />
-              :
+          }
+          {statsSource === "BROKER" &&
               <Table
                   dataSource={brokerQueues}
                   columns={BrokerQueueDataColumns(brokerQueues)}

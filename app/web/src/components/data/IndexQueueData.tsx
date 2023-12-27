@@ -4,7 +4,12 @@ import {formatNumber} from "../../utils/size";
 
 const Text = Typography.Text;
 
-function IndexQueueData() {
+const filterData = data => formatter => data.map( item => ({
+  text: formatter(item),
+  value: formatter(item)
+}));
+
+function IndexQueueData(data) {
   return [
     {
       title: "Queue",
@@ -17,6 +22,9 @@ function IndexQueueData() {
           </Text>
         );
       },
+      filters: filterData(data)(i => i.queue),
+      filterSearch: true,
+      onFilter: (value: string, record) => record.queue && record.queue.includes(value),
     },
     {
       title: "Messages",
