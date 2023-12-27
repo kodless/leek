@@ -10,7 +10,7 @@ export default function ({ icon, number, text, tooltip }) {
       <div className="leekIconWrapper">{icon}</div>
 
       <div className="leekContentWrapper">
-        <Statistic title={text} value={number} />
+        <Statistic title={text} value={number} valueStyle={{fontSize: 16}} />
       </div>
 
       <div style={{ fontSize: "18px", padding: "7px" }}>

@@ -33,11 +33,14 @@ export class MetricsService implements Metrics {
             terms: { field: "routing_key" },
           },
           seen_queues: {
-            terms: { field: "queue", size: 100 },
+            terms: { field: "queue", size: 1000 },
           },
-          processed_events: {
-            sum: { field: "events_count" },
-          },
+          events: {
+            terms: { field: "kind" },
+            aggs: {
+              processed: {sum: { field: "events_count" },}
+            }
+          }
         },
       },
       {
