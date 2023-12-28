@@ -33,6 +33,8 @@ function IndexQueueData(data) {
       render: (doc_count) => {
         return <Tag>{formatNumber(doc_count, 0)}</Tag>;
       },
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.doc_count - b.doc_count,
     },
     {
       title: "Queued",
@@ -41,6 +43,7 @@ function IndexQueueData(data) {
       render: (QUEUED) => {
         return <Tag color="blue">{formatNumber(QUEUED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.QUEUED - b.QUEUED,
     },
     {
       title: "Received",
@@ -49,6 +52,7 @@ function IndexQueueData(data) {
       render: (RECEIVED) => {
         return <Tag color="blue">{formatNumber(RECEIVED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.RECEIVED - b.RECEIVED,
     },
     {
       title: "Started",
@@ -57,6 +61,7 @@ function IndexQueueData(data) {
       render: (STARTED) => {
         return <Tag color="blue">{formatNumber(STARTED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.STARTED - b.STARTED,
     },
     {
       title: "Succeeded",
@@ -65,6 +70,7 @@ function IndexQueueData(data) {
       render: (SUCCEEDED) => {
         return <Tag color="green">{formatNumber(SUCCEEDED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.SUCCEEDED - b.SUCCEEDED,
     },
     {
       title: "Recovered",
@@ -73,6 +79,7 @@ function IndexQueueData(data) {
       render: (RECOVERED) => {
         return <Tag color="green">{formatNumber(RECOVERED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.RECOVERED - b.RECOVERED,
     },
     {
       title: "Retry",
@@ -81,6 +88,7 @@ function IndexQueueData(data) {
       render: (RETRY) => {
         return <Tag color="orange">{formatNumber(RETRY, 0)}</Tag>;
       },
+      sorter: (a, b) => a.RETRY - b.RETRY,
     },
     {
       title: "Failed",
@@ -89,6 +97,7 @@ function IndexQueueData(data) {
       render: (FAILED) => {
         return <Tag color="red">{formatNumber(FAILED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.FAILED - b.FAILED,
     },
     {
       title: "Critical",
@@ -97,6 +106,7 @@ function IndexQueueData(data) {
       render: (CRITICAL) => {
         return <Tag color="red">{formatNumber(CRITICAL, 0)}</Tag>;
       },
+      sorter: (a, b) => a.CRITICAL - b.CRITICAL,
     },
     {
       title: "Revoked",
@@ -105,6 +115,7 @@ function IndexQueueData(data) {
       render: (REVOKED) => {
         return <Tag color="purple">{formatNumber(REVOKED, 0)}</Tag>;
       },
+      sorter: (a, b) => a.REVOKED - b.REVOKED,
     },
   ];
 }

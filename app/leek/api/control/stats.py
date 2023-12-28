@@ -141,13 +141,13 @@ def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
         queue = {
             "name": q["name"],
             "state": q.get("state", "unknown"),
-            "memory": q["memory"],
-            "consumers": q["consumers"],
+            "memory": q.get("memory", 0),
+            "consumers": q.get("consumers", 0),
             "durable": q["durable"],
             "messages": {
-                "ready": q["messages_ready"],
-                "unacknowledged": q["messages_unacknowledged"],
-                "total": q["messages"]
+                "ready": q.get("messages_ready", 0),
+                "unacknowledged": q.get("messages_unacknowledged", 0),
+                "total": q.get("messages", 0)
             },
         }
         if "message_stats" in q:
