@@ -169,3 +169,27 @@ def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
         queues.append(queue)
 
     return queues
+
+
+def purge_queue(app_name, app_env, queue_name):
+    # Retrieve subscription
+    found, subscription = lookup_subscription(app_name, app_env)
+    if not found:
+        return responses.subscription_not_found
+
+    # Prepare connection/producer
+    # noinspection PyBroadException
+    try:
+        connection, client = get_manager_client(subscription)
+        client.is_alive()
+    except NetworkError:
+        return responses.wrong_access_refused
+    except Exception:
+        return responses.broker_not_reachable
+
+    # Queues statistics is only supported when using RabbitMQ
+    if connection.transport.driver_type != "amqp":
+        return "Only RabbitMQ supported for now!", 400
+
+    client.purge_queue(connection.virtual_host, queue_name)
+    return "Queue purging initiated!", 200
