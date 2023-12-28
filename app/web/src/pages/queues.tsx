@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import {Card, Col, Row, Empty, Table, Button, Alert, Radio, Checkbox} from "antd";
-import { SyncOutlined } from "@ant-design/icons";
+import {Card, Col, Row, Empty, Table, Button, Alert, Radio, Checkbox, Space} from "antd";
+import { SyncOutlined, PauseOutlined, CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
 
 import IndexQueueDataColumns from "../components/data/IndexQueueData";
 import BrokerQueueDataColumns from "../components/data/BrokerQueueData";
@@ -10,6 +10,8 @@ import { useApplication } from "../context/ApplicationProvider";
 import { QueueService } from "../api/queue";
 import { BrokerService } from "../api/broker";
 import { handleAPIError, handleAPIResponse } from "../utils/errors";
+
+let timeout;
 
 const QueuesPage = () => {
   const queueService = new QueueService();
@@ -28,6 +30,7 @@ const QueuesPage = () => {
 
   const [statsSource, setStatsSource] = useState<string | null>("INDEX");
   const [hidePIDBoxes, setHidePIDBoxes] = useState<boolean>(true);
+  const [live, setLive] = useState<boolean>(true);
 
   function filterIndexQueues() {
     if (!currentApp) return;
@@ -82,8 +85,19 @@ const QueuesPage = () => {
   }
 
   useEffect(() => {
-    refresh();
-  }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes]);
+    // Stop refreshing queues
+    if (timeout) clearInterval(timeout);
+
+    if (live) {
+      refresh();
+      timeout = setInterval(() => {
+        refresh();
+      }, 5000);
+    }
+    else {
+      refresh();
+    }
+  }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes, live]);
 
   // UI Callbacks
   function refresh() {
@@ -106,6 +120,19 @@ const QueuesPage = () => {
   function handleStatsSourceChange(e) {
     setStatsSource(e.target.value);
   }
+
+  useEffect(() => {
+    // Stop refreshing queues
+    if (timeout) clearInterval(timeout);
+
+    timeout = setInterval(() => {
+      refresh();
+    }, 5000);
+
+    return () => {
+      clearInterval(timeout);
+    };
+  }, []);
 
   return (
     <>
@@ -162,17 +189,27 @@ const QueuesPage = () => {
                 }
               </Col>
               <Col span={3} style={{textAlign: "right"}}>
-                {
-                  statsSource === "BROKER" &&
-                  <Checkbox checked={hidePIDBoxes} onChange={(e) => setHidePIDBoxes(e.target.checked)}>
-                    Hide pid boxes
-                  </Checkbox>
-                }
-                <Button
-                    size="small"
-                    onClick={handleRefresh}
-                    icon={<SyncOutlined />}
-                />
+                <Space style={{ float: "right" }}>
+                  {
+                    statsSource === "BROKER" &&
+                    <Checkbox checked={hidePIDBoxes} onChange={(e) => setHidePIDBoxes(e.target.checked)}>
+                      Hide pid boxes
+                    </Checkbox>
+                  }
+                  <Button
+                      size="small"
+                      onClick={() => {setLive(!live)}}
+                      icon={live ? <PauseOutlined style={{color: '#fff'}} /> : <CaretRightOutlined style={{color: "#33ccb8"}}/>}
+                      type={live ? "primary" : "secondary"}
+                      danger={live}
+                  />
+                  <Button
+                      size="small"
+                      onClick={handleRefresh}
+                      icon={live ? <LoadingOutlined /> : <SyncOutlined />}
+                      disabled={live}
+                  />
+                </Space>
               </Col>
             </Row>
           }

@@ -19,7 +19,7 @@ import {
   CaretUpOutlined,
   CaretDownOutlined,
   CheckCircleOutlined,
-  ExclamationCircleOutlined,
+  ExclamationCircleOutlined, PauseOutlined, CaretRightOutlined, LoadingOutlined,
 } from "@ant-design/icons";
 
 import TaskDataColumns from "../components/data/TaskData";
@@ -44,6 +44,8 @@ const TerminalStates = [
 const { confirm } = Modal;
 const { Text } = Typography;
 
+let timeout;
+
 const TasksPage: React.FC = () => {
   // STATE
   const service = new TaskService();
@@ -59,6 +61,7 @@ const TasksPage: React.FC = () => {
     offset: 900000,
   });
   const [order, setOrder] = useState<string>("desc");
+  const [live, setLive] = useState<boolean>(false);
 
   // Data
   const columns = TaskDataColumns();
@@ -101,12 +104,19 @@ const TasksPage: React.FC = () => {
 
   // Hooks
   useEffect(() => {
-    refresh(pagination);
-  }, [currentApp, currentEnv, filters, timeFilters, order]);
+    // Stop refreshing queues
+    if (timeout) clearInterval(timeout);
 
-  useEffect(() => {
-    //console.log(tasks)
-  }, [tasks]);
+    if (live) {
+      refresh(pagination);
+      timeout = setInterval(() => {
+        refresh(pagination);
+      }, 7000);
+    }
+    else {
+      refresh(pagination);
+    }
+  }, [currentApp, currentEnv, filters, timeFilters, order, live]);
 
   // UI Callbacks
   function refresh(pager = { current: 1, pageSize: 20 }) {
@@ -280,6 +290,15 @@ const TasksPage: React.FC = () => {
         .finally(() => setTasksExporting(false));
   }
 
+  useEffect(() => {
+    // Stop refreshing queues
+    if (timeout) clearInterval(timeout);
+
+    return () => {
+      clearInterval(timeout);
+    };
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -349,9 +368,17 @@ const TasksPage: React.FC = () => {
                         </Button>
                       }
                       <Button
+                          size="small"
+                          onClick={() => {setLive(!live)}}
+                          icon={live ? <PauseOutlined style={{color: '#fff'}} /> : <CaretRightOutlined style={{color: "#33ccb8"}}/>}
+                          type={live ? "primary" : "secondary"}
+                          danger={live}
+                      />
+                      <Button
                         size="small"
                         onClick={handleRefresh}
-                        icon={<SyncOutlined />}
+                        icon={live ? <LoadingOutlined /> : <SyncOutlined />}
+                        disabled={live}
                       />
                     </Space>
                   </Col>
