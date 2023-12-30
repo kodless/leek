@@ -55,7 +55,10 @@ class AgentControl(Resource):
         """
         return self.get_agent_info()
 
-    @auth(allowed_org_names=[settings.LEEK_API_OWNER_ORG])
+    @auth(
+        allowed_org_names=[settings.LEEK_API_OWNER_ORG],
+        only_app_admins=True
+    )
     def post(self):
         """
         Start/Restart agent

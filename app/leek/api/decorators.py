@@ -40,7 +40,12 @@ def build_context():
     g.email = g.claims["email"]
 
 
-def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
+def auth(
+        _route=None,
+        allowed_org_names: List = None,
+        only_app_owner=False,
+        only_app_admins=False
+):
     def decorator(route):
         @wraps(route)
         def wrapper(*args, **kwargs):
@@ -48,18 +53,34 @@ def auth(_route=None, allowed_org_names: List = None, only_app_owner=False):
             g.app_env = request.headers.get("x-leek-app-env")
             if settings.LEEK_API_ENABLE_AUTH:
                 get_claims()
+                # General org authorization (all endpoints)
                 if len(settings.LEEK_API_WHITELISTED_ORGS) and g.org_name not in settings.LEEK_API_WHITELISTED_ORGS:
                     raise JWTError(f'Only {settings.LEEK_API_WHITELISTED_ORGS} are whitelisted to use this app')
+                # Scoped org authorization (specific endpoints)
                 if allowed_org_names:
                     if g.org_name not in allowed_org_names:
                         raise JWTError(f'Only {allowed_org_names} org can access this endpoint')
-                if only_app_owner:
+                # Scoped user authorization (specific endpoints)
+                if only_app_admins or only_app_owner:
+                    # Check if app name is set (required to get leek app)
                     if not g.app_name:
                         return responses.missing_headers
+                    app = get_app(f"{g.org_name}-{g.app_name}")
+                    # Authorize
                     try:
-                        app = get_app(f"{g.org_name}-{g.app_name}")
-                        if g.email != app.get("owner"):
-                            return responses.insufficient_permission
+                        # only_app_admins supersedes only_app_owner because app owner is already considered an admin
+                        if only_app_admins:
+                            if g.email == app.get("owner"):
+                                # Already owner no need for further check
+                                pass
+                            else:
+                                admins = app.get("admins", [])
+                                found_admins = list(filter(lambda admin: admin["email"] == g.email, admins))
+                                if not len(found_admins):
+                                    return responses.insufficient_permission
+                        elif only_app_owner:
+                            if g.email != app.get("owner"):
+                                return responses.insufficient_permission
                     except es_exceptions.NotFoundError:
                         return responses.application_not_found
                     except es_exceptions.ConnectionError:
@@ -96,8 +117,13 @@ def get_app_context(_route=None):
                 # Get/Build application
                 app = get_app(f"{org_name}-{app_name}")
                 fo_triggers = app.pop("fo_triggers")
+                admins = app.pop("admins") if app.get("admins") else []
                 triggers = [FanoutTrigger(**t) for t in fo_triggers]
-                application = Application(**app, fo_triggers=triggers)
+                application = Application(
+                    **app,
+                    fo_triggers=triggers,
+                    admins=admins
+                )
                 # Authenticate
                 if app_key not in [application.app_key, settings.LEEK_AGENT_API_SECRET]:
                     return responses.wrong_application_app_key

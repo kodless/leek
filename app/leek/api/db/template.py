@@ -321,3 +321,55 @@ def get_application_cleanup_tasks(index_alias):
         return responses.search_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist
+
+
+def uniq_admins(list_dicts):
+    uniq_list_of_dicts = {}
+    for item in list_dicts:
+        if item["email"] in uniq_list_of_dicts.keys():
+            continue
+        else:
+            uniq_list_of_dicts.update({item["email"]: item})
+    return list(uniq_list_of_dicts.values())
+
+
+def grant_application_admin(index_alias, admin_email):
+    """
+    Grant a user application admin role
+    :param admin_email: the email address of the new admin
+    :param index_alias: index_alias: application indices prefix AKA Application name
+    :return: new application definition
+    """
+    try:
+        template = get_template(index_alias)
+        app = template["template"]["mappings"]["_meta"]
+        admins = app.get("admins", [])
+        admins.append({"email": admin_email, "since": int(time.time())*1000})
+        template["template"]["mappings"]["_meta"]["admins"] = uniq_admins(admins)
+        es.connection.indices.put_index_template(name=index_alias, body=template)
+        return app, 200
+    except es_exceptions.ConnectionError:
+        return responses.search_backend_unavailable
+    except es_exceptions.NotFoundError:
+        return responses.application_not_found
+
+
+def revoke_application_admin(index_alias, admin_email):
+    """
+    Revoke a user application admin role
+    :param admin_email: the email address of the existing admin
+    :param index_alias: index_alias: application indices prefix AKA Application name
+    :return: new application definition
+    """
+    try:
+        template = get_template(index_alias)
+        app = template["template"]["mappings"]["_meta"]
+        admins = app.get("admins", [])
+        admins = filter(lambda admin: admin["email"] != admin_email, admins)
+        template["template"]["mappings"]["_meta"]["admins"] = list(admins)
+        es.connection.indices.put_index_template(name=index_alias, body=template)
+        return app, 200
+    except es_exceptions.ConnectionError:
+        return responses.search_backend_unavailable
+    except es_exceptions.NotFoundError:
+        return responses.application_not_found

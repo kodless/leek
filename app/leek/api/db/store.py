@@ -161,10 +161,17 @@ class FanoutTrigger:
 
 
 @dataclass()
+class ApplicationAdmin:
+    email: str
+    since: str
+
+
+@dataclass()
 class Application:
     app_name: str
     app_key: str
     app_description: str
     created_at: str
     owner: str
+    admins: Optional[List[ApplicationAdmin]]
     fo_triggers: List[FanoutTrigger] = field(default_factory=lambda: [])

@@ -27,6 +27,11 @@ export interface Application {
   ): any;
 
   deleteFanoutTrigger(app_name: string, trigger_id: string): any;
+
+
+  grantApplicationAdmin(app_name: string, admin_email: string): any;
+
+  revokeApplicationAdmin(app_name: string, admin_email: string): any;
 }
 
 export class ApplicationService implements Application {
@@ -126,6 +131,26 @@ export class ApplicationService implements Application {
     return request({
       method: "GET",
       path: `/v1/applications/tasks/cleanup`,
+      headers: {
+        "x-leek-app-name": app_name,
+      },
+    });
+  }
+
+  grantApplicationAdmin(app_name, admin_email) {
+    return request({
+      method: "POST",
+      path: `/v1/applications/admins/${admin_email}`,
+      headers: {
+        "x-leek-app-name": app_name,
+      },
+    });
+  }
+
+  revokeApplicationAdmin(app_name, admin_email) {
+    return request({
+      method: "DELETE",
+      path: `/v1/applications/admins/${admin_email}`,
       headers: {
         "x-leek-app-name": app_name,
       },
