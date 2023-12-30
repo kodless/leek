@@ -8,9 +8,11 @@ from flask_restx import Resource
 from schema import SchemaError
 
 from leek.api.decorators import auth
+from leek.api.errors import responses
 from leek.api.utils import generate_app_key, init_trigger
 from leek.api.schemas.application import ApplicationSchema, TriggerSchema
 from leek.api.db import template as apps
+from leek.api.conf import settings
 from leek.api.routes.api_v1 import api_v1
 
 applications_bp = Blueprint('applications', __name__, url_prefix='/v1/applications')
@@ -65,7 +67,7 @@ class Applications(Resource):
 @applications_ns.route('/purge')
 class PurgeApplication(Resource):
 
-    @auth(only_app_owner=True)
+    @auth(only_app_admins=True)
     def delete(self):
         """
         Purge application
@@ -77,7 +79,7 @@ class PurgeApplication(Resource):
 @applications_ns.route('/clean')
 class CleanApplication(Resource):
 
-    @auth(only_app_owner=True)
+    @auth(only_app_admins=True)
     def delete(self):
         """
         Clean application
@@ -161,4 +163,39 @@ class UpdateFanoutTriggers(Resource):
         return apps.delete_app_fo_trigger(
             index_alias=g.index_alias,
             trigger_id=trigger_id
+        )
+
+
+@applications_ns.route('/admins/<string:admin_email>')
+class UpdateApplicationAdmins(Resource):
+
+    @staticmethod
+    def illegible_user(email):
+        return len(settings.LEEK_API_WHITELISTED_ORGS) and (
+                email.split("@")[1] in settings.LEEK_API_WHITELISTED_ORGS
+                or email.split("@")[0] in settings.LEEK_API_WHITELISTED_ORGS
+        )
+
+    @auth(only_app_owner=True)
+    def post(self, admin_email):
+        """
+        Add application admin
+        """
+        if not settings.LEEK_API_ENABLE_AUTH:
+            return responses.leek_auth_disabled
+        if not self.illegible_user(admin_email):
+            return responses.ineligible_admin
+        return apps.grant_application_admin(
+            index_alias=g.index_alias,
+            admin_email=admin_email
+        )
+
+    @auth(only_app_owner=True)
+    def delete(self, admin_email):
+        """
+        Remove application admin
+        """
+        return apps.revoke_application_admin(
+            index_alias=g.index_alias,
+            admin_email=admin_email
         )

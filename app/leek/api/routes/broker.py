@@ -43,7 +43,7 @@ class Queues(Resource):
 @broker_ns.route('/queue/<string:queue_name>/purge')
 class PurgeQueue(Resource):
 
-    @auth(only_app_owner=True)
+    @auth(only_app_admins=True)
     def delete(self, queue_name):
         """
         Purge a specific queue

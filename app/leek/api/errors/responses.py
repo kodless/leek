@@ -119,6 +119,21 @@ task_not_routable = {
                         }
                     }, 400
 
+leek_auth_disabled = {
+                         "error": {
+                             "code": "400007",
+                             "message": "Leek auth is disabled",
+                             "reason": "Please enable first using LEEK_API_ENABLE_AUTH"
+                         }
+                     }, 400
+ineligible_admin = {
+                        "error": {
+                            "code": "400008",
+                            "message": "Ineligible admin",
+                            "reason": "User email is not part of LEEK_API_WHITELISTED_ORGS"
+                        }
+                    }, 400
+
 wrong_access_refused = {
                            "error": {
                                "code": "401004",

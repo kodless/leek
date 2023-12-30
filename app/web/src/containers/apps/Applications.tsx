@@ -20,6 +20,7 @@ import { ExclamationCircleOutlined, AppstoreOutlined } from "@ant-design/icons";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierCaveDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
+import Admins from "./Admins";
 import Triggers from "./Triggers";
 import AppsList from "./AppsList";
 
@@ -341,6 +342,11 @@ const Applications = () => {
                   </>
                 )}
               </Card>
+
+              <Admins
+                  selectedApp={selectedApp}
+                  setSelectedApp={setSelectedApp}
+              />
 
               <Triggers
                 selectedApp={selectedApp}
