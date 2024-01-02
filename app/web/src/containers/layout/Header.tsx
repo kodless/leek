@@ -30,6 +30,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { useApplication } from "../../context/ApplicationProvider";
 import env from "../../utils/vars";
 import { useThemeSwitcher } from "react-css-theme-switcher";
+import useSound from "use-sound";
 
 const { SubMenu } = Menu;
 const tabs = [
@@ -55,6 +56,15 @@ const Header = () => {
   } = useApplication();
 
   const { switcher, currentTheme, themes } = useThemeSwitcher();
+
+  const [playOn] = useSound(
+      '/sounds/switch-on.mp3',
+      { volume: 0.50 }
+  );
+  const [playOff] = useSound(
+      '/sounds/switch-off.mp3',
+      { volume: 0.50 }
+  );
 
   function handleAppSelect(e) {
     selectApplication(e.key);
@@ -105,7 +115,14 @@ const Header = () => {
   const toggleTheme = (isChecked) => {
     if (isChecked) localStorage.setItem("theme", "dark");
     else localStorage.setItem("theme", "light");
-    switcher({ theme: isChecked ? themes.dark : themes.light });
+    if (isChecked) {
+      switcher({ theme: themes.dark });
+      playOff()
+    }
+    else {
+      switcher({ theme: themes.light });
+      playOn()
+    }
   };
 
   return (
