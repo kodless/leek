@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
+import useSound from 'use-sound';
 import {
   Row,
   Col,
@@ -12,14 +13,19 @@ import {
   Space,
   Typography,
   Modal,
-  List,
+  List, Tooltip,
 } from "antd";
 import {
   SyncOutlined,
   CaretUpOutlined,
   CaretDownOutlined,
   CheckCircleOutlined,
-  ExclamationCircleOutlined, PauseOutlined, CaretRightOutlined, LoadingOutlined,
+  ExclamationCircleOutlined,
+  PauseOutlined,
+  CaretRightOutlined,
+  LoadingOutlined,
+  SoundOutlined,
+  NotificationOutlined
 } from "@ant-design/icons";
 
 import TaskDataColumns from "../components/data/TaskData";
@@ -62,6 +68,7 @@ const TasksPage: React.FC = () => {
   });
   const [order, setOrder] = useState<string>("desc");
   const [live, setLive] = useState<boolean>(false);
+  const [alarm, setAlarm] = useState<boolean>(false);
 
   // Data
   const columns = TaskDataColumns();
@@ -73,6 +80,25 @@ const TasksPage: React.FC = () => {
   const [tasksRetrying, setTasksRetrying] = useState<boolean>();
   const [tasksExporting, setTasksExporting] = useState<boolean>();
   const [tasks, setTasks] = useState<any[]>([]);
+  const prevTasksRef = useRef<any[]>([]);
+
+  // Sounds
+  const [playActive] = useSound(
+      '/sounds/pop-down.mp3',
+      { volume: 0.35 }
+  );
+  const [playOn] = useSound(
+      '/sounds/pop-up-on.mp3',
+      { volume: 0.35 }
+  );
+  const [playOff] = useSound(
+      '/sounds/pop-up-off.mp3',
+      { volume: 0.35 }
+  );
+  const [playAlarm] = useSound(
+      '/sounds/fanfare.mp3',
+      { volume: 0.35 }
+  );
 
   // API Calls
   function filterTasks(pager = { current: 1, pageSize: 20 }) {
@@ -103,6 +129,25 @@ const TasksPage: React.FC = () => {
   }
 
   // Hooks
+  useEffect(() => {
+    /**
+     * Play alarm only if:
+     * 1: live mode is on
+     * 2: alarm mode is on
+     * 3: there was 0 tasks during previous lookup
+     * 4: there is one or more tasks during current fetch
+     */
+    if (live && alarm && prevTasksRef.current.length == 0 && tasks.length > 0) {
+      playAlarm()
+    }
+    prevTasksRef.current = tasks;
+
+    // Failsafe, disable alarm when tasks are discovered.
+    if (tasks.length > 0) {
+      setAlarm(false)
+    }
+  }, [tasks]);
+
   useEffect(() => {
     // Stop refreshing queues
     if (timeout) clearInterval(timeout);
@@ -358,8 +403,7 @@ const TasksPage: React.FC = () => {
                       }
                       {tasks.length > 0 &&
                         <Button
-                            ghost
-                            type="default"
+                            type="secondary"
                             size="small"
                             onClick={exportByQuery}
                             loading={tasksExporting}
@@ -367,12 +411,32 @@ const TasksPage: React.FC = () => {
                           Export Filtered
                         </Button>
                       }
+                      <Tooltip
+                          title={"Play sound alert when one or more tasks found, only applicable when live mode is on and table is empty."}
+                      >
+                        <Button
+                            size="small"
+                            onClick={() => {setAlarm(!alarm)}}
+                            icon={alarm ? <SoundOutlined style={{color: '#333'}} /> : <NotificationOutlined/>}
+                            type={alarm ? "primary" : "secondary"}
+                            style={alarm ? {background: "gold", borderColor: "gold"} : {}}
+                            onMouseDown={playActive}
+                            onMouseUp={() => {
+                              alarm ? playOff() : playOn();
+                            }}
+                            disabled={!live || tasks.length>0}
+                        />
+                      </Tooltip>
                       <Button
                           size="small"
                           onClick={() => {setLive(!live)}}
                           icon={live ? <PauseOutlined style={{color: '#fff'}} /> : <CaretRightOutlined style={{color: "#33ccb8"}}/>}
                           type={live ? "primary" : "secondary"}
                           danger={live}
+                          onMouseDown={playActive}
+                          onMouseUp={() => {
+                            live ? playOff() : playOn();
+                          }}
                       />
                       <Button
                         size="small"

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import useSound from 'use-sound';
 import {Card, Col, Row, Empty, Table, Button, Alert, Radio, Tooltip, Space, message, Typography, Modal} from "antd";
 import {
   SyncOutlined,
@@ -43,6 +44,19 @@ const QueuesPage = () => {
   const [statsSource, setStatsSource] = useState<string | null>("BROKER");
   const [hidePIDBoxes, setHidePIDBoxes] = useState<boolean>(true);
   const [live, setLive] = useState<boolean>(true);
+
+  const [playActive] = useSound(
+      '/sounds/pop-down.mp3',
+      { volume: 0.35 }
+  );
+  const [playOn] = useSound(
+      '/sounds/pop-up-on.mp3',
+      { volume: 0.35 }
+  );
+  const [playOff] = useSound(
+      '/sounds/pop-up-off.mp3',
+      { volume: 0.35 }
+  );
 
   function filterIndexQueues() {
     if (!currentApp) return;
@@ -244,8 +258,11 @@ const QueuesPage = () => {
                           onClick={() => {setHidePIDBoxes(!hidePIDBoxes)}}
                           icon={hidePIDBoxes ? <EyeInvisibleOutlined style={{color: '#333'}} /> : <EyeOutlined style={{color: "#33ccb8"}}/>}
                           type={hidePIDBoxes ? "primary" : "secondary"}
-                          danger={hidePIDBoxes}
                           style={hidePIDBoxes ? {background: "gold", borderColor: "gold"} : {}}
+                          onMouseDown={playActive}
+                          onMouseUp={() => {
+                            hidePIDBoxes ? playOff() : playOn();
+                          }}
                       />
                     </Tooltip>
                   }
@@ -269,6 +286,10 @@ const QueuesPage = () => {
                         icon={live ? <PauseOutlined style={{color: '#fff'}} /> : <CaretRightOutlined style={{color: "#33ccb8"}}/>}
                         type={live ? "primary" : "secondary"}
                         danger={live}
+                        onMouseDown={playActive}
+                        onMouseUp={() => {
+                          live ? playOff() : playOn();
+                        }}
                     />
                   </Tooltip>
                   <Button
