@@ -4,18 +4,25 @@ SERVICE=$1
 ENABLE_API=$(echo "${LEEK_ENABLE_API-false}" | tr '[:upper:]' '[:lower:]')
 ENABLE_AGENT=$(echo "${LEEK_ENABLE_AGENT-false}" | tr '[:upper:]' '[:lower:]')
 ENABLE_WEB=$(echo "${LEEK_ENABLE_WEB-false}" | tr '[:upper:]' '[:lower:]')
+ENABLE_DDTRACE=$(echo "${LEEK_ENABLE_DDTRACE-false}" | tr '[:upper:]' '[:lower:]')
 
 case ${SERVICE} in
 
   "api")
     if [ "${ENABLE_API}" = true ]; then
-      exec gunicorn --reload -c /opt/app/leek/api/server/gunicorn.py leek.api.server.wsgi:app
+      if [ "${ENABLE_DDTRACE}" = true ]; then
+        exec ddtrace-run gunicorn --reload -c /opt/app/leek/api/server/gunicorn.py leek.api.server.wsgi:app
+      else
+        exec gunicorn --reload -c /opt/app/leek/api/server/gunicorn.py leek.api.server.wsgi:app
     fi
     ;;
 
   "agent")
     if [ "${ENABLE_AGENT}" = true ]; then
-      exec python -m leek.agent.agent
+      if [ "${ENABLE_DDTRACE}" = true ]; then
+        exec ddtrace-run python -m leek.agent.agent
+      else
+        exec python -m leek.agent.agent
     fi
     ;;
 
