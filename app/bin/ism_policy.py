@@ -36,7 +36,7 @@ def check_im_eligibility(conn: Elasticsearch):
         else:
             abort(f"Leek does not support ISM with {es_ver_info['distribution']}")
     else:
-        abort(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
+        abort(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing! ${es_ver_info}")
     logger.info(f"Detected {distribution} as ElasticSearch distribution!")
     return dist, im_endpoint
 
