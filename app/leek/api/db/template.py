@@ -41,7 +41,11 @@ def check_im_eligibility():
         else:
             logger.warning(f"Leek does not support ISM with {es_ver_info['distribution']}")
     else:
-        logger.warning(f"Could not create IM policy, ElasticSearch build_flavor/distribution fields missing!")
+        logger.warning(f"ElasticSearch build_flavor/distribution fields missing, fallback to OpenSearch! ${es_ver_info}")
+        # will favor OpenSearch
+        dist = "OpenSearch"
+        distribution = f"OpenSearch={version_number}"
+
     logger.info(f"Detected {distribution} as ElasticSearch distribution!")
     return dist
 
