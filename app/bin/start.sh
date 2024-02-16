@@ -14,6 +14,7 @@ case ${SERVICE} in
         exec ddtrace-run gunicorn --reload -c /opt/app/leek/api/server/gunicorn.py leek.api.server.wsgi:app
       else
         exec gunicorn --reload -c /opt/app/leek/api/server/gunicorn.py leek.api.server.wsgi:app
+      fi
     fi
     ;;
 
@@ -23,6 +24,7 @@ case ${SERVICE} in
         exec ddtrace-run python -m leek.agent.agent
       else
         exec python -m leek.agent.agent
+      fi
     fi
     ;;
 
