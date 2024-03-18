@@ -133,7 +133,8 @@ def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
     # noinspection PyBroadException
     try:
         connection, client = get_manager_client(subscription)
-        client.is_alive()
+        if connection.transport.driver_type == "amqp":
+            client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
     except Exception:
@@ -192,7 +193,8 @@ def purge_queue(app_name, app_env, queue_name):
     # noinspection PyBroadException
     try:
         connection, client = get_manager_client(subscription)
-        client.is_alive()
+        if connection.transport.driver_type == "amqp":
+            client.is_alive()
     except NetworkError:
         return responses.wrong_access_refused
     except Exception:
