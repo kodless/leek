@@ -112,6 +112,17 @@ def get_fanout_queue_drift(index_alias, app_name, app_env):
     return result, 200
 
 
+def get_rate_or_zero(message_stats, rate_type):
+    """
+    RabbitMQ sometimes does not return messages rates for some queues
+    :return: rate if reported otherwise 0
+    """
+    try:
+        return message_stats[rate_type]["rate"]
+    except KeyError:
+        return 0
+
+
 def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
     # Retrieve subscription
     found, subscription = lookup_subscription(app_name, app_env)
@@ -153,9 +164,9 @@ def get_subscription_queues(app_name, app_env, hide_pid_boxes=True):
         if "message_stats" in q:
             queue.update({
                 "rates": {
-                    "incoming": q["message_stats"]["publish_details"]["rate"],
-                    "deliver_get": q["message_stats"]["deliver_get_details"]["rate"],
-                    "ack": q["message_stats"]["ack_details"]["rate"],
+                    "incoming": get_rate_or_zero(q["message_stats"], "publish_details"),
+                    "deliver_get": get_rate_or_zero(q["message_stats"], "deliver_get_details"),
+                    "ack": get_rate_or_zero(q["message_stats"], "ack_details"),
                 }
             })
         else:
