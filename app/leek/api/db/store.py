@@ -151,7 +151,7 @@ class Task(EV):
 class FanoutTrigger:
     id: str
     enabled: bool
-    slack_wh_url: str
+    wh_url: str
     type: str = "slack"
     states: List = field(default_factory=lambda: [])
     envs: List = field(default_factory=lambda: [])
