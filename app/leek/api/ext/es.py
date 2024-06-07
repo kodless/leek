@@ -13,5 +13,5 @@ class ESExtension(BaseExtension):
 
     def init_app(self, app):
         app.extensions["es"] = self
-        self.connection = Elasticsearch(settings.LEEK_ES_URL)
+        self.connection = Elasticsearch(settings.LEEK_ES_URL, api_key=settings.LEEK_ES_API_KEY)
         logger.info("Connected to elastic search backend!")

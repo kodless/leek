@@ -12,6 +12,7 @@ Leek components are configured using environment variables.
 |:---- | ---- | ---- |
 | `LEEK_ENABLE_API` | Whether to enable or disable the API. | false |
 | `LEEK_ES_URL` | ElasticSearch index db domain URL | None |
+| `LEEK_ES_API_KEY` | ElasticSearch api key | None |
 | `LEEK_API_LOG_LEVEL` | Log level, set it to ERROR after making sure that the agent can reach brokers and api. | INFO |
 | `LEEK_WEB_URL` | Frontend application url, will be used when constructing slack triggers notifications. | None |
 | `LEEK_API_OWNER_ORG` | The owner organization name that can manage leek, it should be domain name for gsuite organizations, and google username for personal account. | None |
