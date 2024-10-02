@@ -19,8 +19,11 @@ services:
       - LEEK_API_URL=http://0.0.0.0:5000
       - LEEK_WEB_URL=http://0.0.0.0:8000
       - LEEK_ES_URL=http://es01:9200
+      - LEEK_ENABLE_DDTRACE=false
       # Authentication
       - LEEK_API_ENABLE_AUTH=false
+      # App
+      - LEEK_CREATE_APP_IF_NOT_EXIST=true
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
