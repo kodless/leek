@@ -32,3 +32,8 @@ LEEK_ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 
 # Control
 LEEK_CONTROL_EXCHANGE_NAME = os.environ.get("LEEK_CONTROL_EXCHANGE_NAME", "celery")
+
+# Create app if not exist, only supported when leek auth is disabled.
+# This is useful for dev / demo environments when developers want to kickstart the stack
+# without worrying about manual interventions like creating leek app from Leek UI.
+LEEK_CREATE_APP_IF_NOT_EXIST = get_bool("LEEK_CREATE_APP_IF_NOT_EXIST", default="false")
