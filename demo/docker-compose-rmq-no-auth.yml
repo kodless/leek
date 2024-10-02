@@ -16,6 +16,8 @@ services:
       - LEEK_ES_URL=http://es01:9200
       # Authentication
       - LEEK_API_ENABLE_AUTH=false
+      # App
+      - LEEK_CREATE_APP_IF_NOT_EXIST=true
       # Subscriptions
       - |
         LEEK_AGENT_SUBSCRIPTIONS=
