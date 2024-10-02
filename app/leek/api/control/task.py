@@ -41,12 +41,33 @@ def broadcast_worker_command(command, arguments, producer):
     )
 
 
+def get_exchange(task):
+    """
+    1. Use default RabbitMQ exchange `""` if exchange is empty.
+    2. Use default celery exchange if exchange is missing.
+
+    In some cases the exchange attribute is set to "", this indicates a default RabbitMQ exchange is being used.
+
+    The default exchange is a direct exchange with no name (empty string) pre-declared by the broker.
+    It has one special property that makes it very useful for simple applications: every queue that is created is
+    automatically bound to it with a routing key which is the same as the queue name.
+
+    the default exchange makes it seem like it is possible to deliver messages directly to queues,
+    even though that is not technically what is happening.
+    :param task:
+    :return: exchange
+    """
+    return task.get("exchange", "tasks")
+
+
 def retry_task(app_name, task_doc):
     if task_doc.get("state") not in STATES_TERMINAL:
         return responses.task_retry_state_precondition_failed
 
+    exchange = get_exchange(task_doc)
+
     # Check if task is routable
-    if not task_doc.get("exchange", "tasks") and not task_doc.get("routing_key"):
+    if not task_doc.get("routing_key"):
         return responses.task_not_routable
 
     # Check if agent is local
@@ -120,7 +141,7 @@ def retry_task(app_name, task_doc):
     try:
         producer.publish(
             body,
-            exchange=task_doc["exchange"],
+            exchange=exchange,
             routing_key=task_doc["routing_key"],
             serializer="json",
             compression=None,
@@ -145,8 +166,7 @@ def retry_task(app_name, task_doc):
         "eta": None,
         "expires": None,
         # --
-        "queue": task_doc["queue"],
-        "exchange": task_doc["exchange"],
+        "exchange": exchange,
         "routing_key": task_doc["routing_key"],
         # --
         "hostname": "leek@control",
@@ -155,6 +175,9 @@ def retry_task(app_name, task_doc):
         "clock": 1,
         "timestamp": time.time(),
     }
+    # Celery does not always add `queue` to workers event. ignore when missing.
+    if "queue" in task_doc and task_doc["queue"] is not None:
+        sent_event["queue"] = task_doc["queue"]
     # noinspection PyBroadException
     try:
         producer.publish(
@@ -202,13 +225,15 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
 
     for task_doc in tasks_docs:
         task = task_doc["_source"]
+        exchange = get_exchange(task)
+
         # Check if task is in terminal state
         if task.get("state") not in STATES_RETRY_ALLOWED:
             # Task state precondition failed
             ineligible_tasks_ids.append(task["uuid"])
 
         # Check if task is routable
-        elif not task.get("exchange", "tasks") and not task.get("routing_key"):
+        elif not task.get("routing_key"):
             # Task not routable
             ineligible_tasks_ids.append(task["uuid"])
 
@@ -238,8 +263,8 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
 
             # Prepare task
             tasks.append(dict(
-                queue=task["queue"],
-                exchange=task["exchange"],
+                queue=task.get("queue"),
+                exchange=exchange,
                 routing_key=task["routing_key"],
                 original_id=task["uuid"],
                 headers={
@@ -317,7 +342,6 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
             "eta": None,
             "expires": None,
             # --
-            "queue": task["queue"],
             "exchange": task["exchange"],
             "routing_key": task["routing_key"],
             # --
@@ -327,6 +351,9 @@ def retry_tasks(app_name, app_env, tasks_docs: List[dict], dry_run=True):
             "clock": 1,
             "timestamp": time.time(),
         }
+        # Celery does not always add `queue` to workers event. ignore when missing.
+        if task["queue"] is not None:
+            sent_event["queue"] = task["queue"]
         # noinspection PyBroadException
         try:
             producer.publish(
