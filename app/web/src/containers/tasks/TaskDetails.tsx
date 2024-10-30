@@ -308,7 +308,7 @@ export default (props) => {
               LINK
             </Text>
             <a
-                href={`https://app.datadoghq.com/apm/traces?query=%40celery.correlation_id%3A${props.task.uuid}%20&start=${twoWeeksFromNow()}&end=${Date.now()}&paused=false`}
+                href={`https://app.datadoghq.com/apm/traces?query=%40celery.correlation_id%3A${props.task.uuid}%20&start=${twoWeeksFromNow()}&end=${Date.now()}&paused=false&historicalData=true`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{color: "orchid"}}
