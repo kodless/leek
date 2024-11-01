@@ -44,6 +44,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
 
   const [seenTasks, setSeenTasks] = useState([]);
   const [seenRoutingKeys, setSeenRoutingKeys] = useState([]);
+  const [seenExchanges, setSeenExchanges] = useState([]);
   const [seenQueues, setSeenQueues] = useState([]);
   const [seenWorkers, setSeenWorkers] = useState([]);
 
@@ -51,6 +52,8 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
   const [seenTasksFetching, setSeenTasksFetching] = useState<boolean>();
   const [seenRoutingKeysFetching, setSeenRoutingKeysFetching] =
     useState<boolean>();
+  const [seenExchangesFetching, setSeenExchangesFetching] =
+      useState<boolean>();
   const [seenQueuesFetching, setSeenQueuesFetching] = useState<boolean>();
   const [seenWorkersFetching, setSeenWorkersFetching] = useState<boolean>();
 
@@ -88,6 +91,19 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
       }, handleAPIError)
       .catch(handleAPIError)
       .finally(() => setSeenRoutingKeysFetching(false));
+  }
+
+  function getSeenExchanges(open) {
+    if (!currentApp || !open) return;
+    setSeenExchangesFetching(true);
+    metricsService
+        .getSeenExchanges(currentApp, currentEnv, props.filters)
+        .then(handleAPIResponse)
+        .then((result: any) => {
+          setSeenExchanges(result.aggregations.seen_exchanges.buckets);
+        }, handleAPIError)
+        .catch(handleAPIError)
+        .finally(() => setSeenExchangesFetching(false));
   }
 
   function getSeenQueues(open) {
@@ -219,6 +235,22 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
               allowClear
             >
               {seenRoutingKeys.map((rq, key) => badgedOption(rq))}
+            </Select>
+          </FormItem>
+        </Row>
+        <Row>
+          <FormItem name="exchange" style={{ width: "100%" }}>
+            <Select
+                placeholder="Exchange"
+                mode="multiple"
+                style={{ width: "100%" }}
+                notFoundContent={
+                  seenExchangesFetching ? loadingIndicator : null
+                }
+                onDropdownVisibleChange={getSeenExchanges}
+                allowClear
+            >
+              {seenExchanges.map((exchange, key) => badgedOption(exchange, "", "default exchange"))}
             </Select>
           </FormItem>
         </Row>

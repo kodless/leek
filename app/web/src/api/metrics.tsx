@@ -74,7 +74,7 @@ export class MetricsService implements Metrics {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {
       seen_tasks: {
-        terms: { field: "name", size: 1000 },
+        terms: { field: "name", size: 1000, missing: "N/A", min_doc_count: 0 },
       },
     });
   }
@@ -83,7 +83,7 @@ export class MetricsService implements Metrics {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {
       seen_queues: {
-        terms: { field: "queue", size: 100 },
+        terms: { field: "queue", size: 100, missing: "N/A", min_doc_count: 0 },
       },
     });
   }
@@ -92,7 +92,16 @@ export class MetricsService implements Metrics {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {
       seen_routing_keys: {
-        terms: { field: "routing_key", size: 100 },
+        terms: { field: "routing_key", size: 100, missing: "N/A", min_doc_count: 0 },
+      },
+    });
+  }
+
+  getSeenExchanges(app_name, app_env, filters: TimeFilters) {
+    let query = [getTimeFilterQuery(filters)];
+    return this.aggregate(app_name, app_env, query, {
+      seen_exchanges: {
+        terms: { field: "exchange", size: 100, missing: "N/A", min_doc_count: 0 },
       },
     });
   }

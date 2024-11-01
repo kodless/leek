@@ -1,2 +1,2 @@
-celery==4.4.2
+celery==5.4.0
 redis==3.5.3
