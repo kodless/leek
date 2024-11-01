@@ -9,11 +9,11 @@ const badgeStyle = {
   fontWeight: 600,
 };
 
-export const badgedOption = (item) => {
+export const badgedOption = (item, represent_value=null, with_value=null) => {
   return (
     <Option key={item.key} value={item.key}>
       <Row style={{ width: "100%" }} justify="space-between">
-        <Col>{item.key}</Col>
+        <Col>{item.key === represent_value ? with_value : item.key}</Col>
         <Col>
           <Badge
             count={item.doc_count}

@@ -1,6 +1,19 @@
 import { getTimeFilterQuery, search } from "./search";
 import {request, buildQueryString} from "./request";
 
+function remove_missing_value(terms, missing_term) {
+  if (terms && terms.length) {
+    let index = terms.indexOf(missing_term);
+
+    if (index !== -1) {
+      let new_terms = [...terms];
+      new_terms.splice(index, 1);
+      return new_terms;
+    }
+  }
+  return terms;
+}
+
 export function getFilterQuery(
   app_env: string | undefined,
   filters: TaskFilters
@@ -19,22 +32,30 @@ export function getFilterQuery(
     else if (filters.rejection_outcome === "ignored")
       rejection_filter = { match: { requeue: { query: false } } };
   }
+  let queues = remove_missing_value(filters.exchange, "N/A")
+  let exchanges = remove_missing_value(filters.exchange, "N/A")
+  let routing_keys = remove_missing_value(filters.routing_key, "N/A")
+  let names = remove_missing_value(filters.name, "N/A")
   let f = [
     { match: { kind: "task" } },
     app_env && { match: { app_env: app_env } },
-    filters.name && filters.name.length && { terms: { name: filters.name } },
+    names && names.length && { terms: { name: names } },
     filters.uuid && { match: { uuid: filters.uuid } },
     filters.state &&
       filters.state.length && { terms: { state: filters.state } },
     filters.worker &&
       filters.worker.length && { terms: { worker: filters.worker } },
     filters.client && { term: { client: filters.client } },
-    filters.routing_key &&
-      filters.routing_key.length && {
-        terms: { routing_key: filters.routing_key },
+    routing_keys &&
+      routing_keys.length && {
+        terms: { routing_key: routing_keys },
       },
-    filters.queue &&
-      filters.queue.length && { terms: { queue: filters.queue } },
+    exchanges &&
+      exchanges.length && {
+        terms: { exchange: exchanges },
+      },
+    queues &&
+      queues.length && { terms: { queue: queues } },
     filters.parent && { match: { parent: filters.parent } },
     filters.runtime && {
       range: { runtime: { [filters.runtime_op || "gte"]: filters.runtime } },
@@ -66,6 +87,35 @@ export function getFilterQuery(
   return f.filter(Boolean);
 }
 
+export function getMustNotFilterQuery(
+    app_env: string | undefined,
+    filters: TaskFilters
+) {
+  let f = [
+    filters.exchange &&
+    filters.exchange.length &&
+    filters.exchange.indexOf("N/A") !== -1 && {
+      exists: { field: "exchange" },
+    },
+    filters.routing_key &&
+    filters.routing_key.length &&
+    filters.routing_key.indexOf("N/A") !== -1 && {
+      exists: { field: "routing_key" },
+    },
+    filters.queue &&
+    filters.queue.length &&
+    filters.queue.indexOf("N/A") !== -1 && {
+      exists: { field: "queue" },
+    },
+    filters.name &&
+    filters.name.length &&
+    filters.name.indexOf("N/A") !== -1 && {
+      exists: { field: "name" },
+    },
+  ];
+  return f.filter(Boolean);
+}
+
 export interface TaskFilters {
   name: string[] | null;
   uuid: string | null;
@@ -73,6 +123,7 @@ export interface TaskFilters {
   worker: string[] | null;
   client: string | null;
   routing_key: string[] | null;
+  exchange: string[] | null;
   queue: string[] | null;
   parent: string | null;
   runtime: number | null;
@@ -129,6 +180,7 @@ export class TaskService implements Task {
         query: {
           bool: {
             must: getFilterQuery(app_env, filters),
+            must_not: getMustNotFilterQuery(app_env, filters),
           },
         },
         sort: [{ timestamp: { order: order } }],
