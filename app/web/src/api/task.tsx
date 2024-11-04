@@ -87,7 +87,7 @@ export function getFilterQuery(
   return f.filter(Boolean);
 }
 
-export function getMustNotFilterQuery(
+export function getMissingTermsFilterQuery(
     app_env: string | undefined,
     filters: TaskFilters
 ) {
@@ -180,7 +180,7 @@ export class TaskService implements Task {
         query: {
           bool: {
             must: getFilterQuery(app_env, filters),
-            must_not: getMustNotFilterQuery(app_env, filters),
+            must_not: getMissingTermsFilterQuery(app_env, filters),
           },
         },
         sort: [{ timestamp: { order: order } }],
