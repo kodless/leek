@@ -141,7 +141,7 @@ def get_workflow_info(
 ):
     connection = es.connection
     root_task = connection.get(index=index_alias, id=root_id)["_source"]
-    wf_start_time = root_task["queued_at"]
+    wf_start_time = root_task.get("queued_at", root_task.get("received_at", root_task.get("started_at", root_task.get("timestamp"))))
     wf_duration = get_workflow_duration(index_alias, app_env, root_id, wf_start_time)
     if wf_duration is None:
         return None
