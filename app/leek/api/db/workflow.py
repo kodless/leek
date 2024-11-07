@@ -218,6 +218,8 @@ def get_celery_workflow_tree(
     workflow_tree = build_workflow_tree(docs, wf_info["root"])
     wf_info.update({
         "total": len(docs)+1,
-        "workflow": workflow_tree
+        "workflow": workflow_tree,
+        "docs": docs,
+        "root_task": wf_info["root"],
     })
     return wf_info
