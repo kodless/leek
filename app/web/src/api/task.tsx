@@ -32,7 +32,7 @@ export function getFilterQuery(
     else if (filters.rejection_outcome === "ignored")
       rejection_filter = { match: { requeue: { query: false } } };
   }
-  let queues = remove_missing_value(filters.exchange, "N/A")
+  let queues = remove_missing_value(filters.queue, "N/A")
   let exchanges = remove_missing_value(filters.exchange, "N/A")
   let routing_keys = remove_missing_value(filters.routing_key, "N/A")
   let names = remove_missing_value(filters.name, "N/A")
