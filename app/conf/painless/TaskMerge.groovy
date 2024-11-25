@@ -137,6 +137,6 @@ if (ctx._source.parent_id != null && ctx._source.parent_id.equals(ctx._source.id
 
 // Increment events count
 ctx._source.events_count = events_count + new_events_count;
-// Keep only record of past 21 states transitions
+// Record only past 21 task states transitions
 events = [params.state] + events[0..21]
 ctx._source.events = events;

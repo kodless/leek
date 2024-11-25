@@ -173,6 +173,6 @@ class Task(EV):
 
         # Increment events count
         self.events_count = events_count + 1
-        # Keep only record of past 21 states transitions
+        # Record only past 21 task states transitions
         events = [coming.state, *events[0:20]]
         self.events = events
