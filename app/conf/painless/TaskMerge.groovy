@@ -38,9 +38,12 @@ Map TaskStateFields = [
     "REVOKED": ["revoked_at", "terminated", "expired", "signum"]
 ];
 
-int events_count = ctx._source.events_count;
 int new_events_count = params.events_count;
+List new_events = params.events;
+
+int events_count = ctx._source.events_count;
 List events = ctx._source.events;
+
 List attrs_to_upsert = [];
 
 if (ctx._source.uuid == null || STATES_TERMINAL.contains(params.state)) {
@@ -138,5 +141,8 @@ if (ctx._source.parent_id != null && ctx._source.parent_id.equals(ctx._source.id
 // Increment events count
 ctx._source.events_count = events_count + new_events_count;
 // Record only past 21 task states transitions
-events = [params.state] + events[0..21]
+events.addAll(0, new_events);
+if (events.size() > 21) {
+    events = events.subList(0, 21);
+}
 ctx._source.events = events;
