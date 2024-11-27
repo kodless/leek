@@ -70,7 +70,8 @@ def add_custom_attributes(kind, event, app_env) -> Tuple[str, Union[Task, Worker
         # Adapt hostname
         origin = "client" if event["state"] == "QUEUED" else "worker"
         event[origin] = event.pop("hostname")
-        event["events"] = [f"A:{event['state']}"]
+        event["events"] = [event['state']]
+        # event["events"] = [f"A:{event['state']}"]
         event_obj = Task(id=event["uuid"], **event)
     else:
         event_obj = Worker(id=event["hostname"], **event)
