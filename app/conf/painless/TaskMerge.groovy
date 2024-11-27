@@ -45,6 +45,8 @@ int events_count = ctx._source.events_count;
 List events = ctx._source.events;
 
 List attrs_to_upsert = [];
+List dd = [];
+dd.a
 
 if (ctx._source.uuid == null || STATES_TERMINAL.contains(params.state)) {
     // First time to index or Coming event in terminal state and safe to merge
@@ -153,11 +155,11 @@ if (ctx._source.parent_id != null && ctx._source.parent_id.equals(ctx._source.id
 // Increment events count
 ctx._source.events_count = events_count + new_events_count;
 // Track the merge operation by the index (I)
-if (ctx._source.uuid != null) {
-    for (int i = 0; i < new_events.size(); i++) {
-        new_events.set(i, "I:"+new_events[i]);
-    }
-}
+// if (ctx._source.uuid != null) {
+//     for (int i = 0; i < new_events.size(); i++) {
+//         new_events.set(i, "I:"+new_events[i]);
+//     }
+// }
 // Record only past 21 task states transitions
 events.addAll(0, new_events);
 if (events.size() > 21) {
