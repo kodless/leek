@@ -62,6 +62,14 @@ else if (STATES_TERMINAL.contains(ctx._source.state)) {
 
     // Get safe attrs from coming task
     attrs_to_upsert.addAll(TaskStateFields[params.state]);
+    if (QUEUED != params.state && new_events.contains(QUEUED)) {
+        // QUEUED already merged by Agent, we should not lose its attributes when merged by Index
+        attrs_to_upsert.addAll(TaskStateFields[QUEUED]);
+    }
+    if (RECEIVED != params.state && new_events.contains(RECEIVED)) {
+        // RECEIVED already merged by Agent, we should not lose its attributes when merged by Index
+        attrs_to_upsert.addAll(TaskStateFields[RECEIVED]);
+    }
     // States with same attrs
     if (params.state == RETRY){
         if (![FAILED, CRITICAL].contains(ctx._source.state)){
@@ -71,6 +79,10 @@ else if (STATES_TERMINAL.contains(ctx._source.state)) {
     }
     else if ([QUEUED, RECEIVED].contains(params.state)) {
         // QUEUED|RECEIVED event came late, update with attrs send only by QUEUED|RECEIVED events
+        attrs_to_upsert.addAll(TaskStateFields.QUEUED_RECEIVED);
+    }
+    else if (new_events.contains(QUEUED) || new_events.contains(RECEIVED)) {
+        // QUEUED|RECEIVED already merged by Agent, we should not lose their attributes when merged by Index
         attrs_to_upsert.addAll(TaskStateFields.QUEUED_RECEIVED);
     }
     // Merge

@@ -6,6 +6,7 @@ from kombu import Queue
 app = Celery('tasks', broker=os.environ['BROKER_URL'])
 
 app.conf.task_send_sent_event = True
+app.conf.task_track_started = True
 app.conf.imports = (
     "leek_demo.tasks.low",
     "leek_demo.tasks.medium",
