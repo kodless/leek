@@ -45,8 +45,6 @@ int events_count = ctx._source.events_count;
 List events = ctx._source.events;
 
 List attrs_to_upsert = [];
-List dd = [];
-dd.a
 
 if (ctx._source.uuid == null || STATES_TERMINAL.contains(params.state)) {
     // First time to index or Coming event in terminal state and safe to merge
