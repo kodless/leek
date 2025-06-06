@@ -79,6 +79,16 @@ export class MetricsService implements Metrics {
     });
   }
 
+  filterSeenTasks(app_name, app_env, filters: TimeFilters, filter_value) {
+    let query = [getTimeFilterQuery(filters)];
+    query.push({ wildcard: { name: { value: filter_value+"*", case_insensitive: true } } });
+    return this.aggregate(app_name, app_env, query, {
+      seen_tasks: {
+        terms: { field: "name", size: 1000, missing: "N/A", min_doc_count: 1 },
+      },
+    });
+  }
+
   getSeenQueues(app_name, app_env, filters: TimeFilters) {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {

@@ -8,14 +8,18 @@ import {
   Form,
   InputNumber,
   Spin,
+  Typography,
+  Space,
+  Divider
 } from "antd";
 
 import { useApplication } from "../../context/ApplicationProvider";
 import { TaskStateClosable } from "../tags/TaskState";
 import { badgedOption } from "../tags/BadgedOption";
 import { MetricsService } from "../../api/metrics";
-import { handleAPIError, handleAPIResponse } from "../../utils/errors";
+import { handleAPIError, handleAPIResponse } from "../../utils/errors"
 
+const { Text } = Typography;
 const { Option } = Select;
 const FormItem = Form.Item;
 
@@ -43,6 +47,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
   const [form] = Form.useForm();
 
   const [seenTasks, setSeenTasks] = useState([]);
+  const [seenOtherTasksCount, setSeenOtherTasksCount] = useState(0);
   const [seenRoutingKeys, setSeenRoutingKeys] = useState([]);
   const [seenExchanges, setSeenExchanges] = useState([]);
   const [seenQueues, setSeenQueues] = useState([]);
@@ -67,6 +72,25 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     props.onFilter(filters);
   }
 
+  function filterSeenTasks(filter_value) {
+    if (!currentApp) return;
+    if (!filter_value) {
+      getSeenTasks(true)
+    }
+    else {
+      setSeenTasksFetching(true);
+      metricsService
+          .filterSeenTasks(currentApp, currentEnv, props.filters, filter_value)
+          .then(handleAPIResponse)
+          .then((result: any) => {
+            setSeenTasks(result.aggregations.seen_tasks.buckets);
+            setSeenOtherTasksCount(result.aggregations.seen_tasks.sum_other_doc_count)
+          }, handleAPIError)
+          .catch(handleAPIError)
+          .finally(() => setSeenTasksFetching(false));
+    }
+  }
+
   function getSeenTasks(open) {
     if (!currentApp || !open) return;
     setSeenTasksFetching(true);
@@ -75,6 +99,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
       .then(handleAPIResponse)
       .then((result: any) => {
         setSeenTasks(result.aggregations.seen_tasks.buckets);
+        setSeenOtherTasksCount(result.aggregations.seen_tasks.sum_other_doc_count)
       }, handleAPIError)
       .catch(handleAPIError)
       .finally(() => setSeenTasksFetching(false));
@@ -172,9 +197,19 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
               style={{ width: "100%" }}
               allowClear
               showSearch
+              onSearch={filterSeenTasks}
               dropdownMatchSelectWidth={false}
               onDropdownVisibleChange={getSeenTasks}
               notFoundContent={seenTasksFetching ? loadingIndicator : null}
+              dropdownRender={ seenOtherTasksCount > 0 ? (menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: '8px 0' }} />
+                    <Space style={{ padding: '0 8px 4px' }}>
+                      <Text type="warning">+{seenOtherTasksCount} tasks, scope down with search!</Text>
+                    </Space>
+                  </>
+              ) : null}
             >
               {memoizedTaskNameOptions}
             </Select>
