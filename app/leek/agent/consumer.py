@@ -159,7 +159,7 @@ class LeekConsumer(ConsumerMixin):
         logger.info("Channel Configured...")
 
         logger.info("Creating consumer...")
-        consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json'], tag_prefix=self.subscription_name)
+        consumer = Consumer(self.queue, callbacks=[self.on_message], accept=['json', 'application/x-python-serialize'], tag_prefix=self.subscription_name)
         logger.info("Consumer created!")
         return [consumer]
 
