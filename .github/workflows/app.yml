@@ -25,6 +25,7 @@ jobs:
           context: app
           file: app/dockers/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64,linux/arm64/v8,linux/arm64/v7
           build-args: |
             LEEK_VERSION=${{ github.event.release.tag_name }}
             LEEK_RELEASE_DATE=${{ steps.date.outputs.date }}
