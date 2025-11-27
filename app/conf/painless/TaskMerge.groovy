@@ -21,8 +21,10 @@ Map TaskStateFields = [
     "SHARED": ["_id", "app_env", "kind", "state", "uuid", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid"],
 
     // Shared between states
-    "QUEUED_RECEIVED": ["name", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries"],
-    "FAILED_RETRY": ["exception", "traceback"],
+    "QUEUED_RECEIVED": ["name", "name_parts", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries",
+                        "args_0", "args_1", "args_2", "args_3", "args_4", "args_5", "args_6", "args_7", "args_8",
+                        "args_9", "kwargs_flattened"],
+    "FAILED_RETRY": ["exception", "traceback", "lang", "error", "stack", "trace"],
 
     // Safe
     "NOT_QUEUED": ["worker"],

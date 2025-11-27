@@ -89,6 +89,17 @@ export class MetricsService implements Metrics {
     });
   }
 
+  filterAggregation(app_name, app_env, filters: TimeFilters, filter_key, filter_value) {
+    let query = [getTimeFilterQuery(filters)];
+    if (filter_value && filter_value !== "")
+      query.push({ wildcard: { [`${filter_key}.wc`]: { value: `*${filter_value}*`, case_insensitive: true } } });
+    return this.aggregate(app_name, app_env, query, {
+      [filter_key]: {
+        terms: { field: filter_key, size: 1000, missing: "N/A", min_doc_count: 1 },
+      },
+    });
+  }
+
   getSeenQueues(app_name, app_env, filters: TimeFilters) {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {

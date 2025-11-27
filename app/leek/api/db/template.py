@@ -6,68 +6,23 @@ from elasticsearch import exceptions as es_exceptions
 from elasticsearch import client as es_client
 
 from leek.api.conf import settings
+from leek.api.db.version import validate_supported_backend
 from leek.api.ext import es
 from leek.api.errors import responses
-from leek.api.db.properties import properties
+from leek.api.db.properties import get_properties
 
 logger = logging.getLogger(__name__)
 
 
-def check_im_eligibility():
-    connection = es.connection
-    es_ver_info = connection.info()["version"]
-    version_number = es_ver_info["number"]
-
-    dist = None
-    distribution = None
-    if "build_flavor" in es_ver_info:
-        if es_ver_info["build_flavor"] == "oss":
-            dist = "OpenDistro"
-            if version_number == "7.10.2":
-                distribution = "OpenDistro>=1.13.0"
-            else:
-                distribution = "OpenDistro<1.13.0"
-                logger.warning(f"Leek does not support ISM with {distribution}")
-        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
-            dist = "ElasticSearch"
-            distribution = f"ElasticSearch={version_number}"
-        else:
-            distribution = "broken"
-            logger.warning(f"Leek does not support ISM with broken Elasticsearch distributions!")
-    elif "distribution" in es_ver_info:
-        if es_ver_info["distribution"] == "opensearch":
-            dist = "OpenSearch"
-            distribution = f"OpenSearch={version_number}"
-        else:
-            logger.warning(f"Leek does not support ISM with {es_ver_info['distribution']}")
-    else:
-        logger.warning(f"ElasticSearch build_flavor/distribution fields missing, fallback to OpenSearch! ${es_ver_info}")
-        # will favor OpenSearch
-        dist = "OpenSearch"
-        distribution = f"OpenSearch={version_number}"
-
-    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
-    return dist
-
-
-def get_im_settings(index_alias, lifecycle_policy_name):
+def get_im_settings(index_alias, lifecycle_policy_name, search_backend):
     if not settings.LEEK_ES_IM_ENABLE:
         return {}
 
-    dist = check_im_eligibility()
-    if dist == "OpenDistro":
-        return {
-            "opendistro": {
-                "index_state_management": {
-                    "rollover_alias": index_alias
-                }
-            }
-        }
-    elif dist == "OpenSearch":
+    if search_backend == "opensearch":
         return {
             "index.plugins.index_state_management.rollover_alias": index_alias
         }
-    elif dist == "ElasticSearch":
+    elif search_backend == "elasticsearch":
         return {
             "index.lifecycle.name": lifecycle_policy_name,
             "index.lifecycle.rollover_alias": index_alias
@@ -80,6 +35,7 @@ def prepare_template_body(
         number_of_replicas=0,
         lifecycle_policy_name="default",
         meta=None,
+        search_backend=None,
 ):
     return {
         "index_patterns": [
@@ -92,7 +48,7 @@ def prepare_template_body(
                     "number_of_replicas": number_of_replicas,
                     "refresh_interval": settings.LEEK_ES_DEFAULT_REFRESH_INTERVAL
                 },
-                **get_im_settings(index_alias, lifecycle_policy_name),
+                **get_im_settings(index_alias, lifecycle_policy_name, search_backend),
             },
             "mappings": {
                 "_source": {
@@ -100,7 +56,7 @@ def prepare_template_body(
                 },
                 "_meta": meta,
                 "dynamic": False,
-                "properties": properties
+                "properties": get_properties(search_backend)
             },
         }
     }
@@ -126,12 +82,14 @@ def create_index_template(
     :param index_alias: index alias in the form of orgName-appName
     """
     connection = es.connection
+    info = validate_supported_backend()
     body = prepare_template_body(
         index_alias,
         number_of_shards=number_of_shards,
         number_of_replicas=number_of_replicas,
         lifecycle_policy_name=lifecycle_policy_name,
         meta=meta,
+        search_backend=info["backend"],
     )
     try:
         connection.indices.put_index_template(name=index_alias, body=body, create=True)
@@ -348,7 +306,7 @@ def grant_application_admin(index_alias, admin_email):
         template = get_template(index_alias)
         app = template["template"]["mappings"]["_meta"]
         admins = app.get("admins", [])
-        admins.append({"email": admin_email, "since": int(time.time())*1000})
+        admins.append({"email": admin_email, "since": int(time.time()) * 1000})
         template["template"]["mappings"]["_meta"]["admins"] = uniq_admins(admins)
         es.connection.indices.put_index_template(name=index_alias, body=template)
         return app, 200

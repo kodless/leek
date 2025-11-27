@@ -1,3 +1,4 @@
+# TODO: centralize this duplicated properties definition into a single place
 def get_properties(search_backend):
     return {
         # Shared

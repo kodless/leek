@@ -25,6 +25,21 @@ const history = {
   },
 };
 
+exports.shouldUpdateScroll = ({ routerProps: { location }, getSavedScrollPosition }) => {
+  const { pathname } = location;
+
+  // List of routes where we want to scroll to the top
+  const scrollToTopRoutes = [`/privacy-policy`,];
+
+  // If the new route is in the list, scroll to top (0, 0)
+  if (scrollToTopRoutes.includes(pathname)) {
+    window.scrollTo(0, 0);
+  }
+
+  // Return false to prevent Gatsby's default scroll restoration
+  return false;
+};
+
 exports.onRenderBody = ({ setPostBodyComponents }) => {
   setPostBodyComponents([
     <script

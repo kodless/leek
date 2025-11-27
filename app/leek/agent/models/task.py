@@ -25,8 +25,10 @@ TaskStateFields = dict(
     # -- No need to update this fields if coming task is out of order
     SHARED=("_id", "app_env", "kind", "state", "uuid", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid"),
     # -- Shared between states
-    QUEUED_RECEIVED=("name", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries"),
-    FAILED_RETRY=("exception", "traceback"),
+    QUEUED_RECEIVED=("name", "name_parts", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries",
+                     "args_0", "args_1", "args_2", "args_3", "args_4", "args_5", "args_6", "args_7", "args_8",
+                     "args_9", "kwargs_flattened"),
+    FAILED_RETRY=("exception", "traceback", "lang", "error", "stack", "trace"),
     # -- Safe
     NOT_QUEUED=("worker",),
     QUEUED=("queued_at", "exchange", "routing_key", "queue", "client",),
@@ -46,9 +48,23 @@ class Task(EV):
     # BASIC
     uuid: str
     name: Optional[str] = None
+    name_parts: Optional[dict] = None
+    fqn: Optional[str] = None
     # INPUT
     args: Optional[str] = None
     kwargs: Optional[str] = None
+    # INPUT Normalized
+    args_0: Optional[str] = None
+    args_1: Optional[str] = None
+    args_2: Optional[str] = None
+    args_3: Optional[str] = None
+    args_4: Optional[str] = None
+    args_5: Optional[str] = None
+    args_6: Optional[str] = None
+    args_7: Optional[str] = None
+    args_8: Optional[str] = None
+    args_9: Optional[str] = None
+    kwargs_flattened: Optional[dict] = None
     # OUTPUT
     result: Optional[str] = None
     runtime: Optional[float] = None
@@ -81,6 +97,10 @@ class Task(EV):
     # FAILURE
     exception: Optional[str] = None
     traceback: Optional[str] = None
+    lang: Optional[str] = None
+    error: Optional[dict] = None
+    stack: Optional[list] = None
+    trace: Optional[dict] = None
     # ORIGIN
     client: Optional[str] = None
     worker: Optional[str] = None

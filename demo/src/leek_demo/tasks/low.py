@@ -15,6 +15,12 @@ def succeeded_task(x, y):
 
 
 @app.task
+def kwargs_task(x: int = 12, y: int = 4, string: str = "test", boolean: bool = True, array: list = None,
+                dictionary: dict = None):
+    return x / y
+
+
+@app.task
 def failed_task():
     return 4 / 0
 
