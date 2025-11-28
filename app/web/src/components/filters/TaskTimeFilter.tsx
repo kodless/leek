@@ -32,18 +32,10 @@ const QUICK_RANGES: { label: string; value: QuickRangeKey; milliseconds?: number
 ];
 
 interface TasksFilterContextData {
-    timeFilter: {
-        timestamp_type: string;
-        interval_type: string;
-        offset: string;
-        from: number | undefined;
-        to: number | undefined;
-    };
-
     onTimeFilterChange(filter: {});
 }
 
-const TaskTimeFilter: React.FC<TasksFilterContextData> = (props) => {
+const TaskTimeFilter: React.FC<TasksFilterContextData> = (props: TasksFilterContextData) => {
     const [quickRange, setQuickRange] = useState<QuickRangeKey>("15m");
     const [timestampType, setTimestampType] = useState<string>("timestamp");
 

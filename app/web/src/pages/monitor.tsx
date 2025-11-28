@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { Helmet } from "react-helmet-async";
 import { Card, Col, Row, Select, Statistic } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
@@ -53,12 +53,26 @@ const MonitorPage = () => {
     offset: 900000,
   });
 
-  function handleFilterChange(values) {
+  // track when children have hydrated from URL
+  const [attrFiltersReady, setAttrFiltersReady] = useState(false);
+  const [timeFiltersReady, setTimeFiltersReady] = useState(false);
+
+  // ---- Handlers passed to children ----
+  const handleFilterChange = useCallback((values: any) => {
     setFilters(values);
-  }
+    setAttrFiltersReady(true);   // ✅ attributes filter hydrated
+  }, []);
+
+  const handleTimeFilterChange = useCallback((values: any) => {
+    setTimeFilters(values);
+    setTimeFiltersReady(true);   // ✅ time filter hydrated
+  }, []);
 
   useEffect(() => {
-    if (!currentApp) return;
+    // Don't fire until we know both filters have hydrated from URL
+    if (!currentApp || !currentEnv) return;
+    if (!attrFiltersReady || !timeFiltersReady) return;
+
     let allFilters = {
       ...filters,
       ...timeFilters,
@@ -140,7 +154,7 @@ const MonitorPage = () => {
       }, handleAPIError)
       .catch(handleAPIError)
       .finally(() => setLoading(false));
-  }, [currentApp, currentEnv, filters, timeFilters, timeDistributionTSType]);
+  }, [currentApp, currentEnv, filters, timeFilters, timeDistributionTSType, attrFiltersReady, timeFiltersReady]);
 
   return (
     <>
@@ -155,7 +169,7 @@ const MonitorPage = () => {
         <Col xxl={5} xl={6} md={7} lg={8} sm={24} xs={24}>
           <AttributesFilter
             onFilter={handleFilterChange}
-            filters={timeFilters}
+            timeFilters={timeFilters}
           />
         </Col>
         <Col xxl={19} xl={18} md={17} lg={16} sm={24} xs={24}>
@@ -168,7 +182,7 @@ const MonitorPage = () => {
               <Col>
                 <TimeFilter
                   timeFilter={timeFilters}
-                  onTimeFilterChange={setTimeFilters}
+                  onTimeFilterChange={handleTimeFilterChange}
                 />
               </Col>
               <Col>

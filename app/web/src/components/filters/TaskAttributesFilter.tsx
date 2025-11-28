@@ -37,7 +37,7 @@ const { Panel } = Collapse;
 
 interface TasksFilterContextData {
   onFilter(value: {});
-  filters: any;
+  timeFilters: any;
 }
 
 const loadingIndicator = (
@@ -282,7 +282,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     if (!currentApp || !open) return;
     setSeenRoutingKeysFetching(true);
     metricsService
-      .getSeenRoutingKeys(currentApp, currentEnv, props.filters)
+      .getSeenRoutingKeys(currentApp, currentEnv, props.timeFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
         setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
@@ -295,7 +295,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     if (!currentApp || !open) return;
     setSeenExchangesFetching(true);
     metricsService
-        .getSeenExchanges(currentApp, currentEnv, props.filters)
+        .getSeenExchanges(currentApp, currentEnv, props.timeFilters)
         .then(handleAPIResponse)
         .then((result: any) => {
           setSeenExchanges(result.aggregations.seen_exchanges.buckets);
@@ -308,7 +308,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     if (!currentApp || !open) return;
     setSeenQueuesFetching(true);
     metricsService
-      .getSeenQueues(currentApp, currentEnv, props.filters)
+      .getSeenQueues(currentApp, currentEnv, props.timeFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
         setSeenQueues(result.aggregations.seen_queues.buckets);
@@ -321,7 +321,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     if (!currentApp || !open) return;
     setSeenWorkersFetching(true);
     metricsService
-      .getSeenWorkers(currentApp, currentEnv, props.filters)
+      .getSeenWorkers(currentApp, currentEnv, props.timeFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
         setSeenWorkers(result.aggregations.seen_workers.buckets);
@@ -465,7 +465,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
                 <DropdownFilter
                     filter_key={"name_parts.function"}
                     placeholder={"Function name"}
-                    filters={props.filters}
+                    filters={props.timeFilters}
                 />
               </FormItem>
             </Row>
@@ -474,7 +474,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
                 <DropdownFilter
                     filter_key={"name_parts.module"}
                     placeholder={"Module name"}
-                    filters={props.filters}
+                    filters={props.timeFilters}
                 />
               </FormItem>
             </Row>
@@ -716,7 +716,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
                 <DropdownFilter
                     filter_key={"error.type"}
                     placeholder={"Error type"}
-                    filters={props.filters}
+                    filters={props.timeFilters}
                 />
               </FormItem>
             </Row>

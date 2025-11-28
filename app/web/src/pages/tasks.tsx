@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import useSound from 'use-sound';
 import {
@@ -53,10 +53,12 @@ const { Text } = Typography;
 let timeout;
 
 const TasksPage: React.FC = () => {
-  // STATE
+  // Services
   const service = new TaskService();
   const controlService = new ControlService();
   const backupService = new BackupService();
+
+  // Providers
   const { currentApp, currentEnv } = useApplication();
 
   // Filters
@@ -66,19 +68,40 @@ const TasksPage: React.FC = () => {
     interval_type: "past",
     offset: 900000,
   });
+
+  // track when children have hydrated from URL
+  const [attrFiltersReady, setAttrFiltersReady] = useState(false);
+  const [timeFiltersReady, setTimeFiltersReady] = useState(false);
+
+  // ---- Handlers passed to children ----
+  const handleFilterChange = useCallback((values: any) => {
+    setFilters(values);
+    setAttrFiltersReady(true);   // ✅ attributes filter hydrated
+  }, []);
+
+  const handleTimeFilterChange = useCallback((values: any) => {
+    setTimeFilters(values);
+    setTimeFiltersReady(true);   // ✅ time filter hydrated
+  }, []);
+
+  // Knobs
   const [order, setOrder] = useState<string>("desc");
   const [live, setLive] = useState<boolean>(false);
   const [alarm, setAlarm] = useState<boolean>(false);
 
-  // Data
-  const columns = TaskDataColumns();
+  // Pagination
   const [pagination, setPagination] = useState<any>({
     pageSize: 20,
     current: 1,
   });
+
+  // Status
   const [loading, setLoading] = useState<boolean>();
   const [tasksRetrying, setTasksRetrying] = useState<boolean>();
   const [tasksExporting, setTasksExporting] = useState<boolean>();
+
+  // Data
+  const columns = TaskDataColumns();
   const [tasks, setTasks] = useState<any[]>([]);
   const prevTasksRef = useRef<any[]>([]);
 
@@ -101,22 +124,32 @@ const TasksPage: React.FC = () => {
   );
 
   // API Calls
+  const requestIdRef = useRef(0);
+
   function filterTasks(pager = { current: 1, pageSize: 20 }) {
     if (!currentApp) return;
     setLoading(true);
+
+    const currentRequestId = ++requestIdRef.current;
+
     let allFilters = {
       ...filters,
       ...timeFilters,
     };
     let from_ = (pager.current - 1) * pager.pageSize;
+
     service
       .filter(currentApp, currentEnv, pager.pageSize, from_, order, allFilters)
       .then(handleAPIResponse)
       .then((result: any) => {
+        // Ignore stale responses
+        if (currentRequestId !== requestIdRef.current) return;
+
         // Prepare pagination
         let p = fixPagination(result.hits.total.value, pager, filterTasks);
         if (p) setPagination(p);
         else return;
+
         // Result
         let tasksList: { any }[] = [];
         result.hits.hits.forEach(function (hit) {
@@ -125,7 +158,12 @@ const TasksPage: React.FC = () => {
         setTasks(tasksList);
       }, handleAPIError)
       .catch(handleAPIError)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        // Only stop loading if this is the latest request
+        if (currentRequestId === requestIdRef.current) {
+          setLoading(false);
+        }
+      });
   }
 
   // Hooks
@@ -149,6 +187,10 @@ const TasksPage: React.FC = () => {
   }, [tasks]);
 
   useEffect(() => {
+    // Don't fire until we know both filters have hydrated from URL
+    if (!currentApp || !currentEnv) return;
+    if (!attrFiltersReady || !timeFiltersReady) return;
+
     // Stop refreshing queues
     if (timeout) clearInterval(timeout);
 
@@ -161,34 +203,31 @@ const TasksPage: React.FC = () => {
     else {
       refresh(pagination);
     }
-  }, [currentApp, currentEnv, filters, timeFilters, order, live]);
+  }, [currentApp, currentEnv, filters, timeFilters, order, live, attrFiltersReady, timeFiltersReady]);
 
   // UI Callbacks
   function refresh(pager = { current: 1, pageSize: 20 }) {
     filterTasks(pager);
   }
 
-  function handleShowTaskDetails(record) {
-    window.open(
-      `/task?app=${currentApp}&env=${currentEnv}&uuid=${record.uuid}`,
-      "_blank"
-    );
-  }
-
   function handleRefresh() {
     refresh(pagination);
-  }
-
-  function handleShowTotal(total) {
-    return `Total of ${total} tasks`;
   }
 
   function handleTableChange(pagination, filters, sorter) {
     refresh(pagination);
   }
 
-  function handleFilterChange(values) {
-    setFilters(values);
+  // Handlers and Helpers
+  function handleShowTaskDetails(record) {
+    window.open(
+        `/task?app=${currentApp}&env=${currentEnv}&uuid=${record.uuid}`,
+        "_blank"
+    );
+  }
+
+  function handleShowTotal(total) {
+    return `Total of ${total} tasks`;
   }
 
   function prepareList(items) {
@@ -357,7 +396,7 @@ const TasksPage: React.FC = () => {
         <Col xxl={5} xl={6} md={7} lg={8} sm={24} xs={24}>
           <AttributesFilter
             onFilter={handleFilterChange}
-            filters={timeFilters}
+            timeFilters={timeFilters}
           />
         </Col>
         <Col xxl={19} xl={18} md={17} lg={16} sm={24} xs={24}>
@@ -384,8 +423,7 @@ const TasksPage: React.FC = () => {
                   </Col>
                   <Col span={18} style={{ textAlign: "center" }}>
                     <TimeFilter
-                      timeFilter={timeFilters}
-                      onTimeFilterChange={setTimeFilters}
+                      onTimeFilterChange={handleTimeFilterChange}
                     />
                   </Col>
                   <Col span={3}>
