@@ -14,6 +14,42 @@ function remove_missing_value(terms, missing_term) {
   return terms;
 }
 
+function argsFilters(arr) {
+  // normalize to array
+  const items = Array.isArray(arr) ? arr : [];
+
+  return items
+      .filter((item) => {
+        if (!item || typeof item !== "object") return false;
+        const { key, value } = item;
+        return key != null && value != null && key !== "";
+      })
+      .map((item) => {
+        const { key, value } = item;
+        return {
+          term: { [`args_${key}`]: value },
+        };
+      });
+}
+
+function kwargsFilters(arr) {
+  // normalize to array
+  const items = Array.isArray(arr) ? arr : [];
+
+  return items
+      .filter((item) => {
+        if (!item || typeof item !== "object") return false;
+        const { key, value } = item;
+        return key != null && value != null && key !== "";
+      })
+      .map((item) => {
+        const { key, value } = item;
+        return {
+          term: { [`kwargs_flattened.${key}`]: value },
+        };
+      });
+}
+
 export function getFilterQuery(
   app_env: string | undefined,
   filters: TaskFilters
@@ -40,6 +76,8 @@ export function getFilterQuery(
     { match: { kind: "task" } },
     app_env && { match: { app_env: app_env } },
     names && names.length && { terms: { name: names } },
+    filters["name_parts.module"]?.length && { terms: { "name_parts.module": filters["name_parts.module"] } },
+    filters["name_parts.function"]?.length && { terms: { "name_parts.function": filters["name_parts.function"] } },
     filters.uuid && { match: { uuid: filters.uuid } },
     filters.state &&
       filters.state.length && { terms: { state: filters.state } },
@@ -63,10 +101,11 @@ export function getFilterQuery(
     filters.retries && {
       range: { retries: { [filters.retries_op || "gte"]: filters.retries } },
     },
-    filters.exception && { match: { exception: { query: filters.exception } } },
-    filters.traceback && {
+    filters["error.type"]?.length && { terms: { "error.type": filters["error.type"] } },
+    filters["error.message"] && { term: { "error.message": filters["error.message"] } },
+    filters["trace.wc"] && {
       wildcard: {
-        traceback: { value: filters.traceback, case_insensitive: true },
+        "trace.wc": { value: "*"+filters["trace.wc"]+"*", case_insensitive: true },
       },
     },
     filters.args && {
@@ -83,6 +122,8 @@ export function getFilterQuery(
     getTimeFilterQuery(filters),
     revocation_filter,
     rejection_filter,
+    ...(filters.args_n ? argsFilters(filters.args_n) : []),
+    ...(filters.kwargs_flattened ? kwargsFilters(filters.kwargs_flattened) : []),
   ];
   return f.filter(Boolean);
 }
@@ -118,6 +159,8 @@ export function getMissingTermsFilterQuery(
 
 export interface TaskFilters {
   name: string[] | null;
+  "name_parts.module": string[] | null;
+  "name_parts.function": string[] | null;
   uuid: string | null;
   state: string[] | null;
   worker: string[] | null;
@@ -132,13 +175,18 @@ export interface TaskFilters {
   retries_op: string | null;
   timestamp_type: number | null;
   interval_type: string | null;
-  after_time: number | null;
-  before_time: number | null;
+  from: number | null;
+  to: number | null;
   offset: number | null;
-  exception: string | null;
-  traceback: string | null;
+  // Errors
+  "error.type": string | null;
+  "error.message": string | null;
+  "trace.wc": string | null;
+  // Input
   args: string | null;
+  args_n: object[] | null;
   kwargs: string | null;
+  kwargs_flattened: object[] | null;
   result: string | null;
   root_id: string | null;
   parent_id: string | null;

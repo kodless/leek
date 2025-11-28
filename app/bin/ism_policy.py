@@ -1,64 +1,26 @@
 from typing import List
 
 from elasticsearch import Elasticsearch, exceptions as es_exceptions
-from utils import abort, logger
+
+from version import validate_supported_backend
+from utils import abort
 
 policy_name = "leek-rollover-policy"
-
-
-def check_im_eligibility(conn: Elasticsearch):
-    es_ver_info = conn.info()["version"]
-    version_number = es_ver_info["number"]
-
-    dist = None
-    distribution = None
-    im_endpoint = None
-    if "build_flavor" in es_ver_info:
-        if es_ver_info["build_flavor"] == "oss":
-            dist = "OpenDistro"
-            if version_number == "7.10.2":
-                distribution = "OpenDistro>=1.13.0"
-                im_endpoint = "/_opendistro/_ism/policies"
-            else:
-                distribution = "OpenDistro<1.13.0"
-                abort(f"Leek does not support ISM with {distribution}")
-        elif es_ver_info["build_flavor"] in ["default", "unknown"]:
-            dist = "ElasticSearch"
-            distribution = f"ElasticSearch={version_number}"
-        else:
-            distribution = "broken"
-            abort(f"Leek does not support ISM with broken Elasticsearch distributions!")
-    elif "distribution" in es_ver_info:
-        if es_ver_info["distribution"] == "opensearch":
-            dist = "OpenSearch"
-            distribution = f"OpenSearch={version_number}"
-            im_endpoint = "/_plugins/_ism/policies"
-        else:
-            abort(f"Leek does not support ISM with {es_ver_info['distribution']}")
-    else:
-        logger.warning(f"ElasticSearch build_flavor/distribution fields missing, fallback to OpenSearch! ${es_ver_info}")
-        # will favor OpenSearch
-        dist = "OpenSearch"
-        distribution = f"OpenSearch={version_number}"
-        im_endpoint = "/_plugins/_ism/policies"
-
-    logger.info(f"Detected {distribution} as ElasticSearch distribution!")
-    return dist, im_endpoint
 
 
 def cleanup_im_policy(
         conn: Elasticsearch,
         dist: str,
-        im_endpoint: str
+        opensearch_im_endpoint: str
 ):
     # Cleanup ISM/ILM policies
     try:
-        if dist in ["OpenDistro", "OpenSearch"]:
+        if dist in "opensearch":
             conn.transport.perform_request(
                 "DELETE",
-                f"{im_endpoint}/{policy_name}",
+                f"{opensearch_im_endpoint}/{policy_name}",
             )
-        elif dist == "ElasticSearch":
+        elif dist == "elasticsearch":
             conn.ilm.remove_policy("*")
             conn.ilm.delete_lifecycle(policy_name)
     except es_exceptions.NotFoundError:
@@ -73,10 +35,12 @@ def setup_im_policy(
         delete_min_index_age: str = "14d",
         slack_webhook_url: str = None,
 ):
-    dist, im_endpoint = check_im_eligibility(conn)
+    info = validate_supported_backend(conn)
+    dist = info["backend"]
+    opensearch_im_endpoint = "/_plugins/_ism/policies"
 
     if not enable_im:
-        cleanup_im_policy(conn, dist, im_endpoint)
+        cleanup_im_policy(conn, dist, opensearch_im_endpoint)
         return
 
     if not rollover_min_doc_count and not rollover_min_size:
@@ -84,10 +48,10 @@ def setup_im_policy(
             "One of or both LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and LEEK_ES_IM_ROLLOVER_MIN_SIZE env var should be set!"
         )
 
-    if dist in ["OpenDistro", "OpenSearch"]:
+    if dist == "opensearch":
         params = {}
         try:
-            seq_no, primary_term = get_ism_policy(conn, im_endpoint)
+            seq_no, primary_term = get_ism_policy(conn, opensearch_im_endpoint)
             params = {
                 "if_seq_no": seq_no,
                 "if_primary_term": primary_term
@@ -116,7 +80,7 @@ def setup_im_policy(
                 continue
         abort("Failed to update ISM policy!")
 
-    elif dist == "ElasticSearch":
+    elif dist == "elasticsearch":
         policy = prepare_ilm_policy(
             rollover_min_size=rollover_min_size,
             rollover_min_doc_count=rollover_min_doc_count,

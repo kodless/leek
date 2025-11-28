@@ -9,6 +9,7 @@ from printy import printy
 from elasticsearch import Elasticsearch
 from ism_policy import setup_im_policy
 from utils import abort, logger
+from migration import migrate_index_templates
 
 """
 PRINT APPLICATION HEADER
@@ -40,6 +41,7 @@ LEEK_ES_IM_DELETE_MIN_INDEX_AGE = os.environ.get("LEEK_ES_IM_DELETE_MIN_INDEX_AG
 LEEK_API_URL = os.environ.get("LEEK_API_URL", "http://0.0.0.0:5000")
 LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
+LEEK_API_OWNER_ORG = os.environ.get("LEEK_API_OWNER_ORG")
 LEEK_CREATE_APP_IF_NOT_EXIST = get_bool("LEEK_CREATE_APP_IF_NOT_EXIST", default="false")
 
 LOGO = """
@@ -305,6 +307,11 @@ def ensure_es_connection() -> Elasticsearch:
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
+    # Migrate Index Templates and Indexes
+    if LEEK_API_ENABLE_AUTH is False:
+        migrate_index_templates(connection, "mono")
+    else:
+        migrate_index_templates(connection, LEEK_API_OWNER_ORG)
     # Creates index management policy for automatic rollover
     setup_im_policy(
         connection,

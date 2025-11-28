@@ -69,7 +69,7 @@ services:
 
   # Just for local demo!! (Test broker)
   mq:
-    image: rabbitmq:3.8.9-management-alpine
+    image: rabbitmq:3.13.7-management-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin

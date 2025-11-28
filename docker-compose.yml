@@ -64,8 +64,7 @@ services:
 
   # Just for local development!! (Test client)
   publisher:
-    build:
-      context: demo
+    image: leek_worker:latest
     environment:
       - BROKER_URL=pyamqp://admin:admin@mq:5672
     command: >
@@ -76,7 +75,7 @@ services:
 
   # Just for local development!! (Test broker)
   mq:
-    image: rabbitmq:3.8.9-management-alpine
+    image: rabbitmq:3.13.7-management-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
@@ -115,34 +114,8 @@ services:
         hard: 65535
     ports:
       - 9200:9200
-
-# Uncomment to test Leek with OpenDistro Elasticsearch Distribution
-#  es01:
-#    build:
-#      context: app
-#      dockerfile: dockers/opendistro.Dockerfile
-#    container_name: es01
-#    environment:
-#      - node.name=es01
-#      - cluster.name=es-docker-cluster
-#      - cluster.initial_master_nodes=es01
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    command: ["elasticsearch", "-Elogger.level=ERROR"]
-#    healthcheck:
-#      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-#      interval: 30s
-#      timeout: 30s
-#      retries: 3
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#      nofile:
-#        soft: 65535
-#        hard: 65535
-#    ports:
-#      - 9200:9200
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
 # Uncomment to test Leek with OpenSearch Elasticsearch Distribution
 #  es01:
@@ -168,3 +141,9 @@ services:
 #        hard: 65535
 #    ports:
 #      - 9200:9200
+#    volumes:
+#      - esdata:/usr/share/opensearch/data
+
+volumes:
+  esdata:
+    driver: local

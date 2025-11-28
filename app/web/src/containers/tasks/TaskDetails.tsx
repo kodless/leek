@@ -595,20 +595,26 @@ export default (props) => {
                 description={props.task.retries || "-"}
               />
             </List.Item>
-            <List.Item key="exception">
+            <List.Item key="error_type">
               <List.Item.Meta
-                title="Exception"
-                description={props.task.exception}
+                title="Error Type"
+                description={props.task.error?.type || "-"}
               />
             </List.Item>
-            <List.Item key="traceback">
+            <List.Item key="error_message">
+              <List.Item.Meta
+                  title="Error Message"
+                  description={props.task.error?.message || "-"}
+              />
+            </List.Item>
+            <List.Item key="Stacktrace">
               <List.Item.Meta
                 style={{ width: "100%" }}
-                title="Traceback"
+                title="Stacktrace"
                 description={
-                  props.task.traceback && (
+                  props.task.trace?.raw && (
                     <SyntaxHighlighter style={atelierCaveDark}>
-                      {props.task.traceback}
+                      {props.task.trace.raw}
                     </SyntaxHighlighter>
                   )
                 }
