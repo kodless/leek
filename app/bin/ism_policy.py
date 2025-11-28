@@ -70,7 +70,7 @@ def setup_im_policy(
             try:
                 conn.transport.perform_request(
                     "PUT",
-                    f"{im_endpoint}/{policy_name}",
+                    f"{opensearch_im_endpoint}/{policy_name}",
                     body=policy,
                     params=params
                 )
