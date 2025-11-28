@@ -93,7 +93,7 @@ def validate_supported_backend(conn: Elasticsearch):
     """
     Detect and validate that the backend is:
       - OpenSearch >= 2.15
-      - OR Elasticsearch >= 7.3.0
+      - OR Elasticsearch >= 7.8.0
 
     Otherwise raise UnsupportedSearchBackend.
 
@@ -133,16 +133,16 @@ def validate_supported_backend(conn: Elasticsearch):
         if major > 2 or (major == 2 and minor >= 15):
             return {"backend": backend, "version": version}
         raise abort(
-            f"OpenSearch {version} is below the minimum supported version 2.7.0"
+            f"OpenSearch {version} is below the minimum supported version 2.15.0"
         )
 
     # --- Elasticsearch requirement ---
     if backend == "elasticsearch":
-        # Elasticsearch 7.3.0+
-        if major > 7 or (major == 7 and minor >= 3):
+        # Elasticsearch 7.8.0+
+        if major > 7 or (major == 7 and minor >= 8):
             return {"backend": backend, "version": version}
         raise abort(
-            f"Elasticsearch {version} is below the minimum supported version 7.3.0"
+            f"Elasticsearch {version} is below the minimum supported version 7.8.0"
         )
 
     # Anything else: OSS, unknown, old

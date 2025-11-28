@@ -29,7 +29,7 @@ exports.shouldUpdateScroll = ({ routerProps: { location }, getSavedScrollPositio
   const { pathname } = location;
 
   // List of routes where you want to scroll to the top
-  const scrollToTopRoutes = [`/privacy-policy`, `/contact`];
+  const scrollToTopRoutes = [`/privacy-policy`,];
 
   // If the new route is in the list, scroll to top (0, 0)
   if (scrollToTopRoutes.includes(pathname)) {

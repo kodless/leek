@@ -49,7 +49,6 @@ export const DropdownFilter: React.FC<{
         const load = async () => {
             setLoading(true);
             try {
-                console.log("Debounced: " + debouncedSearch)
                 const result = await filterAggregation(debouncedSearch);
                 if (!cancelled) {
                     setOptions(result.options);
