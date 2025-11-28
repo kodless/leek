@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { Helmet } from "react-helmet-async";
 import useSound from 'use-sound';
 import {Card, Col, Row, Empty, Table, Button, Alert, Radio, Tooltip, Space, message, Typography, Modal} from "antd";
@@ -40,6 +40,15 @@ const QueuesPage = () => {
     interval_type: "past",
     offset: 900000,
   });
+
+  // track when children have hydrated from URL
+  const [timeFiltersReady, setTimeFiltersReady] = useState(false);
+
+  // ---- Handlers passed to children ----
+  const handleTimeFilterChange = useCallback((values: any) => {
+    setTimeFilters(values);
+    setTimeFiltersReady(true);   // ✅ time filter hydrated
+  }, []);
 
   const [statsSource, setStatsSource] = useState<string | null>("BROKER");
   const [hidePIDBoxes, setHidePIDBoxes] = useState<boolean>(true);
@@ -111,6 +120,9 @@ const QueuesPage = () => {
   }
 
   useEffect(() => {
+    // Don't fire until we know time filters have hydrated from URL
+    if (!timeFiltersReady && statsSource == "INDEX") return;
+
     // Stop refreshing queues
     if (timeout) clearInterval(timeout);
 
@@ -123,7 +135,7 @@ const QueuesPage = () => {
     else {
       refresh();
     }
-  }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes, live]);
+  }, [currentApp, currentEnv, timeFilters, statsSource, hidePIDBoxes, live, timeFiltersReady]);
 
   // UI Callbacks
   function refresh() {
@@ -243,8 +255,7 @@ const QueuesPage = () => {
                 {
                     statsSource === "INDEX" &&
                     <TimeFilter
-                      timeFilter={timeFilters}
-                      onTimeFilterChange={setTimeFilters}
+                      onTimeFilterChange={handleTimeFilterChange}
                     />
                 }
               </Col>

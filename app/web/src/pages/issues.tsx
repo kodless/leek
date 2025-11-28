@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { Helmet } from "react-helmet-async";
 import { Card, Col, Row, Empty, Table, Button } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
@@ -25,6 +25,15 @@ const IssuesPage = () => {
     interval_type: "past",
     offset: 900000,
   });
+
+  // track when children have hydrated from URL
+  const [timeFiltersReady, setTimeFiltersReady] = useState(false);
+
+  // ---- Handlers passed to children ----
+  const handleTimeFilterChange = useCallback((values: any) => {
+      setTimeFilters(values);
+      setTimeFiltersReady(true);   // ✅ time filter hydrated
+  }, []);
 
   function filterIssues(pager = { current: 1, pageSize: 10 }) {
     if (!currentApp) return;
@@ -66,8 +75,10 @@ const IssuesPage = () => {
   }
 
   useEffect(() => {
+    // Don't fire until we know time filters have hydrated from URL
+    if (!timeFiltersReady) return;
     refresh(pagination);
-  }, [currentApp, currentEnv, timeFilters]);
+  }, [currentApp, currentEnv, timeFilters, timeFiltersReady]);
 
   // UI Callbacks
   function refresh(pager = { current: 1, pageSize: 10 }) {
@@ -101,8 +112,7 @@ const IssuesPage = () => {
               <Col span={3}></Col>
               <Col span={18} style={{ textAlign: "center" }}>
                 <TimeFilter
-                  timeFilter={timeFilters}
-                  onTimeFilterChange={setTimeFilters}
+                  onTimeFilterChange={handleTimeFilterChange}
                 />
               </Col>
               <Col span={3}>
