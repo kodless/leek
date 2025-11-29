@@ -1,9 +1,11 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Divider, Row, Select, Space, Spin} from "antd";
+import {Divider, Row, Select, Space, Spin, Typography} from "antd";
 import {badgedOption} from "../tags/BadgedOption";
 import {handleAPIError, handleAPIResponse} from "../../utils/errors";
 import {useApplication} from "../../context/ApplicationProvider";
 import {MetricsService} from "../../api/metrics";
+
+const { Text } = Typography;
 
 // Simple debounce hook
 function useDebouncedValue<T>(value: T, delay = 500): T {
@@ -90,7 +92,7 @@ export const DropdownFilter: React.FC<{
         if (!currentApp) return {options: [], other_options_count: 0};
         const result = await filterAggregation(null);
         setOptions(result.options);
-        setOtherOptionsCount(result.other_options_count)
+        setOtherOptionsCount(result.other_options_count);
     }
 
     const memoizedSelectOptions = useMemo(() => {
