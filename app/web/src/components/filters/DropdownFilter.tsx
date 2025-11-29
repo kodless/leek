@@ -133,7 +133,7 @@ export const DropdownFilter: React.FC<{
                     {menu}
                     <Divider style={{margin: '8px 0'}}/>
                     <Space style={{padding: '0 8px 4px'}}>
-                        <Text type="warning">+{otherOptionsCount} hidden, scope down with search!</Text>
+                        <Text type="warning">+{otherOptionsCount} docs not included, scope down with search!</Text>
                     </Space>
                 </>
             ) : null}
