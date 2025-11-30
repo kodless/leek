@@ -6,6 +6,8 @@ from elasticsearch import exceptions as es_exceptions
 from elasticsearch import client as es_client
 
 from leek.api.conf import settings
+from leek.api.db.summary import ensure_summary_index_with_mapping, ensure_task_summary_transform, \
+    safe_delete_transform, get_summary_transform, start_summary_transform
 from leek.api.db.version import validate_supported_backend
 from leek.api.ext import es
 from leek.api.errors import responses
@@ -101,6 +103,17 @@ def create_index_template(
                 }
             }
         })
+        # Create summary index
+        ensure_summary_index_with_mapping(connection, index=f"summary-{index_alias}")
+        ensure_task_summary_transform(
+            backend=info["backend"],
+            transform_id=f"summary-{index_alias}",
+            dest_index=f"summary-{index_alias}",
+            source_indices=(f"{index_alias}-*",),
+            timestamp_field="updated_at",
+            interval_minutes=1,
+            page_size=1000,
+        )
         return meta, 201
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
@@ -191,6 +204,11 @@ def delete_application(index_alias):
     try:
         connection.indices.delete_index_template(index_alias)
         connection.indices.delete(f"{index_alias}*")
+        safe_delete_transform(
+            transform_id=f"summary-{index_alias}",
+            dest_index=f"summary-{index_alias}",
+        )
+        connection.indices.delete(f"summary-{index_alias}")
         return "Done", 200
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
@@ -283,6 +301,35 @@ def get_application_cleanup_tasks(index_alias):
         return responses.search_backend_unavailable
     except es_exceptions.RequestError:
         return responses.application_already_exist
+
+
+def get_application_transforms(index_alias):
+    """
+    List application transforms
+    :param index_alias: application indices prefix AKA Application name
+    :return:
+    """
+    try:
+        summary_transform = get_summary_transform(f"summary-{index_alias}")
+        if summary_transform:
+            return [summary_transform], 200
+        else:
+            return [], 200
+    except es_exceptions.ConnectionError:
+        return responses.search_backend_unavailable
+
+
+def start_application_transform(index_alias):
+    """
+    Start application transform
+    :param index_alias: application indices prefix AKA Application name
+    :return:
+    """
+    try:
+        start_summary_transform(f"summary-{index_alias}")
+        return "Done", 200
+    except es_exceptions.ConnectionError:
+        return responses.search_backend_unavailable
 
 
 def uniq_admins(list_dicts):

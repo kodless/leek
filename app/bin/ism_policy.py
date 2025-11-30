@@ -2,8 +2,7 @@ from typing import List
 
 from elasticsearch import Elasticsearch, exceptions as es_exceptions
 
-from version import validate_supported_backend
-from utils import abort
+from utils import abort, Backend
 
 policy_name = "leek-rollover-policy"
 
@@ -29,18 +28,17 @@ def cleanup_im_policy(
 
 def setup_im_policy(
         conn: Elasticsearch,
+        backend: Backend,
         enable_im,
         rollover_min_size: str = "32gb",
         rollover_min_doc_count: int = 50000000,
         delete_min_index_age: str = "14d",
         slack_webhook_url: str = None,
 ):
-    info = validate_supported_backend(conn)
-    dist = info["backend"]
     opensearch_im_endpoint = "/_plugins/_ism/policies"
 
     if not enable_im:
-        cleanup_im_policy(conn, dist, opensearch_im_endpoint)
+        cleanup_im_policy(conn, backend, opensearch_im_endpoint)
         return
 
     if not rollover_min_doc_count and not rollover_min_size:
@@ -48,7 +46,7 @@ def setup_im_policy(
             "One of or both LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT and LEEK_ES_IM_ROLLOVER_MIN_SIZE env var should be set!"
         )
 
-    if dist == "opensearch":
+    if backend == "opensearch":
         params = {}
         try:
             seq_no, primary_term = get_ism_policy(conn, opensearch_im_endpoint)
@@ -80,7 +78,7 @@ def setup_im_policy(
                 continue
         abort("Failed to update ISM policy!")
 
-    elif dist == "elasticsearch":
+    elif backend == "elasticsearch":
         policy = prepare_ilm_policy(
             rollover_min_size=rollover_min_size,
             rollover_min_doc_count=rollover_min_doc_count,

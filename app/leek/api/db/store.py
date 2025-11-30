@@ -40,7 +40,8 @@ class WorkerStateFields:
 
 class TaskStateFields:
     # -- No need to update this fields if coming task is out of order
-    SHARED = ("_id", "app_env", "kind", "state", "uuid", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid")
+    SHARED = ("_id", "app_env", "kind", "state", "uuid", "clock", "updated_at", "timestamp", "exact_timestamp",
+              "utcoffset", "pid")
     # -- Shared between states
     QUEUED_RECEIVED = ("name", "name_parts", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries",
                        "args_0", "args_1", "args_2", "args_3", "args_4", "args_5", "args_6", "args_7", "args_8",
@@ -66,6 +67,7 @@ class EV:
     kind: str
     state: str
     clock: str
+    updated_at: Union[int, str]
     timestamp: Union[int, str]
     exact_timestamp: float
     utcoffset: int

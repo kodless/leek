@@ -137,6 +137,26 @@ export class ApplicationService implements Application {
     });
   }
 
+  listTransforms(app_name) {
+    return request({
+      method: "GET",
+      path: `/v1/applications/transforms`,
+      headers: {
+        "x-leek-app-name": app_name,
+      },
+    });
+  }
+
+  startTransform(app_name) {
+    return request({
+      method: "POST",
+      path: `/v1/applications/transforms/start`,
+      headers: {
+        "x-leek-app-name": app_name,
+      },
+    });
+  }
+
   grantApplicationAdmin(app_name, admin_email) {
     return request({
       method: "POST",

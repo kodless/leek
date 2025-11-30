@@ -8,6 +8,10 @@ def get_properties(search_backend):
         "state": {
             "type": "keyword",
         },
+        "updated_at": {
+            "type": "date",
+            "format": "epoch_millis"
+        },
         "timestamp": {
             "type": "date",
             "format": "epoch_millis"
@@ -242,4 +246,41 @@ def get_properties(search_backend):
         "queue": {
             "type": "keyword",
         },
+    }
+
+
+def get_summary_properties():
+    return {
+        "app_env": {"type": "keyword"},
+        "function": {
+            "type": "keyword",
+            "fields": {
+                "wc": {"type": "wildcard"}
+            }
+        },
+        "module": {
+            "type": "keyword",
+            "fields": {
+                "wc": {"type": "wildcard"}
+            }
+        },
+        "queue": {
+            "type": "keyword",
+            "fields": {
+                "wc": {"type": "wildcard"}
+            }
+        },
+        "routing_key": {
+            "type": "keyword",
+            "fields": {
+                "wc": {"type": "wildcard"}
+            }
+        },
+        "exchange": {
+            "type": "keyword",
+            "fields": {
+                "wc": {"type": "wildcard"}
+            }
+        },
+        "last_seen": {"type": "long"},
     }

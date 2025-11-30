@@ -1,4 +1,4 @@
-import { getTimeFilterQuery, search, TimeFilters } from "./search";
+import {getTimeFilterQuery, search, summary, TimeFilters} from "./search";
 
 export interface Metrics {
   getBasicMetrics(app_name: string, app_env: string, filters: TimeFilters): any;
@@ -70,6 +70,26 @@ export class MetricsService implements Metrics {
     );
   }
 
+  aggregate_summary(app_name, app_env, query, aggregations) {
+    if (app_env) query.push({ match: { app_env: app_env } });
+    return summary(
+        app_name,
+        {
+          size: 0,
+          query: {
+            bool: {
+              must: query.filter(Boolean),
+            },
+          },
+          aggs: aggregations,
+        },
+        {
+          size: 0,
+          from_: 0,
+        }
+    );
+  }
+
   getSeenTasks(app_name, app_env, filters: TimeFilters) {
     let query = [getTimeFilterQuery(filters)];
     return this.aggregate(app_name, app_env, query, {
@@ -90,13 +110,24 @@ export class MetricsService implements Metrics {
   }
 
   filterAggregation(app_name, app_env, filters: TimeFilters, filter_key, filter_value) {
-    let query = [getTimeFilterQuery(filters)];
+    let query = [];
     if (filter_value && filter_value !== "")
       query.push({ wildcard: { [`${filter_key}.wc`]: { value: `*${filter_value}*`, case_insensitive: true } } });
-    return this.aggregate(app_name, app_env, query, {
+    return this.aggregate_summary(app_name, app_env, query, {
       [filter_key]: {
-        terms: { field: filter_key, size: 1000, missing: "N/A", min_doc_count: 1 },
-      },
+        terms: {
+          field: filter_key,
+          size: 200,
+          missing: "N/A",
+          min_doc_count: 1,
+          order: { last_seen_max: "desc" }
+        },
+        aggs: {
+          last_seen_max: {
+            max: { field: "last_seen" }
+          }
+        }
+      }
     });
   }
 
@@ -138,7 +169,7 @@ export class MetricsService implements Metrics {
   }
 
   getMetadata(app_name) {
-    return search(
+    return summary(
       app_name,
       {
         size: 0,

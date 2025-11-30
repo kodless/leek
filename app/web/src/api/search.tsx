@@ -43,3 +43,14 @@ export function search(app_name, query, params: {} = {}) {
     },
   });
 }
+
+export function summary(app_name, query, params: {} = {}) {
+  return request({
+    method: "POST",
+    path: `/v1/search/summary${buildQueryString(params)}`,
+    body: query,
+    headers: {
+      "x-leek-app-name": app_name,
+    },
+  });
+}
