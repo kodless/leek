@@ -9,10 +9,13 @@ from leek.api.ext import es
 logger = logging.getLogger(__name__)
 
 
-def search_index(index_alias, query, params):
+def search_index(index_alias, query, params, summary=False):
     connection = es.connection
     try:
-        d = connection.search(index=index_alias, body=query, **params)
+        prefix = ""
+        if summary:
+            prefix = "summary-"
+        d = connection.search(index=f"{prefix}{index_alias}", body=query, **params)
         return d, 200
     except es_exceptions.ConnectionError as e:
         logger.warning(e.info)

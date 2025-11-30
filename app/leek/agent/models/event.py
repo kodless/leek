@@ -15,6 +15,7 @@ class EV:
     kind: str
     state: str
     clock: str
+    updated_at: Union[int, str]
     timestamp: Union[int, str]
     exact_timestamp: float
     utcoffset: int

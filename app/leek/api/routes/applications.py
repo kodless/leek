@@ -117,6 +117,29 @@ class ApplicationCleanupTasks(Resource):
         return apps.get_application_cleanup_tasks(g.index_alias)
 
 
+@applications_ns.route('/transforms')
+class ApplicationTransforms(Resource):
+
+    @auth
+    def get(self):
+        """
+        List transforms
+        """
+
+        return apps.get_application_transforms(g.index_alias)
+
+
+@applications_ns.route('/transforms/start')
+class StartApplicationTransform(Resource):
+
+    @auth(only_app_owner=True)
+    def post(self):
+        """
+        Force Start transform
+        """
+        return apps.start_application_transform(g.index_alias)
+
+
 @applications_ns.route('/fo-triggers')
 class AddFanoutTriggers(Resource):
 

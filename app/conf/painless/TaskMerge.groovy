@@ -18,7 +18,8 @@ List STATES_UNREADY = [QUEUED, RECEIVED, STARTED];
 
 Map TaskStateFields = [
     // No need to update this fields if coming task is out of order
-    "SHARED": ["_id", "app_env", "kind", "state", "uuid", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid"],
+    "SHARED": ["_id", "app_env", "kind", "state", "uuid", "clock", "updated_at", "timestamp", "exact_timestamp",
+               "utcoffset", "pid"],
 
     // Shared between states
     "QUEUED_RECEIVED": ["name", "name_parts", "args", "kwargs", "root_id", "parent_id", "eta", "expires", "retries",

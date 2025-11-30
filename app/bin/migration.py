@@ -255,17 +255,12 @@ def sync_composable_template_and_indices(
     }
 
 
-def migrate_index_templates(es: Elasticsearch, org_prefix):
+def migrate_index_templates(es: Elasticsearch, templates):
     try:
-        templates = es.indices.get_index_template(name=f"{org_prefix}*")
-    except NotFoundError:
-        logger.info(f"No index template found for org '{org_prefix}', skipping migration.")
-        return
-    try:
-        for template in templates["index_templates"]:
+        for template in templates:
             result = sync_composable_template_and_indices(
                 es=es,
-                template_name=template["name"],
+                template_name=template,
                 new_template_body={
                     "template": {
                         "mappings": {

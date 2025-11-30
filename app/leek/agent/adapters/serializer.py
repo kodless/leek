@@ -1,4 +1,5 @@
 from typing import Tuple, Union, Dict, Iterable
+import time
 
 from ciso8601 import parse_datetime
 from fastjsonschema import JsonSchemaException
@@ -57,11 +58,12 @@ def get_custom_fields(kind, ev_type, event):
     }
 
 
-def add_custom_attributes(kind, event, app_env) -> Tuple[str, Union[Task, Worker]]:
+def add_custom_attributes(kind, event, app_env, updated_at) -> Tuple[str, Union[Task, Worker]]:
     ev_type = event.pop("type")
     custom = get_custom_fields(kind, ev_type, event)
     event.update(custom)
     event["app_env"] = app_env
+    event["updated_at"] = updated_at
     if kind == "task":
         # Adapt timestamps
         if event.get("eta", None) is not None:
@@ -111,7 +113,9 @@ def validate_payload(payload: Iterable[Dict], app_env) -> Dict[str, Union[Task, 
             # Validate
             kind, validated_event = validate_event(event)
             # Add custom attributes
-            event_obj_id, event_obj = add_custom_attributes(kind, validated_event, app_env)
+            event_obj_id, event_obj = add_custom_attributes(
+                kind, validated_event, app_env, int(time.time() * 1000)
+            )
             # Merge
             if event_obj_id in validated_payload:
                 # Upsert

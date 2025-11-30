@@ -8,8 +8,10 @@ import time
 from printy import printy
 from elasticsearch import Elasticsearch
 from ism_policy import setup_im_policy
-from utils import abort, logger
+from version import validate_supported_backend
+from utils import abort, logger, get_leek_org_available_index_templates
 from migration import migrate_index_templates
+from summary import ensure_all_summary_indexes_with_mapping, ensure_all_indexes_summary_transform
 
 """
 PRINT APPLICATION HEADER
@@ -307,14 +309,29 @@ def ensure_es_connection() -> Elasticsearch:
 if ENABLE_API:
     # Make sure ES (whether it is local or external) is up before starting the API.
     connection = ensure_es_connection()
-    # Migrate Index Templates and Indexes
+    info = validate_supported_backend(connection)
     if LEEK_API_ENABLE_AUTH is False:
-        migrate_index_templates(connection, "mono")
+        index_prefix = "mono"
     else:
-        migrate_index_templates(connection, LEEK_API_OWNER_ORG)
+        index_prefix = LEEK_API_OWNER_ORG
+    # Initialize indexes
+    index_templates = get_leek_org_available_index_templates(connection, index_prefix)
+    if len(index_templates):
+        # Migrate Index Templates and Indexes (If changed)
+        migrate_index_templates(connection, index_templates)
+        # Create summary indexes for all index templates indexes (If not exist)
+        ensure_all_summary_indexes_with_mapping(connection, index_templates)
+        # Create summary transforms for all indexes and update sync config if changed
+        ensure_all_indexes_summary_transform(
+            backend=info["backend"],
+            es_client=connection,
+            leek_es_url=LEEK_ES_URL,
+            templates=index_templates
+        )
     # Creates index management policy for automatic rollover
     setup_im_policy(
         connection,
+        info["backend"],
         enable_im=LEEK_ES_IM_ENABLE,
         rollover_min_size=LEEK_ES_IM_ROLLOVER_MIN_SIZE,
         rollover_min_doc_count=LEEK_ES_IM_ROLLOVER_MIN_DOC_COUNT,

@@ -1,8 +1,8 @@
 Map WorkerStateFields = [
         // No need to update this fields if coming task is out of order
         "SHARED"   : [
-                "_id", "app_env", "kind", "state", "hostname", "clock", "timestamp", "exact_timestamp", "utcoffset", "pid",
-                "sw_ident", "sw_ver", "sw_sys"
+                "_id", "app_env", "kind", "state", "hostname", "clock", "updated_at", "timestamp", "exact_timestamp",
+                "utcoffset", "pid", "sw_ident", "sw_ver", "sw_sys"
         ],
         // Safe
         "ONLINE"   : ["online_at"],

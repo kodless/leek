@@ -249,17 +249,9 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
     "rejection_outcome": StringParam,
   });
 
-  const [seenRoutingKeys, setSeenRoutingKeys] = useState([]);
-  const [seenExchanges, setSeenExchanges] = useState([]);
-  const [seenQueues, setSeenQueues] = useState([]);
   const [seenWorkers, setSeenWorkers] = useState([]);
 
   // Fetch progress
-  const [seenRoutingKeysFetching, setSeenRoutingKeysFetching] =
-    useState<boolean>();
-  const [seenExchangesFetching, setSeenExchangesFetching] =
-      useState<boolean>();
-  const [seenQueuesFetching, setSeenQueuesFetching] = useState<boolean>();
   const [seenWorkersFetching, setSeenWorkersFetching] = useState<boolean>();
 
   // UI Callbacks
@@ -276,45 +268,6 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
 
   function onSubmit(filters) {
     props.onFilter(filters);
-  }
-
-  function getSeenRoutingKeys(open) {
-    if (!currentApp || !open) return;
-    setSeenRoutingKeysFetching(true);
-    metricsService
-      .getSeenRoutingKeys(currentApp, currentEnv, props.timeFilters)
-      .then(handleAPIResponse)
-      .then((result: any) => {
-        setSeenRoutingKeys(result.aggregations.seen_routing_keys.buckets);
-      }, handleAPIError)
-      .catch(handleAPIError)
-      .finally(() => setSeenRoutingKeysFetching(false));
-  }
-
-  function getSeenExchanges(open) {
-    if (!currentApp || !open) return;
-    setSeenExchangesFetching(true);
-    metricsService
-        .getSeenExchanges(currentApp, currentEnv, props.timeFilters)
-        .then(handleAPIResponse)
-        .then((result: any) => {
-          setSeenExchanges(result.aggregations.seen_exchanges.buckets);
-        }, handleAPIError)
-        .catch(handleAPIError)
-        .finally(() => setSeenExchangesFetching(false));
-  }
-
-  function getSeenQueues(open) {
-    if (!currentApp || !open) return;
-    setSeenQueuesFetching(true);
-    metricsService
-      .getSeenQueues(currentApp, currentEnv, props.timeFilters)
-      .then(handleAPIResponse)
-      .then((result: any) => {
-        setSeenQueues(result.aggregations.seen_queues.buckets);
-      }, handleAPIError)
-      .catch(handleAPIError)
-      .finally(() => setSeenQueuesFetching(false));
   }
 
   function getSeenWorkers(open) {
@@ -463,7 +416,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
             <Row>
               <FormItem name="name_parts.function" style={{ width: "100%" }}>
                 <DropdownFilter
-                    filter_key={"name_parts.function"}
+                    filter_key={"function"}
                     placeholder={"Function name"}
                     filters={props.timeFilters}
                 />
@@ -472,7 +425,7 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
             <Row>
               <FormItem name="name_parts.module" style={{ width: "100%" }}>
                 <DropdownFilter
-                    filter_key={"name_parts.module"}
+                    filter_key={"module"}
                     placeholder={"Module name"}
                     filters={props.timeFilters}
                 />
@@ -646,48 +599,30 @@ const TaskAttributesFilter: React.FC<TasksFilterContextData> = (
           <Panel header="Routing" key="routing" forceRender>
             <Row>
               <FormItem name="routing_key" style={{ width: "100%" }}>
-                <Select
-                    placeholder="Routing key"
-                    mode="multiple"
-                    style={{ width: "100%" }}
-                    notFoundContent={
-                      seenRoutingKeysFetching ? loadingIndicator : null
-                    }
-                    onDropdownVisibleChange={getSeenRoutingKeys}
-                    allowClear
-                >
-                  {seenRoutingKeys.map((rq, key) => badgedOption(rq))}
-                </Select>
+                <DropdownFilter
+                    filter_key={"routing_key"}
+                    placeholder={"Routing key"}
+                    filters={props.timeFilters}
+                />
               </FormItem>
             </Row>
             <Row>
               <FormItem name="exchange" style={{ width: "100%" }}>
-                <Select
-                    placeholder="Exchange"
-                    mode="multiple"
-                    style={{ width: "100%" }}
-                    notFoundContent={
-                      seenExchangesFetching ? loadingIndicator : null
-                    }
-                    onDropdownVisibleChange={getSeenExchanges}
-                    allowClear
-                >
-                  {seenExchanges.map((exchange, key) => badgedOption(exchange, "", "default exchange"))}
-                </Select>
+                <DropdownFilter
+                    filter_key={"exchange"}
+                    placeholder={"Exchange"}
+                    missing_value_default={"default exchange"}
+                    filters={props.timeFilters}
+                />
               </FormItem>
             </Row>
             <Row>
               <FormItem name="queue" style={{ width: "100%" }}>
-                <Select
-                    placeholder="Queue"
-                    mode="multiple"
-                    style={{ width: "100%" }}
-                    notFoundContent={seenQueuesFetching ? loadingIndicator : null}
-                    onDropdownVisibleChange={getSeenQueues}
-                    allowClear
-                >
-                  {seenQueues.map((queue, key) => badgedOption(queue))}
-                </Select>
+                <DropdownFilter
+                    filter_key={"queue"}
+                    placeholder={"Queue"}
+                    filters={props.timeFilters}
+                />
               </FormItem>
             </Row>
             <Row>

@@ -28,10 +28,11 @@ const loadingIndicator = (
 export const DropdownFilter: React.FC<{
     filter_key: string;
     placeholder: string;
+    missing_value_default?: string;
     value?: string;
     filters?: any;
     onChange?: (value: string) => void;
-}> = ({filter_key, placeholder, value, filters, onChange,}) => {
+}> = ({filter_key, placeholder, missing_value_default, value, filters, onChange,}) => {
     const {currentEnv, currentApp} = useApplication();
     const metricsService = new MetricsService();
 
@@ -98,7 +99,10 @@ export const DropdownFilter: React.FC<{
     const memoizedSelectOptions = useMemo(() => {
         // memoize this because it's common to have many different task names, which causes the dropdown to be very laggy.
         // This is a known problem in Ant Design
-        return options.map((o, key) => badgedOption(o));
+        return options.map((o, key) => {
+            if (!missing_value_default) return badgedOption(o, null, null, false);
+            else return badgedOption(o, "", "default exchange", false);
+        });
     }, [options]);
 
     return (
