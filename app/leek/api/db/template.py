@@ -319,14 +319,14 @@ def get_application_transforms(index_alias):
         return responses.search_backend_unavailable
 
 
-def start_application_transform(transform_id):
+def start_application_transform(index_alias):
     """
     Start application transform
-    :param transform_id: transform id
+    :param index_alias: application indices prefix AKA Application name
     :return:
     """
     try:
-        start_summary_transform(transform_id)
+        start_summary_transform(f"summary-{index_alias}")
         return "Done", 200
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable
