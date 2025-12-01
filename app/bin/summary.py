@@ -46,7 +46,7 @@ def ensure_all_indexes_summary_transform(
         ensure_index_summary_transform(
             backend=backend,
             client=client,
-            transform_id=f"summary-{template}",
+            transform_id=f"summary-{template}-transform",
             dest_index=f"summary-{template}",
             source_indices=(f"{template}-*",),
             timestamp_field="updated_at",

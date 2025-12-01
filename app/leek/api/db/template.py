@@ -107,7 +107,7 @@ def create_index_template(
         ensure_summary_index_with_mapping(connection, index=f"summary-{index_alias}")
         ensure_task_summary_transform(
             backend=info["backend"],
-            transform_id=f"summary-{index_alias}",
+            transform_id=f"summary-{index_alias}-transform",
             dest_index=f"summary-{index_alias}",
             source_indices=(f"{index_alias}-*",),
             timestamp_field="updated_at",
@@ -205,7 +205,7 @@ def delete_application(index_alias):
         connection.indices.delete_index_template(index_alias)
         connection.indices.delete(f"{index_alias}*")
         safe_delete_transform(
-            transform_id=f"summary-{index_alias}",
+            transform_id=f"summary-{index_alias}-transform",
             dest_index=f"summary-{index_alias}",
         )
         connection.indices.delete(f"summary-{index_alias}")
@@ -310,7 +310,7 @@ def get_application_transforms(index_alias):
     :return:
     """
     try:
-        summary_transform = get_summary_transform(f"summary-{index_alias}")
+        summary_transform = get_summary_transform(f"summary-{index_alias}-transform")
         if summary_transform:
             return [summary_transform], 200
         else:
@@ -326,7 +326,7 @@ def start_application_transform(index_alias):
     :return:
     """
     try:
-        start_summary_transform(f"summary-{index_alias}")
+        start_summary_transform(f"summary-{index_alias}-transform")
         return "Done", 200
     except es_exceptions.ConnectionError:
         return responses.search_backend_unavailable

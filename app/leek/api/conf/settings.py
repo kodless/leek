@@ -37,3 +37,6 @@ LEEK_CONTROL_EXCHANGE_NAME = os.environ.get("LEEK_CONTROL_EXCHANGE_NAME", "celer
 # This is useful for dev / demo environments when developers want to kickstart the stack
 # without worrying about manual interventions like creating leek app from Leek UI.
 LEEK_CREATE_APP_IF_NOT_EXIST = get_bool("LEEK_CREATE_APP_IF_NOT_EXIST", default="false")
+
+# Explicitly disable fanout triggers
+LEEK_DISABLE_FANOUT_TRIGGERS = get_bool("LEEK_DISABLE_FANOUT_TRIGGERS", default="false")

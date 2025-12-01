@@ -45,6 +45,7 @@ LEEK_WEB_URL = os.environ.get("LEEK_WEB_URL", "http://0.0.0.0:8000")
 LEEK_API_ENABLE_AUTH = get_bool("LEEK_API_ENABLE_AUTH", default="true")
 LEEK_API_OWNER_ORG = os.environ.get("LEEK_API_OWNER_ORG")
 LEEK_CREATE_APP_IF_NOT_EXIST = get_bool("LEEK_CREATE_APP_IF_NOT_EXIST", default="false")
+LEEK_DISABLE_FANOUT_TRIGGERS = get_bool("LEEK_DISABLE_FANOUT_TRIGGERS", default="false")
 
 LOGO = """
 8 8888         8 8888888888   8 8888888888   8 8888     ,88'

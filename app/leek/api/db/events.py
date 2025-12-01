@@ -7,6 +7,7 @@ from elasticsearch.helpers import streaming_bulk, errors as bulk_errors
 
 from flask import g
 
+from leek.api.conf import settings
 from leek.api.channels.pipeline import notify
 from leek.api.db.store import Task
 from leek.api.errors import responses
@@ -69,7 +70,8 @@ def merge_events(index_alias, events: List[Dict]):
             return {"success": success}, 201
         # Finalize
         if not failed:
-            fanout(updated)
+            if not settings.LEEK_DISABLE_FANOUT_TRIGGERS:
+                fanout(updated)
             return {"success": success}, 201
         else:
             return {"success": success, "failed": failed, "errors": errors}, 400
