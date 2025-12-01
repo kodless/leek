@@ -1,4 +1,11 @@
-[<img align="right" width="200px" height="45px" src="https://cdn.buymeacoffee.com/buttons/default-yellow.png">](https://www.buymeacoffee.com/fennec)
+> ⚠️ **IMPORTANT VERSION NOTICE**  
+> Starting from **Leek 7.4.0**, the following changes apply:
+>
+> - **Only OpenSearch ≥ 2.15.0 is supported**
+> - **Only Elasticsearch ≥ 7.8.0 is supported**
+> - **The OSS distribution of Elasticsearch is *no longer supported***
+>
+> Please ensure your environment meets these requirements before upgrading.
 
 # Leek
 
