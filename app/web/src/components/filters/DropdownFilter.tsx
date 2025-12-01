@@ -120,11 +120,7 @@ export const DropdownFilter: React.FC<{
             dropdownMatchSelectWidth={false}
             onDropdownVisibleChange={(open) => {
                 setDropdownOpen(open);
-                if (open) {
-                    if (options.length === 0 && searchText === "")
-                    return fetchAggregations() // Initial load when user opens (not on mount)
-                }
-                else {
+                if (!open) {
                     // dropdown closed → forget search
                     setSearchText("");
                     // optional: also reset options to initial state
