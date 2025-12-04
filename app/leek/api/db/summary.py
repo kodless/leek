@@ -21,6 +21,12 @@ def ensure_summary_index_with_mapping(
 ):
     # Use ignore=400 or equivalent to avoid errors if it already exists
     body = {
+        "settings": {
+            "index": {
+                # Better to be the same as Transform run interval
+                "refresh_interval": "60s"
+            }
+        },
         "mappings": {
             "properties": get_summary_properties()
         }
@@ -223,6 +229,13 @@ def _ensure_os_transform(
             "start_time": now_unix_ms,
         }
     }
+
+    # Unlike Elasticsearch, Opensearch does not have native incremental documents selections using `sync` block
+    # So the "incremental" trick is to add a rolling range on updated_at to data_selection_query and keep
+    # continuous: true + a schedule.
+    data_selection_query["bool"]["filter"].append({
+        "range": {"updated_at": {"gte": "now-5m"}}
+    })
 
     transform_def: Mapping[str, Any] = {
         "description": f"Summary transform for {','.join(source_indices)}",
