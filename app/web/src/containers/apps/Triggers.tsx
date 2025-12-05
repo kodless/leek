@@ -24,6 +24,7 @@ import {
   DeploymentUnitOutlined,
   SlackOutlined,
   BellOutlined,
+  WindowsOutlined
 } from "@ant-design/icons";
 
 import TriggerDataColumns from "../../components/data/TriggerData";
@@ -62,6 +63,7 @@ const Triggers = (props) => {
   const [patternType, setPatternType] = useState<string>("all");
   const [loading, setLoading] = useState<boolean>(false);
   const [triggerId, setTriggerId] = useState();
+
 
   useEffect(() => {}, []);
 
@@ -141,17 +143,17 @@ const Triggers = (props) => {
             <SlackOutlined />
             Slack
           </Option>
+          <Option value="teams">
+            <WindowsOutlined />
+            Teams
+          </Option>
         </Select>
       </FormItem>
 
       <FormItem
-        name="slack_wh_url"
+        name="wh_url"
         rules={[
-          { required: true, message: "Please input slack webhook url!" },
-          {
-            type: "url",
-            message: "This field must be a valid url.",
-          },
+          { required: true, message: "Please input webhook url!" },
         ]}
       >
         <Input
@@ -359,7 +361,7 @@ const Triggers = (props) => {
                     <List.Item.Meta
                       style={{ marginBottom: 16 }}
                       title={"Webhook URL"}
-                      description={<Tag>{record.slack_wh_url}</Tag>}
+                      description={<Tag>{record.wh_url}</Tag>}
                     />
                   </Col>
                   <Col span={12}>

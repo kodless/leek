@@ -8,8 +8,8 @@ TriggerSchema = Schema({
     Optional("envs", default=[]): [str],
     Optional("runtime_upper_bound"): And(Use(float), lambda n: 0.000000000001 <= n <= 1000),
     Optional(Or("exclude", "include", only_one=True)): [str],
-    "type": Or("slack"),
-    "slack_wh_url": And(str, len),
+    "type": Or("slack", "teams"),
+    "wh_url": And(str, len),
 })
 
 ApplicationSchema = Schema(
