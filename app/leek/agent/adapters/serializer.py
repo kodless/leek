@@ -71,13 +71,30 @@ def add_custom_attributes(kind, event, app_env, updated_at) -> Tuple[str, Union[
         if event.get("expires", None) is not None:
             event["expires"] = int(parse_datetime(event["expires"]).timestamp() * 1000)
         if event.get("traceback", None) is not None:
-            event["traceback"] = event["traceback"][:30000]
-            stacktrace = extract_stacktrace(raw=event["traceback"], dedupe_duplicate_frames=True)
-            event["lang"] = stacktrace["lang"]
-            event["error"] = stacktrace["error"]
-            # TODO: will add support for this soon
-            event["stack"] = []  # stacktrace["stack"]
-            event["trace"] = stacktrace["trace"]
+            # Optimization: do not parse Retry exceptions, they tend to flood the search backend
+            # when the number of retries for batch tasks are high.
+            # Keep the retry traceback short to avoid high indexing latency during batch processing
+            if "celery.exceptions.Retry:" in event["traceback"]:
+                event["error"] = {
+                    "type": "celery.exceptions.Retry",
+                    "message": event["exception"]
+                }
+                trace = f"celery.exceptions.Retry: {event.get('exception')}"
+                event["trace"] = {
+                    "raw": trace,
+                    "text": trace,
+                    "wc": trace
+                }
+                event["lang"] = "python"
+                event["stack"] = []
+            else:
+                event["traceback"] = event["traceback"][:30000]
+                stacktrace = extract_stacktrace(raw=event["traceback"], dedupe_duplicate_frames=True)
+                event["lang"] = stacktrace["lang"]
+                event["error"] = stacktrace["error"]
+                # TODO: will add support for this soon
+                event["stack"] = []  # stacktrace["stack"]
+                event["trace"] = stacktrace["trace"]
         if event.get("args", None) is not None:
             promoted_args = promote_args(event["args"], 10)
             event.update(promoted_args)

@@ -51,6 +51,8 @@ services:
     depends_on:
       mq:
         condition: service_healthy
+      es01:
+        condition: service_healthy
 
   # Just for local development!! (Test worker)
   worker:
@@ -126,6 +128,7 @@ services:
 #    environment:
 #      - bootstrap.memory_lock=true
 #      - discovery.type=single-node
+#      - logger.level=warn
 #      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
 #    healthcheck:
 #      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
