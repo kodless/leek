@@ -33,7 +33,7 @@ ADD bin /opt/app/bin
 ADD conf /opt/app/conf
 ADD leek /opt/app/leek
 
-FROM python:3.9-slim-buster AS runtime-image
+FROM python:3.9-slim-bookworm AS runtime-image
 
 WORKDIR /opt/app
 ENV DEBIAN_FRONTEND=noninteractive
