@@ -79,7 +79,7 @@ def add_custom_attributes(kind, event, app_env, updated_at) -> Tuple[str, Union[
                     "type": "celery.exceptions.Retry",
                     "message": event["exception"]
                 }
-                trace = f"celery.exceptions.Retry: {event.get('exception')}"
+                trace = f"celery.exceptions.Retry: {event.get('exception')}"[:30000]
                 event["trace"] = {
                     "raw": trace,
                     "text": trace,
