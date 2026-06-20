@@ -35,6 +35,7 @@ ENABLE_AGENT = get_bool("LEEK_ENABLE_AGENT")
 ENABLE_WEB = get_bool("LEEK_ENABLE_WEB")
 ENABLE_DDTRACE = get_bool("LEEK_ENABLE_DDTRACE")
 LEEK_ES_URL = os.environ.get("LEEK_ES_URL", "http://0.0.0.0:9200")
+LEEK_ES_API_KEY = os.environ.get("LEEK_ES_API_KEY", None)
 LEEK_ES_IM_ENABLE = get_bool("LEEK_ES_IM_ENABLE", default="false")
 LEEK_ES_IM_SLACK_WEBHOOK_URL = os.environ.get("LEEK_ES_IM_SLACK_WEBHOOK_URL")
 LEEK_ES_IM_ROLLOVER_MIN_SIZE = os.environ.get("LEEK_ES_IM_ROLLOVER_MIN_SIZE")
@@ -297,7 +298,7 @@ def ensure_connection(target):
 
 def ensure_es_connection() -> Elasticsearch:
     logging.getLogger("elasticsearch").setLevel(logging.ERROR)
-    conn = Elasticsearch(LEEK_ES_URL)
+    conn = Elasticsearch(LEEK_ES_URL, api_key=LEEK_ES_API_KEY)
     for i in range(10):
         if conn.ping():
             logging.getLogger("elasticsearch").setLevel(logging.INFO)
